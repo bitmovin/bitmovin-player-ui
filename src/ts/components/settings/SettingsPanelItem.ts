@@ -142,6 +142,37 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
     }
   }
 
+  protected onHideEvent(): void {
+    this.updateAccessibilityTreePresence();
+    super.onHideEvent();
+  }
+
+  protected onShowEvent(): void {
+    this.updateAccessibilityTreePresence();
+    super.onShowEvent();
+  }
+
+  /**
+   * Takes a hidden row out of the accessibility tree, in line with the `display: none` of its stylesheet. Some screen
+   * readers (e.g. VoiceOver in Safari) otherwise still count a hidden menu item in the position and size of the menu,
+   * announcing e.g. "1 of 5" with only 4 items visible.
+   */
+  private updateAccessibilityTreePresence(): void {
+    const element = this.getDomElement();
+
+    if (this.isHidden()) {
+      element.attr('aria-hidden', 'true');
+      element.attr('role', 'none');
+    } else {
+      element.removeAttr('aria-hidden');
+      if (this.config.role) {
+        element.attr('role', this.config.role);
+      } else {
+        element.removeAttr('role');
+      }
+    }
+  }
+
   /**
    * Whether activating this item opens the options of its {@link ListSelector} setting in another menu, which is
    * announced through `aria-haspopup`.

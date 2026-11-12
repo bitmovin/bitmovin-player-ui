@@ -53,6 +53,51 @@ describe('Settings menu roles', () => {
     });
   });
 
+  describe('hidden rows', () => {
+    it('should leave the accessibility tree while hidden', () => {
+      const item = new SettingsPanelItem({ label: 'Audio Quality' });
+
+      item.hide();
+
+      expect(attribute(item, 'aria-hidden')).toBe('true');
+      expect(attribute(item, 'role')).toBe('none');
+    });
+
+    it('should return to the accessibility tree with its role when shown again', () => {
+      const item = new SettingsPanelItem({ label: 'Audio Quality' });
+      item.hide();
+
+      item.show();
+
+      expect(attribute(item, 'aria-hidden')).toBeNull();
+      expect(attribute(item, 'role')).toBe('menuitem');
+    });
+
+    it('should leave the accessibility tree when it is configured as hidden', () => {
+      const item = new SettingsPanelItem({ label: 'Saved Emissions', hidden: true });
+
+      item.initialize();
+
+      expect(attribute(item, 'aria-hidden')).toBe('true');
+      expect(attribute(item, 'role')).toBe('none');
+    });
+
+    it('should restore the role a subclass configures', () => {
+      const listSelector = new ListSelectorTestClass();
+      const settingsPanel = new SettingsPanel({ components: [new SettingsPanelPage({})] });
+      const item = new DynamicSettingsPanelItem({
+        label: 'Speed',
+        settingComponent: listSelector,
+        container: settingsPanel,
+      });
+      item.hide();
+
+      item.show();
+
+      expect(attribute(item, 'role')).toBe('menuitem');
+    });
+  });
+
   describe('controls in title rows', () => {
     let settingsPanel: SettingsPanel<SettingsPanelConfig>;
 

@@ -248,3 +248,16 @@ test('on TV, Home on a titled list box selects the first track, not the title', 
   await expect(english).toHaveAttribute('aria-checked', 'true');
   await expect(german).toHaveAttribute('aria-checked', 'false');
 });
+
+test('hidden settings rows do not count as menu items', async ({ page }) => {
+  // Without audio tracks, audio qualities and subtitles, only Video Quality and Speed are shown
+  await mountUi(page, { live: false, videoQualities: VIDEO_QUALITIES });
+
+  const settingsMenu = await openSettings(page);
+
+  await expect(settingsMenu.getByRole('menuitem')).toHaveCount(2);
+  // Some screen readers (VoiceOver in Safari) count every element with a menu item role for "1 of n", including
+  // rows hidden through CSS, so hidden rows must not keep that role
+  await expect(settingsMenu.locator('[role^="menuitem"]')).toHaveCount(2);
+  await expect(settingsMenu.locator('.bmpui-hidden[role^="menuitem"]')).toHaveCount(0);
+});
