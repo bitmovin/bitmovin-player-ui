@@ -19,6 +19,9 @@ import { SettingsPanel } from './settings/SettingsPanel';
 export interface UIContainerConfig extends ContainerConfig {
   /**
    * The delay in milliseconds after which the control bar will be hidden when there is no user interaction.
+   * The delay does not elapse while keyboard focus is inside the control bar, title bar or settings panel (except
+   * with spatial navigation, e.g. on TVs), or, with {@link UIConfig.disableAutoHideWhenHovered}, while a control is
+   * hovered. It starts again once focus or the pointer has left.
    * Set to -1 for the UI to be always shown.
    * Default: 2 seconds (2000)
    */

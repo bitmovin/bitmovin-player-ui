@@ -18,6 +18,8 @@ import { Action } from '../../spatialnavigation/types';
 export interface SettingsPanelConfig extends ContainerConfig {
   /**
    * The delay in milliseconds after which the settings panel will be hidden when there is no user interaction.
+   * The delay does not elapse while the pointer is over the panel or while keyboard focus is inside it (WCAG 2.2.1
+   * Timing Adjustable); it starts again once the pointer leaves the panel or keyboard focus moves out of it.
    * Set to -1 to disable automatic hiding.
    * Default: 5 seconds (5000)
    */
@@ -108,6 +110,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   };
 
   private hideTimeout?: Timeout;
+  private isPointerInside = false;
 
   constructor(config: Config) {
     super(config);
@@ -136,24 +139,30 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
     uimanager.onControlsHide.subscribe(() => this.hideHoveredSelectBoxes());
     uimanager.onComponentViewModeChanged.subscribe((_, { mode }) => this.trackComponentViewMode(mode));
+    // Keyboard focus inside suspends the hide timeout of this panel (and of the UI) through the view mode
+    this.keepShownWhileKeyboardFocused(uimanager);
 
     if (config.hideDelay > -1) {
       this.hideTimeout = new Timeout(config.hideDelay, () => {
         this.hide();
         this.hideHoveredSelectBoxes();
       });
+      // Do not close the panel while the pointer rests on it, only once it has left (WCAG 2.2.1 Timing Adjustable)
       this.getDomElement().on('mouseenter mousemove', () => {
-        this.hideTimeout.reset();
+        this.isPointerInside = true;
+        this.hideTimeout.clear();
       });
       this.getDomElement().on('mouseleave', () => {
-        // On mouse leave activate the timeout
+        this.isPointerInside = false;
         this.hideTimeout.reset();
       });
       this.getDomElement().on('focusin', () => {
         this.hideTimeout.clear();
       });
       this.getDomElement().on('focusout', () => {
-        this.hideTimeout.reset();
+        if (!this.isPointerInside) {
+          this.hideTimeout.reset();
+        }
       });
     }
 
@@ -197,6 +206,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       if (config.hideDelay > -1) {
         // Clear timeout when hidden from outside
         this.hideTimeout.clear();
+        // The panel can hide under a resting pointer, which then never dispatches mouseleave
+        this.isPointerInside = false;
       }
 
       // Since we don't reset the actual navigation here we need to simulate a onInactive event in case some panel
@@ -390,7 +401,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   }
 
   protected resumeHideTimeout() {
-    this.hideTimeout?.resume(true);
+    // Only restart the timeout when the panel is open and the pointer is not resting on it
+    this.hideTimeout?.resume(this.isShown() && !this.isPointerInside);
   }
 
   private updateActivePageClass(): void {

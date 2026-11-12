@@ -260,6 +260,112 @@ describe('SettingsPanel', () => {
     });
   });
 
+  describe('automatic hiding', () => {
+    const hideDelay = 5000;
+    let uiInstanceManagerMock: UIInstanceManager;
+    let page: SettingsPanelPage;
+
+    const panelElement = () => settingsPanel.getDomElement().get(0);
+    const pointer = (...types: string[]) => types.forEach(type => panelElement().dispatchEvent(new MouseEvent(type)));
+    const focusInside = ({ keyboard }: { keyboard: boolean }) => {
+      // The FocusVisibilityTracker marks keyboard focus before the focusin event bubbles up
+      page.getDomElement().get(0).classList.toggle('{{PREFIX}}-focus-visible', keyboard);
+      page
+        .getDomElement()
+        .get(0)
+        .dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    };
+    const moveFocusOutside = () => {
+      page.getDomElement().get(0).classList.remove('{{PREFIX}}-focus-visible');
+      page
+        .getDomElement()
+        .get(0)
+        .dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
+    };
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      uiInstanceManagerMock = getUiInstanceManagerMock();
+      Object.defineProperty(uiInstanceManagerMock, 'onComponentViewModeChanged', {
+        value: new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>(),
+      });
+      page = new SettingsPanelPage({});
+      settingsPanel = new SettingsPanel({ components: [page], hidden: true, hideDelay });
+      settingsPanel.initialize();
+      settingsPanel.configure(getPlayerMock(), uiInstanceManagerMock);
+      document.body.appendChild(panelElement());
+      settingsPanel.show();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      document.body.innerHTML = '';
+    });
+
+    it('should close after the hide delay when the user does not interact with it', () => {
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should stay open while the pointer rests on it', () => {
+      pointer('mouseenter', 'mousemove');
+
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      expect(settingsPanel.isShown()).toBe(true);
+    });
+
+    it('should close after the hide delay once the pointer has left it', () => {
+      pointer('mouseenter', 'mousemove');
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      pointer('mouseleave');
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should stay open while keyboard focus is inside, even when the pointer passes over it', () => {
+      focusInside({ keyboard: true });
+
+      pointer('mouseenter', 'mousemove', 'mouseleave');
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      expect(settingsPanel.isShown()).toBe(true);
+    });
+
+    it('should close after the hide delay once keyboard focus has left it', () => {
+      focusInside({ keyboard: true });
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      moveFocusOutside();
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should close after the hide delay when focused by a pointer that has left it', () => {
+      pointer('mouseenter');
+      focusInside({ keyboard: false });
+
+      pointer('mouseleave');
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should not restart the hide delay while the pointer rests on it when a component leaves the persistent view mode', () => {
+      pointer('mouseenter');
+
+      uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Persistent });
+      uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Temporary });
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      expect(settingsPanel.isShown()).toBe(true);
+    });
+  });
+
   describe('items', () => {
     it('does not create a label for an omitted label config', () => {
       expect(new SettingsPanelItem({}).getComponents()).toHaveLength(0);

@@ -67,6 +67,15 @@ export class FocusVisibilityTracker {
   }
 }
 
+/**
+ * Checks whether an element shows a visible focus indicator, i.e. it was focused by keyboard (or spatial navigation)
+ * rather than by a pointer. The {@link FocusVisibilityTracker} of the UI decides this when the element receives focus,
+ * so this answers correctly in `focusin` handlers, which run after the `focus` event the tracker listens to.
+ */
+export function hasVisibleFocus(element: EventTarget | null): boolean {
+  return isHtmlElement(element) && element.classList.contains(FocusVisibleCssClassName);
+}
+
 function isBitmovinUi(element: Element, bitmovinUiPrefix: string): boolean {
   return element.id.indexOf(bitmovinUiPrefix) === 0;
 }

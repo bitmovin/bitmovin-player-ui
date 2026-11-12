@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- `UIConfig.disableAutoHideWhenHovered` now defaults to `true`, so the controls stay shown while the pointer rests on a control in the control bar instead of hiding after the hide delay. Set it to `false` to restore the previous behavior.
+
+### Fixed
+
+- Controls auto-hiding while keyboard focus is inside the control bar, title bar or settings panel, which made the focused control and its focus indicator invisible. They now stay shown until focus leaves them. UIs with spatial navigation, such as the TV layouts, keep hiding as before, because focus never leaves the UI there.
+- Settings panel closing itself while the pointer rests on it, or while keyboard focus is inside it and the pointer moves. `SettingsPanelConfig.hideDelay` now only elapses while the panel is neither hovered nor keyboard-focused.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

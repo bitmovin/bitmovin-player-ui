@@ -322,7 +322,7 @@ export class UIManager {
     this.config = {
       playbackSpeedSelectionEnabled: true, // Switch on speed selector by default
       autoUiVariantResolve: true, // Switch on auto UI resolving by default
-      disableAutoHideWhenHovered: false, // Disable auto hide when UI is hovered
+      disableAutoHideWhenHovered: true, // Keep the controls shown while a control is hovered (WCAG 1.4.13)
       enableSeekPreview: true,
       enableResumeFromLastPosition: false,
       enableTimestampDeepLink: true,
@@ -1097,6 +1097,14 @@ export class UIInstanceManager {
 
   isUIResolved(): boolean {
     return this.uiContainer != null;
+  }
+
+  /**
+   * Whether this UI is navigated with {@link SpatialNavigation} (e.g. on TVs), where focus always stays inside the UI.
+   * Only reliable once the UI is resolved, which is the case when its components are configured.
+   */
+  hasSpatialNavigation(): boolean {
+    return this.spatialNavigation != null;
   }
 
   getPlayer(): PlayerAPI {

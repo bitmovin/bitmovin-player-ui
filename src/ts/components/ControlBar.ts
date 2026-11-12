@@ -83,6 +83,8 @@ export class ControlBar extends Container<ControlBarConfig> {
       });
     }
 
+    this.keepShownWhileKeyboardFocused(uimanager);
+
     uimanager.onControlsShow.subscribe(() => {
       this.show();
     });

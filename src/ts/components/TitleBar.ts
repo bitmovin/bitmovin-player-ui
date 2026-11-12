@@ -70,6 +70,8 @@ export class TitleBar extends Container<TitleBarConfig> {
       }
     };
 
+    this.keepShownWhileKeyboardFocused(uimanager);
+
     // Subscribe to any label-like component's text changes
     this.subscribeToTextChanges(this.getComponents(), checkTextAndUpdateVisibility);
 

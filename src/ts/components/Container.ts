@@ -2,6 +2,8 @@ import { ComponentConfig, Component, ViewModeChangedEventArgs, ViewMode } from '
 import { DOM } from '../DOM';
 import { ArrayUtils } from '../utils/ArrayUtils';
 import { i18n } from '../localization/i18n';
+import type { UIInstanceManager } from '../UIManager';
+import { hasVisibleFocus } from '../utils/FocusVisibilityTracker';
 
 /**
  * Configuration interface for a {@link Container}.
@@ -45,6 +47,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   private componentsToPrepend: Component<ComponentConfig>[];
   private componentsToRemove: Component<ComponentConfig>[];
   private componentsInPersistentViewMode: number;
+  private releaseKeyboardFocusTracking?: () => void;
 
   constructor(config: Config) {
     super(config);
@@ -173,6 +176,54 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     containerElement.append(innerContainer);
 
     return containerElement;
+  }
+
+  release(): void {
+    this.releaseKeyboardFocusTracking?.();
+    super.release();
+  }
+
+  /**
+   * Keeps this container in {@link ViewMode.Persistent} while keyboard focus is inside it, so the UI does not
+   * auto-hide the focused control together with its focus indicator (WCAG 2.4.7 Focus Visible, 2.4.11 Focus Not
+   * Obscured). Focus set by a pointer does not count, so clicking a control does not keep the UI shown.
+   *
+   * Has no effect with spatial navigation (e.g. on TVs): focus never leaves the UI there, so the UI would never
+   * auto-hide.
+   *
+   * Must be called from {@link configure}.
+   */
+  protected keepShownWhileKeyboardFocused(uimanager: UIInstanceManager): void {
+    if (uimanager.hasSpatialNavigation()) {
+      return;
+    }
+
+    const element = this.getDomElement();
+    const setKeyboardFocused = (focused: boolean) =>
+      this.onViewModeChangedEvent(focused ? ViewMode.Persistent : ViewMode.Temporary);
+    const onFocusIn = (e: FocusEvent) => setKeyboardFocused(hasVisibleFocus(e.target));
+    const onFocusOut = (e: FocusEvent) => {
+      // When focus moves to another element inside, the focusin that follows decides
+      const nextFocused = e.relatedTarget as Node | null;
+      if (!nextFocused || !element.get(0).contains(nextFocused)) {
+        setKeyboardFocused(false);
+      }
+    };
+    // Focus can stay on a control without a focusout when it is hidden, e.g. when the UI switches variants
+    const onHiddenWithFocus = () => setKeyboardFocused(false);
+
+    element.on('focusin', onFocusIn);
+    element.on('focusout', onFocusOut);
+    this.onHide.subscribe(onHiddenWithFocus);
+    uimanager.onInactive.subscribe(onHiddenWithFocus);
+
+    this.releaseKeyboardFocusTracking = () => {
+      // Let the UI auto-hide again if this container is released while focused
+      setKeyboardFocused(false);
+      element.off('focusin', onFocusIn);
+      element.off('focusout', onFocusOut);
+      uimanager.onInactive.unsubscribe(onHiddenWithFocus);
+    };
   }
 
   protected suspendHideTimeout(): void {
