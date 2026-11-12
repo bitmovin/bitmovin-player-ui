@@ -182,11 +182,11 @@ describe('localized texts on a UI language change', () => {
   describe('SelectBox', () => {
     it('should render its accessible name and option labels in the new language and keep the selection', () => {
       const selectBox = track(new SelectBox({ ariaLabel: i18n.getLocalizer('settings.audio.quality') }));
+      const select = element(selectBox) as HTMLSelectElement;
       selectBox.addItem('auto', i18n.getLocalizer('auto'));
       selectBox.addItem('off', i18n.getLocalizer('off'));
       selectBox.addItem('custom', 'Custom item');
       selectBox.selectItem('off');
-      const select = element(selectBox) as HTMLSelectElement;
 
       i18n.setLanguage('nl');
 
@@ -197,6 +197,26 @@ describe('localized texts on a UI language change', () => {
         'Custom item',
       ]);
       expect(select.options[select.selectedIndex].value).toBe('off');
+    });
+
+    it('should keep the option the user chose, its options and the focus', () => {
+      const selectBox = track(new SelectBox());
+      selectBox.addItem('auto', i18n.getLocalizer('auto'));
+      selectBox.addItem('off', i18n.getLocalizer('off'));
+      const select = element(selectBox) as HTMLSelectElement;
+      document.body.appendChild(select);
+      const options = Array.from(select.options);
+      select.focus();
+      select.value = 'off';
+      select.dispatchEvent(new Event('change'));
+
+      i18n.setLanguage('nl');
+
+      expect(select.value).toBe('off');
+      expect(Array.from(select.options)).toEqual(options);
+      expect(options.map(option => option.textContent)).toEqual(['automatisch', 'uit']);
+      expect(document.activeElement).toBe(select);
+      select.remove();
     });
   });
 
@@ -213,6 +233,22 @@ describe('localized texts on a UI language change', () => {
 
       const items = Array.from(element(list).querySelectorAll('li'));
       expect(items.map(item => item.textContent)).toEqual(['automatisch', 'uit']);
+      expect(items[1].className).toContain('selected');
+    });
+
+    it('should keep the item the user clicked', () => {
+      const list = track(new ItemSelectionList());
+      list.getDomElement();
+      list.addItem('auto', i18n.getLocalizer('auto'));
+      list.addItem('off', i18n.getLocalizer('off'));
+      const items = Array.from(element(list).querySelectorAll('li'));
+      items[1].click();
+
+      i18n.setLanguage('nl');
+
+      expect(Array.from(element(list).querySelectorAll('li'))).toEqual(items);
+      expect(items.map(item => item.textContent)).toEqual(['automatisch', 'uit']);
+      expect(items[0].className).not.toContain('selected');
       expect(items[1].className).toContain('selected');
     });
   });

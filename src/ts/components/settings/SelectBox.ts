@@ -1,4 +1,4 @@
-import { ListSelector, ListSelectorConfig } from '../lists/ListSelector';
+import { ListItem, ListSelector, ListSelectorConfig } from '../lists/ListSelector';
 import { DOM } from '../../DOM';
 import { i18n } from '../../localization/i18n';
 import { PlayerAPI } from 'bitmovin-player';
@@ -48,6 +48,10 @@ const Timeout = 100;
 
 export class SelectBox extends ListSelector<ListSelectorConfig> {
   private selectElement: DOM | undefined;
+  /**
+   * The rendered options and the items they show, so that their labels can be localized again in place.
+   */
+  private renderedOptions: { item: ListItem; element: DOM }[] = [];
   private dropdownCloseListenerTimeoutId = 0;
   private removeDropdownCloseListeners = () => {};
   private uiContainer: UIContainer | undefined;
@@ -110,12 +114,14 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
     // Delete all children
     this.selectElement.empty();
+    this.renderedOptions = [];
 
     // Add updated children
     for (const item of this.items) {
       const optionElement = new DOM('option', {
         value: String(item.key),
       }).html(i18n.performLocalization(item.label));
+      this.renderedOptions.push({ item, element: optionElement });
 
       if (item.key === String(selectedValue)) {
         // convert selectedValue to string to catch 'null'/null case
@@ -128,8 +134,12 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
   protected onLanguageChanged(): void {
     super.onLanguageChanged();
-    // Renders the option labels in the new language
-    this.updateDomItems(this.selectedItem);
+
+    // Localizes the option labels in place, because rebuilding the options would lose the selection the user made,
+    // which is not necessarily the selected item yet, and the focus
+    for (const { item, element } of this.renderedOptions) {
+      element.html(i18n.performLocalization(item.label));
+    }
   }
 
   protected onItemsChangedEvent() {

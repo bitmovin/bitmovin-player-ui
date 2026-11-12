@@ -292,6 +292,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       };
 
       let playing = true;
+      let playbackSpeed = 1;
       let sourceLoaded = true;
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
@@ -373,6 +374,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           return true;
         },
         timeShift: (): void => undefined,
+        getPlaybackSpeed: () => playbackSpeed,
+        setPlaybackSpeed: (speed: number) => {
+          if (speed === playbackSpeed) {
+            return;
+          }
+          const from = playbackSpeed;
+          playbackSpeed = speed;
+          fire(PlayerEvent.PlaybackSpeedChanged, { from, to: speed });
+        },
         play: (issuer = 'api') => {
           playing = true;
           fire(PlayerEvent.Play, { time: 0, issuer });

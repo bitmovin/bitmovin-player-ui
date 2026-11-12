@@ -1,4 +1,4 @@
-import { ListSelector, ListSelectorConfig } from './ListSelector';
+import { ListItem, ListSelector, ListSelectorConfig } from './ListSelector';
 import { DOM } from '../../DOM';
 import { i18n } from '../../localization/i18n';
 
@@ -9,6 +9,10 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   private static readonly CLASS_SELECTED = 'selected';
 
   private listElement: DOM;
+  /**
+   * The rendered item labels and the items they show, so that they can be localized again in place.
+   */
+  private renderedItemLabels: { item: ListItem; element: DOM }[] = [];
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
@@ -46,6 +50,7 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   protected updateDomItems(selectedValue: string = null) {
     // Delete all children
     this.listElement.empty();
+    this.renderedItemLabels = [];
 
     let selectedListItem: DOM = null;
 
@@ -58,10 +63,12 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
     };
 
     for (const item of this.items) {
+      const itemLabel = new DOM('a', {}).html(i18n.performLocalization(item.label));
+      this.renderedItemLabels.push({ item, element: itemLabel });
       const listItem = new DOM('li', {
         type: 'li',
         class: this.prefixCss('ui-selectionlistitem'),
-      }).append(new DOM('a', {}).html(i18n.performLocalization(item.label)));
+      }).append(itemLabel);
 
       if (!selectedListItem) {
         if (selectedValue == null) {
@@ -100,9 +107,10 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
   protected onLanguageChanged(): void {
     super.onLanguageChanged();
 
-    // Renders the item labels in the new language
-    if (this.hasDomElement()) {
-      this.updateDomItems(this.selectedItem);
+    // Localizes the item labels in place, because rebuilding the list would lose the selection the user made, which
+    // is not necessarily the selected item yet
+    for (const { item, element } of this.renderedItemLabels) {
+      element.html(i18n.performLocalization(item.label));
     }
   }
 

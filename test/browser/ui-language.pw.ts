@@ -105,6 +105,29 @@ test('a runtime localization config names the live indicator in the new language
   ).toHaveText('En direct');
 });
 
+test('a settings option chosen through the UI keeps its selection and focus when the UI language changes', async ({
+  page,
+}) => {
+  const ui = await mountUi(page, { live: false });
+  await page.locator('.bmpui-ui-controlbar').getByRole('button', { name: 'Settings', exact: true }).click();
+  const settingsPanel = page.locator('.bmpui-ui-settings-panel:not(.bmpui-ui-listbox)');
+  await settingsPanel.getByRole('menuitem', { name: 'Speed normal', exact: true }).click();
+  const chosenOption = settingsPanel.getByRole('menuitem', { name: '1.5x', exact: true });
+  await chosenOption.click();
+  await expect(chosenOption).toHaveClass(/bmpui-selected/);
+  await expect(chosenOption).toBeFocused();
+
+  await ui.setLanguage('nl');
+
+  await expect(
+    settingsPanel.getByRole('menuitem', { name: 'normaal', exact: true }),
+    'the options must be named in the new language',
+  ).toBeVisible();
+  await expect(chosenOption, 'the chosen option must stay selected').toHaveClass(/bmpui-selected/);
+  await expect(chosenOption, 'the chosen option must keep the focus').toBeFocused();
+  await expect(settingsPanel.getByRole('menuitem', { name: 'normaal', exact: true })).not.toHaveClass(/bmpui-selected/);
+});
+
 test('the context menu names its items in the new UI language', async ({ page }) => {
   const ui = await mountUi(page, { live: false });
 
