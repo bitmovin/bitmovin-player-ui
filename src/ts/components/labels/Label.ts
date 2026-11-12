@@ -157,6 +157,8 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
    * Clears the text on this label.
    */
   clearText() {
+    // Also forgets a localized text, so that a language change does not show it again
+    this.text = '';
     this.textElement?.html('');
     this.onTextChangedEvent(null);
   }

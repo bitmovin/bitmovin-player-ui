@@ -542,7 +542,7 @@ export class UIContainer extends Container<UIContainerConfig> {
   }
 
   protected onLanguageChanged(): void {
-    // Also localizes the accessible name, which has to be in the language that the `lang` attribute announces
+    // The accessible name has already been localized, in the language that the `lang` attribute announces
     super.onLanguageChanged();
 
     if (this.hasDomElement()) {

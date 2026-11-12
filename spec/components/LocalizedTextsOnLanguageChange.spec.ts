@@ -15,6 +15,9 @@ import {
 import { PlayerInsightsContextMenuItem } from '../../src/ts/components/panels/player-insights/PlayerInsightsContextMenuItem';
 import type { PlayerInsightsPanel } from '../../src/ts/components/panels/player-insights/PlayerInsightsPanel';
 import { VolumeController } from '../../src/ts/utils/VolumeController';
+import { Button, ButtonConfig } from '../../src/ts/components/buttons/Button';
+import { AdSkipButton } from '../../src/ts/components/ads/AdSkipButton';
+import { AdCounterLabel } from '../../src/ts/components/ads/AdCounterLabel';
 import type { UIInstanceManager } from '../../src/ts/UIManager';
 
 // MockHelper mocks the DOM, but the subject here is the rendered markup after a language change. A mock factory takes
@@ -88,6 +91,22 @@ describe('localized texts on a UI language change', () => {
 
       expect(element(seekBar).getAttribute('aria-label')).toBe('Custom timeline');
     });
+
+    it.each([
+      ['set through setAriaLabel', (seekBar: SeekBar) => seekBar.setAriaLabel('Runtime custom timeline')],
+      [
+        'changed on the element',
+        (seekBar: SeekBar) => element(seekBar).setAttribute('aria-label', 'Runtime custom timeline'),
+      ],
+    ])('should not add the current time to a name that was %s', (_, overrideName) => {
+      const seekBar = renderVodSeekBar({ addCurrentTimeToAriaLabel: true });
+      overrideName(seekBar);
+
+      i18n.setLanguage('de');
+      seekBar['setAriaSliderValues']();
+
+      expect(element(seekBar).getAttribute('aria-label')).toBe('Runtime custom timeline');
+    });
   });
 
   describe('VolumeSlider', () => {
@@ -121,6 +140,17 @@ describe('localized texts on a UI language change', () => {
 
       expect(label.getText()).toBe('Player Insights ausblenden');
       expect(element(label).textContent).toBe('Player Insights ausblenden');
+    });
+
+    it('should not show a cleared localized text again', () => {
+      const label = track(new Label<LabelConfig>({ text: 'Plain text' }));
+      label.getDomElement();
+      label.setText(i18n.getLocalizer('live'));
+      label.clearText();
+
+      i18n.setLanguage('fr');
+
+      expect(element(label).textContent).toBe('');
     });
 
     it('should keep a plain string text that was set at runtime', () => {
@@ -233,6 +263,30 @@ describe('localized texts on a UI language change', () => {
 
       expect(element(item).getAttribute('aria-label')).toBe('Player Insights ausblenden');
       expect(element(item).textContent).toBe('Player Insights ausblenden');
+    });
+  });
+
+  describe('components that override the language change hook', () => {
+    it.each([
+      ['an ad skip button', () => new AdSkipButton()],
+      ['an ad counter label', () => new AdCounterLabel()],
+      [
+        'a custom component that does not call super',
+        () =>
+          new (class extends Button<ButtonConfig> {
+            protected onLanguageChanged(): void {
+              // Deliberately does not call super.onLanguageChanged()
+            }
+          })({}),
+      ],
+    ])('should render the accessible name of %s in the new language', (_, createComponent) => {
+      const component = track(createComponent() as Component<ComponentConfig>);
+      component.setAriaLabel(i18n.getLocalizer('play'));
+      expect(element(component).getAttribute('aria-label')).toBe('Play');
+
+      i18n.setLanguage('de');
+
+      expect(element(component).getAttribute('aria-label')).toBe('Abspielen');
     });
   });
 });

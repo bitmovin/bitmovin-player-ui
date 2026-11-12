@@ -124,12 +124,16 @@ export class Component<Config extends ComponentConfig> {
   private static readonly CLASS_DISABLED = 'disabled';
 
   /**
-   * Stable handler reference for language change events, delegates to the overridable
-   * {@link #onLanguageChanged} method. Using a private arrow field ensures that
-   * subscribe/unsubscribe always use the same reference, even when subclasses override
+   * Stable handler reference for language change events. It localizes the accessible name again and then delegates to
+   * the overridable {@link #onLanguageChanged} method. The accessible name is refreshed here instead of in that
+   * method, so that subclasses that override it without calling super still get their name localized. Using a private
+   * arrow field ensures that subscribe/unsubscribe always use the same reference, even when subclasses override
    * {@link #onLanguageChanged}.
    */
-  private readonly languageChangedHandler = () => this.onLanguageChanged();
+  private readonly languageChangedHandler = () => {
+    this.refreshLocalizedAriaLabel();
+    this.onLanguageChanged();
+  };
 
   /**
    * Configuration object of this component.
@@ -335,10 +339,11 @@ export class Component<Config extends ComponentConfig> {
    * Called when the UI language changes. Subclasses can override this method to update
    * their localized content (e.g. labels, button text), and should call super.onLanguageChanged().
    *
-   * The base implementation localizes the accessible name again, see {@link refreshLocalizedAriaLabel}.
+   * The accessible name is already localized again before this method is called, see
+   * {@link refreshLocalizedAriaLabel}. The base implementation is a no-op.
    */
   protected onLanguageChanged(): void {
-    this.refreshLocalizedAriaLabel();
+    // Override in subclasses to react to language changes
   }
 
   /**
@@ -400,6 +405,18 @@ export class Component<Config extends ComponentConfig> {
     }
 
     this.setAriaLabel(this.appliedAriaLabel);
+  }
+
+  /**
+   * Checks whether the DOM element shows the accessible name that was applied for the given label, i.e. it was neither
+   * replaced through {@link setAriaLabel} nor changed directly on the element.
+   */
+  protected isAppliedAriaLabel(label: LocalizableText): boolean {
+    return (
+      this.hasDomElement() &&
+      this.appliedAriaLabel === label &&
+      this.getDomElement().attr('aria-label') === this.appliedAriaLabelText
+    );
   }
 
   /**
