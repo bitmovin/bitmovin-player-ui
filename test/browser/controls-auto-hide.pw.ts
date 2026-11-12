@@ -62,6 +62,23 @@ test('keyboard focus inside the control bar keeps the controls shown until it le
   await expect(controlBar(page), 'the controls hide again once focus has left them').toHaveClass(HIDDEN);
 });
 
+test('keyboard focus inside the control bar keeps the controls shown when the pointer leaves the player', async ({
+  page,
+}) => {
+  await installClock(page);
+  await mountDefaultControlBarUi(page, { live: false, hideDelay: UI_HIDE_DELAY });
+  const player = await page.locator('#player').boundingBox();
+  if (!player) throw new Error('the player must be laid out');
+  await page.mouse.move(player.x + player.width / 2, player.y + 20);
+
+  await tabIntoControlBar(page);
+  // Leaving the player normally hides the controls at once
+  await page.mouse.move(player.x + player.width + 50, player.y + player.height + 50);
+  await page.clock.runFor(UI_HIDE_DELAY * 3);
+
+  await expect(controlBar(page), 'the focused control must stay visible').not.toHaveClass(HIDDEN);
+});
+
 test('controls focused by a click still auto-hide once the pointer has left them', async ({ page }) => {
   await installClock(page);
   await mountDefaultControlBarUi(page, { live: false, hideDelay: UI_HIDE_DELAY });

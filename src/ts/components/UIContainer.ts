@@ -10,6 +10,7 @@ import { Button, ButtonConfig } from './buttons/Button';
 import { TouchControlOverlay } from './overlays/TouchControlOverlay';
 import { Component, ComponentConfig } from './Component';
 import { SettingsPanel } from './settings/SettingsPanel';
+import { UIUtils } from '../utils/UIUtils';
 
 /**
  * Configuration interface for a {@link UIContainer}.
@@ -316,7 +317,9 @@ export class UIContainer extends Container<UIContainerConfig> {
           // When a seek is going on, the seek scrub pointer may exit the UI area while still seeking, and we do not
           // hide the UI in such cases
           if (!isSeeking && !this.hidingPrevented()) {
-            if (this.config.hideImmediatelyOnMouseLeave) {
+            // A keyboard user may hold focus in the controls while the pointer leaves, so only start the hide timeout,
+            // which stays suspended until that focus has left (WCAG 2.4.11 Focus Not Obscured)
+            if (this.config.hideImmediatelyOnMouseLeave && !this.hasKeyboardFocusedControls()) {
               this.hideUi(true);
             } else {
               this.uiHideTimeout.start();
@@ -519,6 +522,14 @@ export class UIContainer extends Container<UIContainerConfig> {
 
   onPlayerStateChange(): UiEvent<UIContainer, PlayerUtils.PlayerState> {
     return this.playerStateChange.getEvent();
+  }
+
+  private hasKeyboardFocusedControls(): boolean {
+    let focused = false;
+    UIUtils.traverseTree(this, component => {
+      focused = focused || (component !== this && component instanceof Container && component.hasKeyboardFocusWithin());
+    });
+    return focused;
   }
 
   protected suspendHideTimeout() {

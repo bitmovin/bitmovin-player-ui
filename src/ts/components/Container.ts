@@ -48,6 +48,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   private componentsToRemove: Component<ComponentConfig>[];
   private componentsInPersistentViewMode: number;
   private releaseKeyboardFocusTracking?: () => void;
+  private keyboardFocusedWithin = false;
 
   constructor(config: Config) {
     super(config);
@@ -184,6 +185,14 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   }
 
   /**
+   * Whether keyboard focus is inside this container and keeps it in {@link ViewMode.Persistent}, see
+   * {@link keepShownWhileKeyboardFocused}. Always false for containers that do not track keyboard focus.
+   */
+  hasKeyboardFocusWithin(): boolean {
+    return this.keyboardFocusedWithin;
+  }
+
+  /**
    * Keeps this container in {@link ViewMode.Persistent} while keyboard focus is inside it, so the UI does not
    * auto-hide the focused control together with its focus indicator (WCAG 2.4.7 Focus Visible, 2.4.11 Focus Not
    * Obscured). Focus set by a pointer does not count, so clicking a control does not keep the UI shown.
@@ -199,8 +208,14 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     }
 
     const element = this.getDomElement();
-    const setKeyboardFocused = (focused: boolean) =>
+    const hiddenClass = this.prefixCss('hidden');
+    const setKeyboardFocused = (focused: boolean) => {
+      this.keyboardFocusedWithin = focused;
       this.onViewModeChangedEvent(focused ? ViewMode.Persistent : ViewMode.Temporary);
+    };
+    // Reads the focus state from the DOM, for changes that do not dispatch a focusout through this container
+    const recheckKeyboardFocus = () => setKeyboardFocused(isVisiblyFocusedWithin(element.get(0), hiddenClass));
+
     const onFocusIn = (e: FocusEvent) => setKeyboardFocused(hasVisibleFocus(e.target));
     const onFocusOut = (e: FocusEvent) => {
       // When focus moves to another element inside, the focusin that follows decides
@@ -217,9 +232,26 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     this.onHide.subscribe(onHiddenWithFocus);
     uimanager.onInactive.subscribe(onHiddenWithFocus);
 
+    // Browsers do not reliably dispatch focusout when the focused control is removed or hidden
+    const descendantObserver =
+      typeof MutationObserver !== 'undefined'
+        ? new MutationObserver(() => {
+            if (this.keyboardFocusedWithin) {
+              recheckKeyboardFocus();
+            }
+          })
+        : undefined;
+    descendantObserver?.observe(element.get(0), {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
     this.releaseKeyboardFocusTracking = () => {
       // Let the UI auto-hide again if this container is released while focused
       setKeyboardFocused(false);
+      descendantObserver?.disconnect();
       element.off('focusin', onFocusIn);
       element.off('focusout', onFocusOut);
       uimanager.onInactive.unsubscribe(onHiddenWithFocus);
@@ -249,4 +281,25 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       this.resumeHideTimeout();
     }
   }
+}
+
+/**
+ * Whether the element that has keyboard focus (with a visible focus indicator) is inside `container` and not hidden.
+ * Reads the active element of the container's own root, so it also works inside a Shadow DOM.
+ */
+function isVisiblyFocusedWithin(container: HTMLElement, hiddenClass: string): boolean {
+  const root = (container.getRootNode ? container.getRootNode() : document) as Document | ShadowRoot;
+  const focused = root.activeElement;
+
+  if (!focused || !container.contains(focused) || !hasVisibleFocus(focused)) {
+    return false;
+  }
+
+  // The focused control or one of its ancestors may be hidden before the browser moves focus away from it
+  for (let node: Element | null = focused; node; node = node.parentElement) {
+    if (node.classList.contains(hiddenClass)) {
+      return false;
+    }
+  }
+  return true;
 }

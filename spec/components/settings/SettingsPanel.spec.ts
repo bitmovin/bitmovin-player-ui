@@ -364,6 +364,49 @@ describe('SettingsPanel', () => {
 
       expect(settingsPanel.isShown()).toBe(true);
     });
+
+    describe('with pointer events', () => {
+      const pointerEvent = (type: string, pointerType: string) =>
+        panelElement().dispatchEvent(Object.assign(new Event(type), { pointerType }));
+
+      beforeEach(() => {
+        // jsdom has no PointerEvent; the panel only checks that the platform supports pointer events
+        Object.defineProperty(window, 'PointerEvent', { configurable: true, value: class {} });
+        settingsPanel = new SettingsPanel({ components: [page], hidden: true, hideDelay });
+        settingsPanel.initialize();
+        settingsPanel.configure(getPlayerMock(), uiInstanceManagerMock);
+        document.body.appendChild(panelElement());
+        settingsPanel.show();
+      });
+
+      afterEach(() => {
+        delete (window as { PointerEvent?: unknown }).PointerEvent;
+      });
+
+      it.each(['mouse', 'pen'])('should stay open while a %s pointer rests on it', pointerType => {
+        pointerEvent('pointerenter', pointerType);
+        pointerEvent('pointermove', pointerType);
+
+        jest.advanceTimersByTime(hideDelay * 2);
+
+        expect(settingsPanel.isShown()).toBe(true);
+      });
+
+      it('should close after the hide delay following a tap, which leaves no pointer resting on it', () => {
+        // A tap dispatches touch pointer events and compatibility mouse events, but no mouseleave after lifting
+        jest.advanceTimersByTime(hideDelay - 1);
+        pointerEvent('pointerenter', 'touch');
+        pointerEvent('pointermove', 'touch');
+        pointer('mouseenter', 'mousemove');
+        pointerEvent('pointerleave', 'touch');
+
+        jest.advanceTimersByTime(hideDelay - 1);
+        expect(settingsPanel.isShown()).toBe(true);
+        jest.advanceTimersByTime(1);
+
+        expect(settingsPanel.isHidden()).toBe(true);
+      });
+    });
   });
 
   describe('items', () => {

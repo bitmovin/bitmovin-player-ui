@@ -147,15 +147,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
         this.hide();
         this.hideHoveredSelectBoxes();
       });
-      // Do not close the panel while the pointer rests on it, only once it has left (WCAG 2.2.1 Timing Adjustable)
-      this.getDomElement().on('mouseenter mousemove', () => {
-        this.isPointerInside = true;
-        this.hideTimeout.clear();
-      });
-      this.getDomElement().on('mouseleave', () => {
-        this.isPointerInside = false;
-        this.hideTimeout.reset();
-      });
+      this.trackPointerInside();
       this.getDomElement().on('focusin', () => {
         this.hideTimeout.clear();
       });
@@ -398,6 +390,43 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
   protected suspendHideTimeout() {
     this.hideTimeout?.suspend();
+  }
+
+  /**
+   * Keeps the panel open while a hovering pointer rests on it, and starts the hide timeout once it has left (WCAG 2.2.1
+   * Timing Adjustable). Touch has no hover: a tap only restarts the timeout, because touch input dispatches
+   * compatibility mouse events on tap but no mouseleave once the finger lifts.
+   */
+  private trackPointerInside(): void {
+    const element = this.getDomElement();
+    const enter = () => {
+      this.isPointerInside = true;
+      this.hideTimeout.clear();
+    };
+    const leave = () => {
+      this.isPointerInside = false;
+      this.hideTimeout.reset();
+    };
+
+    if (typeof window.PointerEvent === 'undefined') {
+      // Legacy platforms without pointer events
+      element.on('mouseenter mousemove', enter);
+      element.on('mouseleave', leave);
+      return;
+    }
+
+    element.on('pointerenter pointermove', (e: PointerEvent) => {
+      if (e.pointerType === 'touch') {
+        this.hideTimeout.reset();
+      } else {
+        enter();
+      }
+    });
+    element.on('pointerleave', (e: PointerEvent) => {
+      if (e.pointerType !== 'touch') {
+        leave();
+      }
+    });
   }
 
   protected resumeHideTimeout() {

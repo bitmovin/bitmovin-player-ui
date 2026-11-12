@@ -34,13 +34,21 @@ describe.each(autoHidingContainers)('$name keyboard focus', ({ create }) => {
   const focusButton = ({ keyboard }: { keyboard: boolean }) => {
     // The FocusVisibilityTracker marks keyboard focus before the focusin event bubbles up
     buttonElement().classList.toggle(FOCUS_VISIBLE_CLASS, keyboard);
-    buttonElement().dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    buttonElement().focus();
   };
 
-  const blurButton = (relatedTarget: HTMLElement | null) => {
+  const moveFocusTo = (target: HTMLElement | null, { keyboard }: { keyboard: boolean }) => {
     buttonElement().classList.remove(FOCUS_VISIBLE_CLASS);
-    buttonElement().dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget }));
+    target?.classList.toggle(FOCUS_VISIBLE_CLASS, keyboard);
+    if (target) {
+      target.focus();
+    } else {
+      buttonElement().blur();
+    }
   };
+
+  // Lets the container's MutationObserver deliver its records
+  const flushMutations = () => new Promise(resolve => setTimeout(resolve, 0));
 
   const configure = ({ spatialNavigation = false } = {}) => {
     jest.spyOn(uiInstanceManagerMock, 'hasSpatialNavigation').mockReturnValue(spatialNavigation);
@@ -63,16 +71,24 @@ describe.each(autoHidingContainers)('$name keyboard focus', ({ create }) => {
     document.body.appendChild(outsideElement);
   });
 
+  const removeButton = () => {
+    // Removing a nested control (TitleBar keeps its rows in child containers) does not dispatch focusout here
+    const parent = button.getDomElement().get(0).parentElement as HTMLElement;
+    parent.removeChild(button.getDomElement().get(0));
+  };
+
   afterEach(() => {
     document.body.innerHTML = '';
   });
 
-  it('should keep the UI shown while a control inside has keyboard focus', () => {
+  it('should keep the UI shown while a control inside has keyboard focus', async () => {
     configure();
 
     focusButton({ keyboard: true });
+    await flushMutations();
 
     expect(viewModes).toEqual([ViewMode.Persistent]);
+    expect(container.hasKeyboardFocusWithin()).toBe(true);
   });
 
   it('should not keep the UI shown when a control inside is focused by a pointer', () => {
@@ -91,20 +107,36 @@ describe.each(autoHidingContainers)('$name keyboard focus', ({ create }) => {
     configure();
     focusButton({ keyboard: true });
 
-    blurButton(destination === 'nowhere' ? null : outsideElement);
+    moveFocusTo(destination === 'nowhere' ? null : outsideElement, { keyboard: true });
 
     expect(viewModes).toEqual([ViewMode.Persistent, ViewMode.Temporary]);
   });
 
-  it('should keep the UI shown while keyboard focus moves between controls inside', () => {
-    configure();
-    focusButton({ keyboard: true });
+  it('should keep the UI shown while keyboard focus moves between controls inside', async () => {
     const otherControl = document.createElement('button');
+    configure();
     container.getDomElement().get(0).appendChild(otherControl);
+    focusButton({ keyboard: true });
 
-    blurButton(otherControl);
+    moveFocusTo(otherControl, { keyboard: true });
+    await flushMutations();
 
     expect(viewModes).toEqual([ViewMode.Persistent]);
+  });
+
+  it.each`
+    change          | act
+    ${'is removed'} | ${() => removeButton()}
+    ${'is hidden'}  | ${() => button.hide()}
+  `('should let the UI hide again when the keyboard-focused control $change', async ({ act }: { act: () => void }) => {
+    configure();
+    focusButton({ keyboard: true });
+
+    act();
+    await flushMutations();
+
+    expect(viewModes).toEqual([ViewMode.Persistent, ViewMode.Temporary]);
+    expect(container.hasKeyboardFocusWithin()).toBe(false);
   });
 
   it.each`
