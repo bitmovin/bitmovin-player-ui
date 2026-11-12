@@ -29,20 +29,27 @@ export class FocusVisibilityTracker {
     }
 
     this.lastInteractionWasKeyboard = true;
+    // Switching to the keyboard on a control focused by a pointer makes its focus visible, like :focus-visible
+    this.markFocusVisible(e.target);
   };
 
   private onMouseOrPointerOrTouch = () => (this.lastInteractionWasKeyboard = false);
 
   private onFocus = ({ target: element }: FocusEvent) => {
+    if (this.lastInteractionWasKeyboard) {
+      this.markFocusVisible(element);
+    }
+  };
+
+  private markFocusVisible(element: EventTarget | null): void {
     if (
-      this.lastInteractionWasKeyboard &&
       isHtmlElement(element) &&
       isBitmovinUi(element, this.bitmovinUiPrefix) &&
       !element.classList.contains(FocusVisibleCssClassName)
     ) {
       element.classList.add(FocusVisibleCssClassName);
     }
-  };
+  }
 
   private onBlur = ({ target: element }: FocusEvent) => {
     if (isHtmlElement(element)) {

@@ -227,8 +227,17 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
     // Focus can stay on a control without a focusout when it is hidden, e.g. when the UI switches variants
     const onHiddenWithFocus = () => setKeyboardFocused(false);
 
+    // Switching to the keyboard on a control focused by a pointer makes its focus visible without a focus event. The
+    // FocusVisibilityTracker marks it in the capture phase, before the keydown reaches this container.
+    const onKeyDown = () => {
+      if (!this.keyboardFocusedWithin) {
+        recheckKeyboardFocus();
+      }
+    };
+
     element.on('focusin', onFocusIn);
     element.on('focusout', onFocusOut);
+    element.on('keydown', onKeyDown);
     this.onHide.subscribe(onHiddenWithFocus);
     uimanager.onInactive.subscribe(onHiddenWithFocus);
 
@@ -254,6 +263,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
       descendantObserver?.disconnect();
       element.off('focusin', onFocusIn);
       element.off('focusout', onFocusOut);
+      element.off('keydown', onKeyDown);
       uimanager.onInactive.unsubscribe(onHiddenWithFocus);
     };
   }

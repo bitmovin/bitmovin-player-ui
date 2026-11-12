@@ -9,6 +9,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { Component, ComponentConfig } from '../Component';
 import { getKeyMapForPlatform } from '../../spatialnavigation/getKeyMapForPlatform';
 import { Action } from '../../spatialnavigation/types';
+import { BrowserUtils } from '../../utils/BrowserUtils';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -409,9 +410,14 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     };
 
     if (typeof window.PointerEvent === 'undefined') {
-      // Legacy platforms without pointer events
-      element.on('mouseenter mousemove', enter);
-      element.on('mouseleave', leave);
+      // Legacy platforms without pointer events cannot tell a tap's compatibility mouse events from hovering, so on
+      // touch devices every mouse event only restarts the timeout, like the ControlBar hover tracking does
+      if (BrowserUtils.isTouchSupported) {
+        element.on('mouseenter mousemove mouseleave', () => this.hideTimeout.reset());
+      } else {
+        element.on('mouseenter mousemove', enter);
+        element.on('mouseleave', leave);
+      }
       return;
     }
 

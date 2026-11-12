@@ -97,6 +97,25 @@ test('controls focused by a click still auto-hide once the pointer has left them
   await expect(controlBar(page)).toHaveClass(HIDDEN);
 });
 
+test('switching to the keyboard on a control focused by a click keeps the controls shown', async ({ page }) => {
+  await installClock(page);
+  await mountDefaultControlBarUi(page, { live: false, hideDelay: UI_HIDE_DELAY });
+  await controlBar(page).getByRole('button', { name: 'Pause' }).click();
+  await controlBar(page).getByRole('button', { name: 'Play', exact: true }).click();
+  await expect(controlBar(page).getByRole('button', { name: 'Pause' })).toBeFocused();
+  const player = await page.locator('#player').boundingBox();
+  if (!player) throw new Error('the player must be laid out');
+  await page.mouse.move(player.x + player.width / 2, player.y + 20);
+
+  // Operate the focused toggle by keyboard without moving focus: pause, then resume so the UI may auto-hide again
+  await page.keyboard.press('Space');
+  await page.keyboard.press('Space');
+  await expect(controlBar(page).getByRole('button', { name: 'Pause' })).toBeFocused();
+  await page.clock.runFor(UI_HIDE_DELAY * 3);
+
+  await expect(controlBar(page), 'the keyboard-operated control must stay visible').not.toHaveClass(HIDDEN);
+});
+
 test('the pointer resting on a control keeps the controls shown', async ({ page }) => {
   await installClock(page);
   await mountDefaultControlBarUi(page, { live: false, hideDelay: UI_HIDE_DELAY });

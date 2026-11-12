@@ -99,6 +99,17 @@ describe.each(autoHidingContainers)('$name keyboard focus', ({ create }) => {
     expect(viewModes).toEqual([]);
   });
 
+  it('should keep the UI shown when the keyboard is used on a control focused by a pointer', () => {
+    configure();
+    focusButton({ keyboard: false });
+
+    // The FocusVisibilityTracker marks the focused control in the capture phase of the keydown
+    buttonElement().classList.add(FOCUS_VISIBLE_CLASS);
+    buttonElement().dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+
+    expect(viewModes).toEqual([ViewMode.Persistent]);
+  });
+
   it.each`
     destination
     ${'outside of the UI'}

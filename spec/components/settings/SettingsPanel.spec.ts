@@ -13,6 +13,7 @@ import { Label } from '../../../src/ts/components/labels/Label';
 import { SelectBox } from '../../../src/ts/components/settings/SelectBox';
 import { SettingsPanelItem } from '../../../src/ts/components/settings/SettingsPanelItem';
 import { VolumeSlider } from '../../../src/ts/components/seekbar/VolumeSlider';
+import { BrowserUtils } from '../../../src/ts/utils/BrowserUtils';
 
 let settingsPanel: SettingsPanel<SettingsPanelConfig>;
 
@@ -285,6 +286,8 @@ describe('SettingsPanel', () => {
 
     beforeEach(() => {
       jest.useFakeTimers();
+      // jsdom reports touch support; hovering needs a platform without it
+      jest.spyOn(BrowserUtils, 'isTouchSupported', 'get').mockReturnValue(false);
       uiInstanceManagerMock = getUiInstanceManagerMock();
       Object.defineProperty(uiInstanceManagerMock, 'onComponentViewModeChanged', {
         value: new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>(),
@@ -299,6 +302,7 @@ describe('SettingsPanel', () => {
 
     afterEach(() => {
       jest.useRealTimers();
+      jest.restoreAllMocks();
       document.body.innerHTML = '';
     });
 
@@ -363,6 +367,29 @@ describe('SettingsPanel', () => {
       jest.advanceTimersByTime(hideDelay * 2);
 
       expect(settingsPanel.isShown()).toBe(true);
+    });
+
+    describe('without pointer events on a touch device', () => {
+      beforeEach(() => {
+        jest.spyOn(BrowserUtils, 'isTouchSupported', 'get').mockReturnValue(true);
+        settingsPanel = new SettingsPanel({ components: [page], hidden: true, hideDelay });
+        settingsPanel.initialize();
+        settingsPanel.configure(getPlayerMock(), uiInstanceManagerMock);
+        document.body.appendChild(panelElement());
+        settingsPanel.show();
+      });
+
+      it('should close after the hide delay following a tap, which leaves no pointer resting on it', () => {
+        // A tap dispatches compatibility mouse events, but no mouseleave after lifting
+        jest.advanceTimersByTime(hideDelay - 1);
+        pointer('mouseenter', 'mousemove');
+
+        jest.advanceTimersByTime(hideDelay - 1);
+        expect(settingsPanel.isShown()).toBe(true);
+        jest.advanceTimersByTime(1);
+
+        expect(settingsPanel.isHidden()).toBe(true);
+      });
     });
 
     describe('with pointer events', () => {
