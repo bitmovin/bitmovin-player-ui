@@ -7,11 +7,11 @@ import {
   UIVariantIdentifier,
   UIVariant,
 } from '../src/ts/UIManager';
-import { PlayerAPI } from 'bitmovin-player';
+import { AdEvent, AdLinearityChangedEvent, PlayerAPI, PlayerEvent, PlayerResizedEvent } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from './helper/MockHelper';
 import { MobileV3PlayerEvent } from '../src/ts/utils/MobileV3PlayerAPI';
 import { UIContainer } from '../src/ts/components/UIContainer';
-import { Container } from '../src/ts/components/Container';
+import { Container, ContainerConfig } from '../src/ts/components/Container';
 import { StorageUtils } from '../src/ts/utils/StorageUtils';
 import { prefixCss } from '../src/ts/components/DummyComponent';
 import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
@@ -271,6 +271,58 @@ describe('UIManager', () => {
       expect(adUi.ui.isHidden()).toBeTruthy();
       expect(contentUi.ui.isHidden()).toBeFalsy();
     });
+  });
+
+  describe('ad linearity changes', () => {
+    class AdStartedRecorder extends Container<ContainerConfig> {
+      readonly relayedLinearity: boolean[] = [];
+
+      configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
+        super.configure(player, uimanager);
+        player.on(player.exports.PlayerEvent.AdStarted, (event: AdEvent) => {
+          this.relayedLinearity.push(event.ad.isLinear);
+        });
+      }
+    }
+
+    it.each([
+      { from: 'linear', to: 'non-linear', startsLinear: true, isLinear: false },
+      { from: 'non-linear', to: 'linear', startsLinear: false, isLinear: true },
+    ])(
+      'should relay the current linearity to a variant switched to after an ad changed from $from to $to',
+      ({ startsLinear, isLinear }) => {
+        const playerMock = MockHelper.getPlayerMock();
+        let wide = true;
+        const recorder = new AdStartedRecorder({});
+        const wideAdUi = {
+          ui: new UIContainer({ components: [new Container({})] }),
+          condition: (context: UIConditionContext) => context.isAd && wide,
+        };
+        const narrowAdUi = {
+          ui: new UIContainer({ components: [recorder] }),
+          condition: (context: UIConditionContext) => context.isAd && !wide,
+        };
+        const defaultUi = { ui: new UIContainer({ components: [new Container({})] }) };
+        new UIManager(playerMock, [wideAdUi, narrowAdUi, defaultUi]);
+        playerMock.eventEmitter.fireAdStartedEvent({ isLinear: startsLinear });
+        playerMock.eventEmitter.fireEvent<AdLinearityChangedEvent>({
+          type: PlayerEvent.AdLinearityChanged,
+          timestamp: Date.now(),
+          isLinear,
+        });
+
+        wide = false;
+        playerMock.eventEmitter.fireEvent<PlayerResizedEvent>({
+          type: PlayerEvent.PlayerResized,
+          timestamp: Date.now(),
+          width: '600px',
+          height: '400px',
+        });
+
+        expect(narrowAdUi.ui.isHidden()).toBeFalsy();
+        expect(recorder.relayedLinearity).toEqual([isLinear]);
+      },
+    );
   });
 
   describe('resume from last position', () => {

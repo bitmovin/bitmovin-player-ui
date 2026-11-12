@@ -56,6 +56,10 @@ interface BrowserTestWindow extends Window {
   __openedUrls: string[];
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
+  /** Skip offset of the linear ad the stub considers active, so `player.ads.skip()` can end that ad. */
+  __activeLinearAdSkippableAfter?: number;
+  /** Counts `player.ads.skip()` calls while a linear ad is active. See {@link BrowserPlayerController}. */
+  __linearAdSkipRequests?: number;
   __currentTime?: number;
 }
 
@@ -127,6 +131,11 @@ export interface MountOptions {
   metadata?: { title?: string; description?: string };
 }
 
+export interface LinearAdOptions {
+  /** Playback time from which the ad can be skipped. Omitted means a non-skippable ad. */
+  skippableAfter?: number;
+}
+
 export interface PauseAdOptions {
   /**
    * Click-through destination carried by the creative. Omitted means a creative without one, which
@@ -163,9 +172,22 @@ export interface BrowserPlayerController {
    * Starts a linear ad that requests the UI, which makes the UI manager switch to its ads variant.
    *
    * Only emits the event the UI manager resolves its variant from. The stub still reports no active
-   * linear ad, because nothing in the browser scenarios reads it.
+   * linear ad through `ads.isLinearAdActive()`, because nothing in the browser scenarios reads it. It does
+   * remember the ad, so `player.ads.skip()` skips it once playback has reached `skippableAfter`, like the player.
    */
-  startLinearAd(): Promise<void>;
+  startLinearAd(options?: LinearAdOptions): Promise<void>;
+
+  /** Ends the active linear ad, without ending its ad break. */
+  finishLinearAd(): Promise<void>;
+
+  /** Ends the ad break, which makes the UI manager switch back to the content variant. */
+  finishAdBreak(): Promise<void>;
+
+  /** How often the UI requested to skip the active linear ad, including requests the player ignored. */
+  linearAdSkipRequests(): Promise<number>;
+
+  /** Moves the playback position to `time` and emits the time update the player emits while playing. */
+  playTo(time: number): Promise<void>;
 
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
@@ -332,6 +354,18 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
             if (activeAdId) {
               browserWindow.__activePauseAdId = undefined;
               fire('nonlinearadskipped', { ad: { id: activeAdId } });
+              return;
+            }
+
+            const skippableAfter = browserWindow.__activeLinearAdSkippableAfter;
+            if (skippableAfter !== undefined) {
+              browserWindow.__linearAdSkipRequests = (browserWindow.__linearAdSkipRequests || 0) + 1;
+              // The player ignores the request until the ad is skippable
+              if (skippableAfter >= 0 && (browserWindow.__currentTime || 0) >= skippableAfter) {
+                browserWindow.__activeLinearAdSkippableAfter = undefined;
+                fire(PlayerEvent.AdSkipped, { ad: { id: 'linear-ad-1', isLinear: true } });
+                fire(PlayerEvent.AdBreakFinished, { adBreak: { id: 'linear-ad-break-1', scheduleTime: 0 } });
+              }
             }
           },
         },
@@ -429,13 +463,42 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           browserWindow.__fire('nonlinearadfinished', { ad: { id: adId } });
         }, id);
       },
-      startLinearAd: async () => {
+      startLinearAd: async ({ skippableAfter = -1 }: LinearAdOptions = {}) => {
+        await page.evaluate(skipOffset => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__activeLinearAdSkippableAfter = skipOffset;
+          browserWindow.__linearAdSkipRequests = 0;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdStarted, {
+            ad: { id: 'linear-ad-1', isLinear: true, skippableAfter: skipOffset, uiConfig: { requestsUi: true } },
+          });
+        }, skippableAfter);
+      },
+      finishLinearAd: async () => {
         await page.evaluate(() => {
           const browserWindow = window as unknown as BrowserTestWindow;
-          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdStarted, {
-            ad: { id: 'linear-ad-1', isLinear: true, uiConfig: { requestsUi: true } },
+          browserWindow.__activeLinearAdSkippableAfter = undefined;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdFinished, {
+            ad: { id: 'linear-ad-1', isLinear: true },
           });
         });
+      },
+      finishAdBreak: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdBreakFinished, {
+            adBreak: { id: 'linear-ad-break-1', scheduleTime: 0 },
+          });
+        });
+      },
+      linearAdSkipRequests: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__linearAdSkipRequests || 0);
+      },
+      playTo: async (time: number) => {
+        await page.evaluate(playbackTime => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__currentTime = playbackTime;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.TimeChanged, { time: playbackTime });
+        }, time);
       },
       enterCue: async (cue: SubtitleCue) => {
         // The overlay identifies a cue by its start time and text, so consecutive cues need
