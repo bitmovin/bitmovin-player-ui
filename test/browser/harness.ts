@@ -37,6 +37,7 @@ interface BrowserTestWindow extends Window {
     player: {
       Player: { prototype: object };
       PlayerEvent: Record<string, string>;
+      ViewMode: Record<string, string>;
     };
     playerui: {
       UIFactory: {
@@ -118,6 +119,10 @@ export interface MountOptions {
   mobile?: boolean;
   /** UI control auto-hide delay. Defaults to disabled so layout tests stay visible while debugging. */
   hideDelay?: number;
+  /** Hide the UI controls as soon as the mouse leaves the player, instead of after the hide delay. */
+  hideControlsOnMouseLeave?: boolean;
+  /** Whether the player reports fullscreen as available, which shows the fullscreen button. */
+  fullscreenAvailable?: boolean;
   /** Available video qualities for scenarios that need a quality Settings row. */
   videoQualities?: { id: string; label: string }[];
   /**
@@ -214,7 +219,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     mobile = false,
     withoutShadowRoot = false,
     hideDelay = -1,
+    hideControlsOnMouseLeave = false,
     videoQualities = [],
+    fullscreenAvailable = false,
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -246,7 +253,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
+    ({
+      isLive,
+      uiFactory,
+      uiMetadata,
+      availableVideoQualities,
+      hideDelay,
+      hideImmediatelyOnMouseLeave,
+      isFullscreenAvailable,
+    }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -307,7 +322,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         isCasting: () => false,
         isAirplayActive: () => false,
         isAirplayAvailable: () => false,
-        isViewModeAvailable: () => false,
+        isViewModeAvailable: (viewMode: string) =>
+          isFullscreenAvailable && viewMode === browserWindow.bitmovin.player.ViewMode.Fullscreen,
         hasEnded: () => false,
         getViewMode: () => 'inline',
         getPlayerType: () => 'html5',
@@ -373,7 +389,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       const uiConfig = {
         // Auto-hide would leave the control bar at opacity 0. It stays measurable either way, but
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
-        componentConfigOverrides: { UIContainer: { hideDelay } },
+        componentConfigOverrides: { UIContainer: { hideDelay, hideImmediatelyOnMouseLeave } },
         metadata: uiMetadata,
       };
       switch (uiFactory) {
@@ -392,7 +408,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
+    {
+      isLive: live,
+      uiFactory: factory,
+      uiMetadata: metadata,
+      availableVideoQualities: videoQualities,
+      hideDelay,
+      hideImmediatelyOnMouseLeave: hideControlsOnMouseLeave,
+      isFullscreenAvailable: fullscreenAvailable,
+    },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);

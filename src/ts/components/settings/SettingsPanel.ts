@@ -9,6 +9,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { Component, ComponentConfig } from '../Component';
 import { getKeyMapForPlatform } from '../../spatialnavigation/getKeyMapForPlatform';
 import { Action } from '../../spatialnavigation/types';
+import { FocusUtils } from '../../utils/FocusUtils';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -96,6 +97,16 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   // navigation handling
   private activePage: SettingsPanelPage;
   private navigationStack: SettingsPanelPage[] = [];
+  // The element that opened each page of the navigation stack, so navigating back can focus it again
+  private pageOpeners: { page: SettingsPanelPage; opener: HTMLElement | null }[] = [];
+
+  // The element that had focus before the panel was shown, so hiding the panel can return focus to it
+  private focusReturnTarget: HTMLElement | null = null;
+  private isReturningFocus = false;
+  // The control that opened the panel, kept while a closed panel can still be restored
+  private opener: HTMLElement | null = null;
+  // Restores the tab sequence of a hidden panel on platforms without `inert`
+  private restoreTabSequence: (() => void) | null = null;
 
   private currentState: SettingsPanelState = null;
 
@@ -242,7 +253,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       });
     }
     uimanager.onControlsShow.subscribe(() => {
-      if (this.currentState !== null) {
+      // Returning focus to the opener can show the controls (focusin), which must not reopen the closing panel
+      if (this.currentState !== null && !this.isReturningFocus) {
         this.show();
       }
     });
@@ -358,6 +370,23 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return this.settingsPanelEvents.onActivePageChanged.getEvent();
   }
 
+  /**
+   * Sets the control that opens the panel, e.g. a {@link SettingsToggleButton}. When the panel closes while it has
+   * focus, focus returns to this control. Without an opener, focus returns to the element that had focus when the
+   * panel was shown. The opener is kept while a closed panel can be restored, and cleared when its state is reset.
+   * @param opener the opening element, or null to clear it
+   */
+  setOpener(opener: HTMLElement | null): void {
+    this.opener = opener;
+  }
+
+  /**
+   * Returns the control that opened the panel, as set by {@link setOpener}, or null.
+   */
+  getOpener(): HTMLElement | null {
+    return this.opener;
+  }
+
   hideAndReset(): void {
     this.shouldResetStateImmediately = true;
     this.hide();
@@ -383,6 +412,67 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   addPage(page: SettingsPanelPage) {
     this.addComponent(page);
     this.updateComponents();
+  }
+
+  protected onShowEvent(): void {
+    this.getDomElement().removeAttr('inert');
+    if (this.restoreTabSequence) {
+      this.restoreTabSequence();
+      this.restoreTabSequence = null;
+    }
+    // Capture the opener before the onShow subscribers move focus into the panel
+    this.focusReturnTarget = this.opener ?? this.getFocusedElementOutsidePanel();
+    super.onShowEvent();
+  }
+
+  protected onHideEvent(): void {
+    super.onHideEvent();
+
+    const focusReturnTarget = this.focusReturnTarget;
+    this.focusReturnTarget = null;
+
+    // Runs after the onHide subscribers, so one that already moved focus (e.g. TV spatial navigation) takes
+    // precedence. Only focus that would otherwise be lost inside the hidden panel is moved, so focus that the user
+    // put elsewhere is never taken away.
+    if (
+      focusReturnTarget &&
+      focusReturnTarget.isConnected !== false &&
+      FocusUtils.containsFocus(this.getDomElement().get(0))
+    ) {
+      this.isReturningFocus = true;
+      try {
+        FocusUtils.focusWithoutScrolling(focusReturnTarget);
+      } finally {
+        this.isReturningFocus = false;
+      }
+    }
+
+    // A panel closed without a saved state opens fresh next time, possibly from another control
+    if (this.currentState === null) {
+      this.opener = null;
+    }
+
+    // The panel stays visible while it fades out. Keep its items out of the tab sequence and away from the pointer
+    // during that time, so Tab from the opener does not land in a closing panel. A subscriber may have shown the
+    // panel again in the meantime.
+    if (this.isHidden()) {
+      const panelElement = this.getDomElement().get(0);
+      this.getDomElement().attr('inert', '');
+      if (!FocusUtils.isInertSupported(panelElement) && !this.restoreTabSequence) {
+        this.restoreTabSequence = FocusUtils.removeFromTabSequence(panelElement);
+      }
+    }
+  }
+
+  private getFocusedElementOutsidePanel(): HTMLElement | null {
+    const panelElement = this.getDomElement().get(0);
+    const focusedElement = FocusUtils.getFocusedElement(panelElement);
+
+    if (!focusedElement || focusedElement === document.body || panelElement.contains(focusedElement)) {
+      return null;
+    }
+
+    return focusedElement;
   }
 
   protected suspendHideTimeout() {
@@ -413,6 +503,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       }
     }
     this.navigationStack = [];
+    this.pageOpeners = [];
     this.animateNavigation(rootPage, sourcePage, resetNavigationOnShow);
     this.activePage = rootPage;
     this.updateActivePageClass();
@@ -431,8 +522,10 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   }
 
   private resetState(): void {
+    this.opener = null;
     this.activePage = this.getRootPage();
     this.navigationStack = [];
+    this.pageOpeners = [];
     this.currentState = null;
     this.resetStateTimerId = null;
 
@@ -475,6 +568,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
     this.activePage = pages[state.activePageIndex] ?? this.getRootPage();
     this.navigationStack = state.navigationStackIndices.map(i => pages[i]).filter(Boolean);
+    this.pageOpeners = this.pageOpeners.filter(({ page }) => this.navigationStack.indexOf(page) > -1);
 
     this.updateActivePageClass();
     this.onActivePageChangedEvent();
@@ -490,12 +584,19 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     direction: NavigationDirection,
     skipAnimation: boolean,
   ): void {
+    const panelElement = this.getDomElement().get(0);
+    const focusedElement = FocusUtils.getFocusedElement(panelElement);
+    const focusedElementInPanel = focusedElement && panelElement.contains(focusedElement) ? focusedElement : null;
+    let opener: HTMLElement | null = null;
+
     this.activePage = targetPage;
 
     if (direction === NavigationDirection.Forwards) {
       this.navigationStack.push(targetPage);
+      this.pageOpeners.push({ page: targetPage, opener: focusedElementInPanel });
     } else {
       this.navigationStack.pop();
+      opener = this.takePageOpener(sourcePage);
     }
 
     this.animateNavigation(targetPage, sourcePage, skipAnimation);
@@ -505,6 +606,22 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     targetPage.onActiveEvent();
 
     this.onActivePageChangedEvent();
+
+    // Going back returns focus to the item that opened the page instead of the first item of the target page.
+    // Done last so it wins over the default focus that onActiveEvent and the onActivePageChanged subscribers apply.
+    if (focusedElementInPanel && opener && targetPage.getDomElement().get(0).contains(opener)) {
+      FocusUtils.focusWithoutScrolling(opener);
+    }
+  }
+
+  private takePageOpener(page: SettingsPanelPage): HTMLElement | null {
+    for (let i = this.pageOpeners.length - 1; i >= 0; i--) {
+      if (this.pageOpeners[i].page === page) {
+        return this.pageOpeners.splice(i, 1)[0].opener;
+      }
+    }
+
+    return null;
   }
 
   /**

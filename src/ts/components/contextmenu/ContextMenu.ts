@@ -4,6 +4,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { Component, ComponentConfig } from '../Component';
 import { Container } from '../Container';
 import { InteractiveContextMenuItem } from './InteractiveContextMenuItem';
+import { FocusUtils } from '../../utils/FocusUtils';
 
 /**
  * Configuration interface for a generic {@link ContextMenu}.
@@ -44,6 +45,15 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
 
     const uiContainer = uimanager.getUI();
     this.contextMenuHost = uiContainer.getDomElement().get(0);
+
+    // Move focus into the menu so it can be used with the keyboard. When it closes, the SettingsPanel base returns
+    // focus to the element that had it before.
+    this.onShow.subscribe(() => {
+      const firstItem = FocusUtils.getTabbableElements(this.getDomElement().get(0))[0];
+      if (firstItem) {
+        FocusUtils.focusWithoutScrolling(firstItem);
+      }
+    });
 
     this.onHide.subscribe(() => {
       const contextMenuElement = this.getDomElement();
