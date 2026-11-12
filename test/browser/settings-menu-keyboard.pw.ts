@@ -60,7 +60,7 @@ test('a settings sub page exposes its title row as a named menu, not as a menu i
   // back button is the only menu item in that row.
   await expect(qualityMenu).toMatchAriaSnapshot(`
     - menu "Video Quality":
-      - menuitem "Video Quality"
+      - menuitem /^Video Quality/
       - menuitemradio "auto" [checked=false]
       - menuitemradio "1080p" [checked=false]
       - menuitemradio "720p" [checked=false]

@@ -98,13 +98,19 @@ describe('Settings menu roles', () => {
       expect(attribute(titleRow, 'role')).toBe('none');
     });
 
-    it('should name the menu after the back button that shows its title', () => {
+    it('should name the menu after the visible title of its back button, not after the back button itself', () => {
       const titleRow = subPage.getComponents()[0] as SettingsPanelItem<never>;
       const backButton = titleRow.getComponents()[0];
+      const backButtonElement = backButton.getDomElement().get(0);
+      const labelledBy = attribute(subPage, 'aria-labelledby');
+      const nameElement = Array.from(backButtonElement.children).find(child => child.id === labelledBy);
 
       expect(backButton).toBeInstanceOf(SettingsPanelPageBackButton);
       expect(attribute(backButton, 'role')).toBe('menuitem');
-      expect(attribute(subPage, 'aria-labelledby')).toBe(backButton.getConfig().id);
+      // The accessible name of the back button may say more than its title, e.g. that it navigates back, which must
+      // not become the name of the menu
+      expect(labelledBy).not.toBe(backButton.getConfig().id);
+      expect(nameElement?.textContent).toBe('Video Quality');
     });
 
     it('should not announce the options as opening another menu', () => {
