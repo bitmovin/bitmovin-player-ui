@@ -3,6 +3,7 @@ import { SeekBar } from '../../../src/ts/components/seekbar/SeekBar';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { Timeout } from '../../../src/ts/utils/Timeout';
 import { DOM } from '../../../src/ts/DOM';
+import { UIUtils } from '../../../src/ts/utils/UIUtils';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
@@ -52,6 +53,98 @@ describe('SeekBar', () => {
       playerMock.eventEmitter.fireAdBreakFinishedEvent();
 
       expect(clearSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('keyboard seeking', () => {
+    let mockDomElement: ReturnType<typeof MockHelper.generateDOMMock>;
+    let timeShiftSpy: jest.SpyInstance;
+    let seekSpy: jest.SpyInstance;
+
+    const pressKey = (keyCode: UIUtils.KeyCode) => {
+      const keydownHandler = mockDomElement.on.mock.calls.find(([eventName]) => eventName === 'keydown')?.[1] as (
+        event: KeyboardEvent,
+      ) => void;
+      expect(keydownHandler).toEqual(expect.any(Function));
+      keydownHandler({ keyCode, preventDefault: jest.fn() } as unknown as KeyboardEvent);
+    };
+
+    // The UI manager dispatches onUpdated when a source is loaded or a UI variant is added for a loaded source.
+    const dispatchUiUpdated = () => {
+      const onUpdated = uiInstanceManagerMock.getConfig().events.onUpdated as unknown as {
+        subscribe: jest.Mock<void, [() => void]>;
+      };
+      onUpdated.subscribe.mock.calls.forEach(([listener]) => listener());
+    };
+
+    const mockLiveSource = () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(true);
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(Infinity);
+      jest.spyOn(playerMock, 'getMaxTimeShift').mockReturnValue(-60);
+      jest.spyOn(playerMock, 'getTimeShift').mockReturnValue(-10);
+    };
+
+    const mockVodSource = () => {
+      jest.spyOn(playerMock, 'isLive').mockReturnValue(false);
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(100);
+      jest.spyOn(playerMock, 'getCurrentTime').mockReturnValue(30);
+    };
+
+    beforeEach(() => {
+      mockDomElement = MockHelper.generateDOMMock();
+      jest.spyOn(seekbar, 'getDomElement').mockReturnValue(mockDomElement);
+      timeShiftSpy = jest.spyOn(playerMock, 'timeShift');
+      seekSpy = jest.spyOn(playerMock, 'seek');
+    });
+
+    it.each`
+      smoothPlaybackPositionUpdateIntervalMs
+      ${1}
+      ${SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED}
+    `(
+      'should time-shift when configured while a live source is loaded (smoothPlaybackPositionUpdateIntervalMs=$smoothPlaybackPositionUpdateIntervalMs)',
+      ({ smoothPlaybackPositionUpdateIntervalMs }) => {
+        seekbar = new SeekBar({ smoothPlaybackPositionUpdateIntervalMs });
+        // Build the child elements before replacing the root element with the mock
+        seekbar.getDomElement();
+        jest.spyOn(seekbar, 'getDomElement').mockReturnValue(mockDomElement);
+        mockLiveSource();
+
+        seekbar.configure(playerMock, uiInstanceManagerMock);
+        // A UI variant added for an already loaded source receives onUpdated, without a change of the live state
+        dispatchUiUpdated();
+
+        pressKey(UIUtils.KeyCode.LeftArrow);
+        expect(timeShiftSpy).toHaveBeenLastCalledWith(-11);
+
+        pressKey(UIUtils.KeyCode.End);
+        expect(timeShiftSpy).toHaveBeenLastCalledWith(0);
+        expect(seekSpy).not.toHaveBeenCalled();
+      },
+    );
+
+    it('should time-shift after a live source is loaded into a VOD-configured seek bar', () => {
+      mockVodSource();
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+
+      mockLiveSource();
+      dispatchUiUpdated();
+      pressKey(UIUtils.KeyCode.LeftArrow);
+
+      expect(timeShiftSpy).toHaveBeenCalledWith(-11);
+      expect(seekSpy).not.toHaveBeenCalled();
+    });
+
+    it('should seek again after switching from a live to a VOD source', () => {
+      mockLiveSource();
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+
+      mockVodSource();
+      dispatchUiUpdated();
+      pressKey(UIUtils.KeyCode.LeftArrow);
+
+      expect(seekSpy).toHaveBeenCalledWith(29);
+      expect(timeShiftSpy).not.toHaveBeenCalled();
     });
   });
 
