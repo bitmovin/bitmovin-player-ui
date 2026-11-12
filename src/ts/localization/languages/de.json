@@ -90,5 +90,13 @@
   "contextMenu.subtitle": "Adaptive Streaming für das Web",
   "contextMenu.copyTimestampLink": "Link zur aktuellen Zeit kopieren",
   "captions.enable": "Untertitel einschalten",
-  "captions.disable": "Untertitel ausschalten"
+  "captions.disable": "Untertitel ausschalten",
+  "announcements.buffering": "Wird gepuffert",
+  "announcements.adStarted": "Anzeige gestartet",
+  "announcements.adNumberOfTotalStarted": "Anzeige {activeAdIndex} von {totalAdsCount} gestartet",
+  "announcements.adSkippable": "Die Anzeige kann jetzt übersprungen werden",
+  "announcements.castStarted": "Wiedergabe auf {castDeviceName}",
+  "announcements.castStartedUnknownDevice": "Übertragung gestartet",
+  "announcements.castStopped": "Übertragung beendet",
+  "announcements.playbackFinished": "Wiedergabe beendet"
 }

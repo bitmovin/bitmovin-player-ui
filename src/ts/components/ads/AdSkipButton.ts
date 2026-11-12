@@ -25,6 +25,8 @@ export interface AdSkipButtonConfig extends ButtonConfig {
 /**
  * A button that is displayed during ads and can be used to skip the ad.
  *
+ * When the ad becomes skippable, this is announced to screen readers through {@link UIInstanceManager.announce}.
+ *
  * @category Buttons
  */
 export class AdSkipButton extends Button<AdSkipButtonConfig> {
@@ -32,6 +34,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   private untilSkippableMessage?: LocalizableText;
   private skippableMessage?: LocalizableText;
   private skipOffset: number = -1;
+  private skippableAnnounced: boolean = false;
   private player?: PlayerAPI;
 
   constructor(config: AdSkipButtonConfig = {}) {
@@ -75,12 +78,19 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       } else {
         this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.skippableMessage), player));
         this.enable();
+
+        // Announce once per ad; this handler runs on every time update
+        if (!this.skippableAnnounced) {
+          this.skippableAnnounced = true;
+          uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.adSkippable')));
+        }
       }
     };
 
     const adStartHandler = (event: AdEvent) => {
       const ad = event.ad as LinearAd;
       this.skipOffset = ad.skippableAfter;
+      this.skippableAnnounced = false;
       this.untilSkippableMessage = (ad.uiConfig && ad.uiConfig.untilSkippableMessage) || config.untilSkippableMessage;
       this.skippableMessage = (ad.uiConfig && ad.uiConfig.skippableMessage) || config.skippableMessage;
 

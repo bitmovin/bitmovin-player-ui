@@ -69,6 +69,21 @@
   width: 100%;
 }
 
+// Hide visually while keeping the element in the accessibility tree, e.g. for live regions
+@mixin visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 // Align to parent's bottom
 @mixin layout-align-bottom {
   bottom: 0;

@@ -414,6 +414,7 @@ export class UIContainer extends Container<UIContainerConfig> {
     });
     player.on(player.exports.PlayerEvent.PlaybackFinished, () => {
       updateState(PlayerUtils.PlayerState.Finished);
+      uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.playbackFinished')));
     });
     player.on(player.exports.PlayerEvent.SourceUnloaded, () => {
       updateState(PlayerUtils.PlayerState.Idle);

@@ -7,6 +7,9 @@ import { i18n } from '../../localization/i18n';
 /**
  * Overlays the player and displays the status of a Cast session.
  *
+ * The start and end of a Cast session are also announced to screen readers through
+ * {@link UIInstanceManager.announce}.
+ *
  * @category Components
  */
 export class CastStatusOverlay extends Container<ContainerConfig> {
@@ -44,10 +47,18 @@ export class CastStatusOverlay extends Container<ContainerConfig> {
       this.show();
       const castDeviceName = event.deviceName;
       this.statusLabel.setText(i18n.getLocalizer('playingOn', { castDeviceName }));
+      uimanager.announce(
+        i18n.performLocalization(
+          castDeviceName
+            ? i18n.getLocalizer('announcements.castStarted', { castDeviceName })
+            : i18n.getLocalizer('announcements.castStartedUnknownDevice'),
+        ),
+      );
     });
     player.on(player.exports.PlayerEvent.CastStopped, event => {
       // Cast session gone, hide the status panel
       this.hide();
+      uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.castStopped')));
     });
   }
 }

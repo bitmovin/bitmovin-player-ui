@@ -15,6 +15,27 @@ describe('ErrorMessageOverlay', () => {
       uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
     });
 
+    it('should expose the overlay as an alert so fatal errors are announced immediately', () => {
+      expect(errorMessageOverlay.getDomElement().attr('role')).toBe('alert');
+    });
+
+    it('should not also announce the error through the polite live region', () => {
+      const announceMock = jest.fn();
+      uiInstanceManagerMock.announce = announceMock;
+      errorMessageOverlay['tvNoiseBackground'] = { start: () => {} } as any;
+      errorMessageOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      playerMock.eventEmitter.fireEvent<any>({
+        type: playerMock.exports.PlayerEvent.Error,
+        code: 1000,
+        name: 'UNKNOWN_ERROR',
+        timestamp: 0,
+      });
+
+      expect(errorMessageOverlay.isShown()).toBe(true);
+      expect(announceMock).not.toHaveBeenCalled();
+    });
+
     it('adds an event listener for source loaded event', () => {
       const onSpy = jest.spyOn(playerMock, 'on');
       errorMessageOverlay.configure(playerMock, uiInstanceManagerMock);

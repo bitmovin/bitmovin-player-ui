@@ -3,6 +3,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { Component, ComponentConfig } from '../Component';
 import { Timeout } from '../../utils/Timeout';
 import { PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
 
 /**
  * Configuration interface for the {@link BufferingOverlay} component.
@@ -21,10 +22,14 @@ export interface BufferingOverlayConfig extends ContainerConfig {
 /**
  * Overlays the player and displays a buffering indicator.
  *
+ * When the indicator appears, it is also announced to screen readers through {@link UIInstanceManager.announce}.
+ * Stalls shorter than {@link BufferingOverlayConfig.showDelayMs} are neither shown nor announced.
+ *
  * @category Components
  */
 export class BufferingOverlay extends Container<BufferingOverlayConfig> {
   private indicators: Component<ComponentConfig>[];
+  private overlayShowTimeout?: Timeout;
 
   constructor(config: BufferingOverlayConfig = {}) {
     super(config);
@@ -55,7 +60,9 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     const overlayShowTimeout = new Timeout(config.showDelayMs, () => {
       uimanager.onBufferingShow.dispatch(this);
       this.show();
+      uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.buffering')));
     });
+    this.overlayShowTimeout = overlayShowTimeout;
 
     const showOverlay = () => {
       overlayShowTimeout.start();
@@ -89,5 +96,10 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     if (player.isStalled()) {
       this.show();
     }
+  }
+
+  release(): void {
+    this.overlayShowTimeout?.clear();
+    super.release();
   }
 }

@@ -67,6 +67,7 @@ export namespace MockHelper {
       onRelease: getEventDispatcherMock(),
       onComponentViewModeChanged: getEventDispatcherMock(),
       uiWrapperElement: generateDOMMock(),
+      announce: jest.fn(),
     }));
 
     return new UiInstanceManagerMockClass();

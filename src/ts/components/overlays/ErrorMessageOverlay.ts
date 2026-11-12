@@ -86,6 +86,9 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
 /**
  * Overlays the player and displays error messages.
  *
+ * The overlay has the `alert` role, so screen readers announce a displayed error immediately. Errors are therefore
+ * not announced through {@link UIInstanceManager.announce} as well.
+ *
  * @category Components
  */
 export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
@@ -104,7 +107,9 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
         cssClass: 'ui-errormessage-overlay',
         components: [this.tvNoiseBackground, this.errorLabel],
         hidden: true,
-        role: 'status',
+        // A fatal error interrupts playback and needs the user's attention. Browsers raise an alert event when an
+        // `alert` element becomes visible, which `status` lacks (WCAG 4.1.3).
+        role: 'alert',
       },
       this.config,
     );

@@ -21,6 +21,7 @@ import { UIPreferencesManager } from './utils/UIPreferencesManager';
 import { TimestampLinkUtils } from './utils/TimestampLinkUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
+import { StatusAnnouncer } from './utils/StatusAnnouncer';
 import { AdBreakTracker } from './utils/AdBreakTracker';
 import { ResumePositionTracker } from './utils/ResumePositionTracker';
 import { ComponentConfigManager } from './utils/ComponentConfigManager';
@@ -71,6 +72,7 @@ export interface InternalUIConfig extends UIConfig {
   };
   volumeController: VolumeController;
   adBreakTracker: AdBreakTracker;
+  statusAnnouncer: StatusAnnouncer;
 }
 
 /**
@@ -351,6 +353,7 @@ export class UIManager {
       },
       volumeController: new VolumeController(this.managerPlayerWrapper.getPlayer()),
       adBreakTracker: new AdBreakTracker(this.managerPlayerWrapper.getPlayer()),
+      statusAnnouncer: new StatusAnnouncer(),
     };
     this.componentLayoutOverrideProcessor = new ComponentLayoutOverrideProcessor(this.config);
 
@@ -509,6 +512,10 @@ export class UIManager {
         console.warn('Shadow DOM is not supported in this environment. Falling back to classic UI rendering.');
       }
     }
+
+    // The live region must be in the DOM before its first message, and outlive UI variant switches, to be announced
+    // reliably. It therefore belongs to the manager instead of a UI variant.
+    this.uiWrapperElement.append(this.config.statusAnnouncer.getDomElement());
 
     // Create UI instance managers for the UI variants
     // The instance managers map to the corresponding UI variants by their array index
@@ -742,6 +749,7 @@ export class UIManager {
 
     // Hide the currently active UI variant
     if (this.currentUi) {
+      this.currentUi.setActive(false);
       const currentUiContainer = this.currentUi.resolveUI();
       this.currentUi.onInactive.dispatch(currentUiContainer);
       currentUiContainer.hide();
@@ -756,6 +764,8 @@ export class UIManager {
       return;
     }
 
+    // Activate before configuring and relaying events, so the new variant's components can already announce.
+    this.currentUi.setActive(true);
     const currentUiContainer = this.currentUi.resolveUI();
     // Add the UI to the DOM (and configure it) the first time it is selected
     if (!this.currentUi.isConfigured()) {
@@ -896,6 +906,7 @@ export class UIManager {
     this.config.adBreakTracker.release();
 
     if (this.currentUi) {
+      this.currentUi.setActive(false);
       this.currentUi.onInactive.dispatch(this.currentUi.getUI());
       this.currentUi = null;
     }
@@ -907,7 +918,27 @@ export class UIManager {
     this.managerPlayerWrapper.clearEventHandlers();
     this.uiPreferencesManager.release();
     this.focusVisibilityTracker.release();
+    this.config.statusAnnouncer.release();
     this.shadowDomManager.release();
+  }
+
+  /**
+   * Announces a status message to screen reader users through the UI's polite live region, without moving focus
+   * (WCAG 4.1.3 Status Messages).
+   *
+   * The UI already announces its own status changes, such as buffering, ad start, an ad becoming skippable,
+   * casting and the end of playback. Use this for additional status changes of an integration, for example
+   * "Added to watchlist". The message is read once when the screen reader is idle; it is not shown visually.
+   * Repeating the same message announces it again. Messages that arrive within about 100 ms of each other are
+   * read together. Pass plain text; markup is not interpreted.
+   *
+   * Do not use this for errors that need immediate attention, or to repeat what the focused control already
+   * conveys, such as the state of a toggle button.
+   *
+   * @param message the localized, plain-text message to announce
+   */
+  announce(message: string): void {
+    this.config.statusAnnouncer.announce(message);
   }
 
   /**
@@ -1001,6 +1032,7 @@ export class UIInstanceManager {
   private subtitleSettingsManager: SubtitleSettingsManager;
   private uiPreferencesManager: UIPreferencesManager;
   protected spatialNavigation?: SpatialNavigation;
+  protected active: boolean = false;
   readonly uiWrapperElement: DOM;
 
   private events = {
@@ -1101,6 +1133,22 @@ export class UIInstanceManager {
 
   getPlayer(): PlayerAPI {
     return this.playerWrapper.getPlayer();
+  }
+
+  /**
+   * Announces a status message to screen reader users through the polite live region shared by all UI variants
+   * of the {@link UIManager} (WCAG 4.1.3 Status Messages).
+   *
+   * Components call this when they visibly show a status change that does not move focus, e.g. a buffering
+   * indicator. Only the active UI variant is announced; calls from inactive variants are ignored, so components
+   * that exist in several variants do not announce twice. See {@link UIManager.announce} for the behavior.
+   *
+   * @param message the localized, plain-text message to announce
+   */
+  announce(message: string): void {
+    if (this.active) {
+      this.config.statusAnnouncer?.announce(message);
+    }
   }
 
   /**
@@ -1237,6 +1285,10 @@ export class UIInstanceManager {
 class InternalUIInstanceManager extends UIInstanceManager {
   private configured: boolean;
   private released: boolean;
+
+  setActive(active: boolean): void {
+    this.active = active;
+  }
 
   getWrappedPlayer(): WrappedPlayer {
     // TODO find a non-hacky way to provide the WrappedPlayer to the UIManager without exporting it

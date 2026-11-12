@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Screen reader announcements for status changes that were only shown visually: buffering that lasts longer than the `BufferingOverlay` show delay, the start of a linear ad (with its position in the ad break, e.g. "Ad 1 of 2 started"), an ad becoming skippable, the start and end of a Cast session, and the end of playback. They are read from one visually hidden live region that the `UIManager` adds next to the UI, so custom layouts get it without changes.
+- `UIManager.announce()` to announce custom status messages to screen reader users, and `UIInstanceManager.announce()` for custom components to do the same.
+- `announcements.*` localization keys for these messages in all bundled languages.
+
+### Changed
+
+- `ErrorMessageOverlay` has the `alert` role instead of `status`, so screen readers announce playback errors immediately.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

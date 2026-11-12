@@ -90,5 +90,13 @@
   "contextMenu.subtitle": "Streaming adaptatif pour le web",
   "contextMenu.copyTimestampLink": "Copier le lien à l'instant actuel",
   "captions.enable": "Activer les sous-titres",
-  "captions.disable": "Désactiver les sous-titres"
+  "captions.disable": "Désactiver les sous-titres",
+  "announcements.buffering": "Mise en mémoire tampon",
+  "announcements.adStarted": "Début de l'annonce",
+  "announcements.adNumberOfTotalStarted": "Début de l'annonce {activeAdIndex} sur {totalAdsCount}",
+  "announcements.adSkippable": "Vous pouvez maintenant passer l'annonce",
+  "announcements.castStarted": "Diffusion sur {castDeviceName}",
+  "announcements.castStartedUnknownDevice": "Diffusion démarrée",
+  "announcements.castStopped": "Diffusion arrêtée",
+  "announcements.playbackFinished": "Lecture terminée"
 }
