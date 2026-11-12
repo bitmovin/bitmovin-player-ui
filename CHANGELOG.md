@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- `ErrorMessageOverlay` no longer has the `status` role. Playback errors are announced immediately through an alert region that the `UIManager` keeps ready next to the UI, which screen readers announce more reliably.
+- `ErrorMessageOverlay` no longer has the `status` role, except on Tizen. Playback errors are announced immediately through an alert region that the `UIManager` keeps ready next to the UI, which screen readers announce more reliably. Tizen keeps the previous behavior, where text-to-speech reads the overlay through its `status` role, because Tizen does not fully support `alert`.
 - `BufferingOverlay` shows a stall that is already ongoing when the UI is created after `showDelayMs`, like any other stall, instead of immediately.
 
 ## [4.23.1] - 2026-11-05

@@ -3,6 +3,7 @@ import { Label, LabelConfig } from '../labels/Label';
 import { UIInstanceManager } from '../../UIManager';
 import { TvNoiseCanvas } from '../TvNoiseCanvas';
 import { ErrorUtils } from '../../utils/ErrorUtils';
+import { BrowserUtils } from '../../utils/BrowserUtils';
 import { ErrorEvent, PlayerAPI, PlayerEventBase } from 'bitmovin-player';
 import {
   isMobileV3PlayerAPI,
@@ -91,6 +92,9 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
  * makes screen readers announce it reliably. The overlay itself has no live region role, so the error is
  * announced once.
  *
+ * On Tizen, the overlay keeps the `status` role instead and the alert region is not used, because Tizen's
+ * text-to-speech does not support `alert` (2.4) or only partly (3.0), but reads the overlay as a status.
+ *
  * @category Components
  */
 export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
@@ -110,6 +114,8 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
         cssClass: 'ui-errormessage-overlay',
         components: [this.tvNoiseBackground, this.errorLabel],
         hidden: true,
+        // Tizen reads the error through this role, see the class description
+        role: BrowserUtils.isTizen ? 'status' : undefined,
       },
       this.config,
     );
@@ -159,8 +165,11 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     this.errorLabel.setText(errorMessage);
     this.tvNoiseBackground.start();
     this.show();
-    // An error stops playback and needs the user's attention, so it interrupts the screen reader (WCAG 4.1.3)
-    this.uimanager?.announce(this.getRenderedErrorText() || errorMessage, { assertive: true });
+    // An error stops playback and needs the user's attention, so it interrupts the screen reader (WCAG 4.1.3).
+    // Tizen reads the overlay itself through its status role, and would otherwise read the error twice.
+    if (!BrowserUtils.isTizen) {
+      this.uimanager?.announce(this.getRenderedErrorText() || errorMessage, { assertive: true });
+    }
   }
 
   /**
