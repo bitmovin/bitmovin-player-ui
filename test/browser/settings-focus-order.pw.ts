@@ -171,3 +171,48 @@ test('TV: going back from a Settings sub-page focuses the item that opened it', 
   await page.keyboard.press('ArrowUp');
   await expect(qualityItem, 'the remote should continue from the restored item').toBeFocused();
 });
+
+for (const { direction, key } of [
+  { direction: 'Tab past the last item', key: 'Tab' },
+  { direction: 'Shift+Tab before the first item', key: 'Shift+Tab' },
+]) {
+  test(`${direction} also leaves a Settings panel that reopened with the controls`, async ({ page }) => {
+    // Hiding on mouse leave makes the controls hide and show deterministically, without waiting for a timer.
+    await mountDefaultControlBarUi(page, {
+      live: false,
+      videoQualities: VIDEO_QUALITIES,
+      fullscreenAvailable: true,
+      hideDelay: 60000,
+      hideControlsOnMouseLeave: true,
+    });
+    const insidePlayer = { x: 300, y: 200 };
+    const belowPlayer = { x: 300, y: 650 };
+    await page.mouse.move(insidePlayer.x, insidePlayer.y);
+    const settingsButton = await openSettingsWithKeyboard(page);
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    const backButton = settingsPanel(page).getByRole('button', { name: 'Speed' });
+    await expect(backButton, 'the Speed sub-page should be open').toBeVisible();
+
+    // Hiding the controls closes the panel and keeps its sub-page for when the controls show again.
+    await page.mouse.move(belowPlayer.x, belowPlayer.y);
+    await expect(settingsPanel(page)).toBeHidden();
+    await expect(settingsButton).toBeFocused();
+    // Returning focus showed the controls again, so hide them once more before showing them with the mouse.
+    await page.mouse.move(insidePlayer.x, insidePlayer.y);
+    await page.mouse.move(belowPlayer.x, belowPlayer.y);
+    await page.mouse.move(insidePlayer.x, insidePlayer.y);
+    await expect(backButton, 'showing the controls should restore the sub-page').toBeVisible();
+
+    // The back button opens the sub-page's tab sequence, and its last option closes it.
+    const edgeItem = key === 'Tab' ? settingsPanel(page).getByRole('menuitem').last() : backButton;
+    await edgeItem.focus();
+    await page.keyboard.press(key);
+
+    await expect(settingsPanel(page)).toBeHidden();
+    await expect(
+      key === 'Tab' ? page.getByRole('button', { name: 'Fullscreen' }) : settingsButton,
+      'leaving the restored panel should move focus next to the Settings button',
+    ).toBeFocused();
+  });
+}

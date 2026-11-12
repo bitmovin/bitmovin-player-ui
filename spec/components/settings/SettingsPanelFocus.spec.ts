@@ -49,6 +49,7 @@ describe('SettingsPanel focus management', () => {
   let firstItem: Button<ButtonConfig>;
   let secondItem: Button<ButtonConfig>;
   let backButton: Button<ButtonConfig>;
+  let subPageItem: Button<ButtonConfig>;
   let rootPage: SettingsPanelPage;
   let subPage: SettingsPanelPage;
   let settingsPanel: SettingsPanel<SettingsPanelConfig>;
@@ -59,8 +60,9 @@ describe('SettingsPanel focus management', () => {
     firstItem = button();
     secondItem = button();
     backButton = button();
+    subPageItem = button();
     rootPage = new SettingsPanelPage({ components: [firstItem, secondItem] });
-    subPage = new SettingsPanelPage({ components: [backButton] });
+    subPage = new SettingsPanelPage({ components: [backButton, subPageItem] });
     settingsPanel = new SettingsPanel({ components: [rootPage, subPage], hidden: true, hideDelay: -1 });
 
     const ui = new UIContainer({ components: [opener, settingsPanel] });
@@ -177,7 +179,10 @@ describe('SettingsPanel focus management', () => {
       element(opener).parentElement.appendChild(element(toggleButton));
       toggleButton.configure(createPlayer(), createUiManager(null));
       // jsdom does no layout, so it cannot tell which elements are rendered and therefore tabbable.
-      jest.spyOn(FocusUtils, 'getTabbableElements').mockImplementation(() => [element(firstItem), element(secondItem)]);
+      // Approximate it with the controls of the active page.
+      jest
+        .spyOn(FocusUtils, 'getTabbableElements')
+        .mockImplementation(() => settingsPanel.getActivePage().getComponents().map(element));
       element(toggleButton).focus();
       toggleButton['onClickEvent']();
     });
@@ -248,7 +253,8 @@ describe('SettingsPanel focus management', () => {
       settingsPanel.hide();
       uiManager.onControlsShow.dispatch(null);
       expect(settingsPanel.isShown()).toBe(true);
-      const edgeItem = shiftKey ? element(firstItem) : element(secondItem);
+      expect(settingsPanel.getActivePage()).toBe(subPage);
+      const edgeItem = shiftKey ? element(backButton) : element(subPageItem);
       edgeItem.focus();
 
       pressTab(edgeItem, shiftKey);
