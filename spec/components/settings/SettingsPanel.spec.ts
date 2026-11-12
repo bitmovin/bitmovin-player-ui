@@ -13,6 +13,7 @@ import { Label } from '../../../src/ts/components/labels/Label';
 import { SelectBox } from '../../../src/ts/components/settings/SelectBox';
 import { SettingsPanelItem } from '../../../src/ts/components/settings/SettingsPanelItem';
 import { VolumeSlider } from '../../../src/ts/components/seekbar/VolumeSlider';
+import { BrowserUtils } from '../../../src/ts/utils/BrowserUtils';
 
 let settingsPanel: SettingsPanel<SettingsPanelConfig>;
 
@@ -256,6 +257,181 @@ describe('SettingsPanel', () => {
         settingsPanel['hideHoveredSelectBoxes']();
 
         expect(closeDropdownSpy).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('automatic hiding', () => {
+    const hideDelay = 5000;
+    let uiInstanceManagerMock: UIInstanceManager;
+    let page: SettingsPanelPage;
+
+    const panelElement = () => settingsPanel.getDomElement().get(0);
+    const pointer = (...types: string[]) => types.forEach(type => panelElement().dispatchEvent(new MouseEvent(type)));
+    const focusInside = ({ keyboard }: { keyboard: boolean }) => {
+      // The FocusVisibilityTracker marks keyboard focus before the focusin event bubbles up
+      page.getDomElement().get(0).classList.toggle('{{PREFIX}}-focus-visible', keyboard);
+      page
+        .getDomElement()
+        .get(0)
+        .dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    };
+    const moveFocusOutside = () => {
+      page.getDomElement().get(0).classList.remove('{{PREFIX}}-focus-visible');
+      page
+        .getDomElement()
+        .get(0)
+        .dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
+    };
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      // jsdom reports touch support; hovering needs a platform without it
+      jest.spyOn(BrowserUtils, 'isTouchSupported', 'get').mockReturnValue(false);
+      uiInstanceManagerMock = getUiInstanceManagerMock();
+      Object.defineProperty(uiInstanceManagerMock, 'onComponentViewModeChanged', {
+        value: new EventDispatcher<Component<ComponentConfig>, ViewModeChangedEventArgs>(),
+      });
+      page = new SettingsPanelPage({});
+      settingsPanel = new SettingsPanel({ components: [page], hidden: true, hideDelay });
+      settingsPanel.initialize();
+      settingsPanel.configure(getPlayerMock(), uiInstanceManagerMock);
+      document.body.appendChild(panelElement());
+      settingsPanel.show();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      jest.restoreAllMocks();
+      document.body.innerHTML = '';
+    });
+
+    it('should close after the hide delay when the user does not interact with it', () => {
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should stay open while the pointer rests on it', () => {
+      pointer('mouseenter', 'mousemove');
+
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      expect(settingsPanel.isShown()).toBe(true);
+    });
+
+    it('should close after the hide delay once the pointer has left it', () => {
+      pointer('mouseenter', 'mousemove');
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      pointer('mouseleave');
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should stay open while keyboard focus is inside, even when the pointer passes over it', () => {
+      focusInside({ keyboard: true });
+
+      pointer('mouseenter', 'mousemove', 'mouseleave');
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      expect(settingsPanel.isShown()).toBe(true);
+    });
+
+    it('should close after the hide delay once keyboard focus has left it', () => {
+      focusInside({ keyboard: true });
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      moveFocusOutside();
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should close after the hide delay when focused by a pointer that has left it', () => {
+      pointer('mouseenter');
+      focusInside({ keyboard: false });
+
+      pointer('mouseleave');
+      jest.advanceTimersByTime(hideDelay);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+    });
+
+    it('should not restart the hide delay while the pointer rests on it when a component leaves the persistent view mode', () => {
+      pointer('mouseenter');
+
+      uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Persistent });
+      uiInstanceManagerMock.onComponentViewModeChanged.dispatch(undefined, { mode: ViewMode.Temporary });
+      jest.advanceTimersByTime(hideDelay * 2);
+
+      expect(settingsPanel.isShown()).toBe(true);
+    });
+
+    describe('without pointer events on a touch device', () => {
+      beforeEach(() => {
+        jest.spyOn(BrowserUtils, 'isTouchSupported', 'get').mockReturnValue(true);
+        settingsPanel = new SettingsPanel({ components: [page], hidden: true, hideDelay });
+        settingsPanel.initialize();
+        settingsPanel.configure(getPlayerMock(), uiInstanceManagerMock);
+        document.body.appendChild(panelElement());
+        settingsPanel.show();
+      });
+
+      it('should close after the hide delay following a tap, which leaves no pointer resting on it', () => {
+        // A tap dispatches compatibility mouse events, but no mouseleave after lifting
+        jest.advanceTimersByTime(hideDelay - 1);
+        pointer('mouseenter', 'mousemove');
+
+        jest.advanceTimersByTime(hideDelay - 1);
+        expect(settingsPanel.isShown()).toBe(true);
+        jest.advanceTimersByTime(1);
+
+        expect(settingsPanel.isHidden()).toBe(true);
+      });
+    });
+
+    describe('with pointer events', () => {
+      const pointerEvent = (type: string, pointerType: string) =>
+        panelElement().dispatchEvent(Object.assign(new Event(type), { pointerType }));
+
+      beforeEach(() => {
+        // jsdom has no PointerEvent; the panel only checks that the platform supports pointer events
+        Object.defineProperty(window, 'PointerEvent', { configurable: true, value: class {} });
+        settingsPanel = new SettingsPanel({ components: [page], hidden: true, hideDelay });
+        settingsPanel.initialize();
+        settingsPanel.configure(getPlayerMock(), uiInstanceManagerMock);
+        document.body.appendChild(panelElement());
+        settingsPanel.show();
+      });
+
+      afterEach(() => {
+        delete (window as { PointerEvent?: unknown }).PointerEvent;
+      });
+
+      it.each(['mouse', 'pen'])('should stay open while a %s pointer rests on it', pointerType => {
+        pointerEvent('pointerenter', pointerType);
+        pointerEvent('pointermove', pointerType);
+
+        jest.advanceTimersByTime(hideDelay * 2);
+
+        expect(settingsPanel.isShown()).toBe(true);
+      });
+
+      it('should close after the hide delay following a tap, which leaves no pointer resting on it', () => {
+        // A tap dispatches touch pointer events and compatibility mouse events, but no mouseleave after lifting
+        jest.advanceTimersByTime(hideDelay - 1);
+        pointerEvent('pointerenter', 'touch');
+        pointerEvent('pointermove', 'touch');
+        pointer('mouseenter', 'mousemove');
+        pointerEvent('pointerleave', 'touch');
+
+        jest.advanceTimersByTime(hideDelay - 1);
+        expect(settingsPanel.isShown()).toBe(true);
+        jest.advanceTimersByTime(1);
+
+        expect(settingsPanel.isHidden()).toBe(true);
       });
     });
   });

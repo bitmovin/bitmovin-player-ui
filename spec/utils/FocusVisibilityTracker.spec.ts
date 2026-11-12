@@ -59,6 +59,15 @@ describe('FocusVisibilityTracker', () => {
     },
   );
 
+  it('adds the focus-visible class when the keyboard is used on a UI button focused by a pointer', () => {
+    dispatchEvent(document, 'MouseEvent', 'mousedown');
+    uiButton.focus();
+
+    uiButton.dispatchEvent(new window.KeyboardEvent('keydown', { bubbles: true }));
+
+    expect(uiButton.classList.contains(focusVisibileClassName)).toBe(true);
+  });
+
   it('removes the focus-visible class on a UI button once it loses focus', () => {
     uiButton.focus();
 
