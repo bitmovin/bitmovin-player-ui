@@ -44,6 +44,8 @@ export class AdClickOverlay extends ClickOverlay {
       // Pause the ad when overlay is clicked
       player.pause('ui-ad-click-overlay');
 
+      // A click on a linear ad is reported even when nothing is opened, e.g. for a destination other than http or
+      // https, because the ad can track clicks without having a click-through.
       if (clickThroughCallback) {
         clickThroughCallback();
       }

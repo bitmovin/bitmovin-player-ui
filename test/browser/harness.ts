@@ -54,8 +54,8 @@ interface BrowserTestWindow extends Window {
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
-  /** URLs passed to `window.open`, which the harness records instead of opening. */
-  __openedUrls: string[];
+  /** Calls of `window.open`, which the harness records instead of opening. */
+  __openedWindows: OpenedWindow[];
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
   __currentTime?: number;
@@ -142,6 +142,13 @@ export interface PauseAdOptions {
   clickThroughUrl?: string;
 }
 
+/** The arguments of a `window.open` call. */
+export interface OpenedWindow {
+  url: string;
+  target?: string;
+  features?: string;
+}
+
 /** A subtitle cue, as the player hands it to the UI, minus the fields the harness assigns. */
 export type SubtitleCue = Partial<Omit<SubtitleCueEvent, 'type' | 'timestamp' | 'start' | 'end'>>;
 
@@ -194,6 +201,9 @@ export interface BrowserPlayerController {
 
   /** URLs the UI passed to `window.open` since mounting. */
   openedUrls(): Promise<string[]>;
+
+  /** All arguments the UI passed to `window.open` since mounting. */
+  openedWindows(): Promise<OpenedWindow[]>;
 
   /** Whether the stub player still considers a pause ad active. */
   pauseAdActive(): Promise<boolean>;
@@ -275,9 +285,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       browserWindow.__fire = fire;
 
       // Record click-through navigation instead of opening real popups.
-      browserWindow.__openedUrls = [];
-      window.open = (url?: string | URL) => {
-        browserWindow.__openedUrls.push(String(url));
+      browserWindow.__openedWindows = [];
+      window.open = (url?: string | URL, target?: string, features?: string) => {
+        browserWindow.__openedWindows.push({ url: String(url), target, features });
         return null;
       };
 
@@ -509,7 +519,10 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__clickThroughCount || 0);
       },
       openedUrls: async () => {
-        return page.evaluate(() => (window as unknown as BrowserTestWindow).__openedUrls);
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__openedWindows.map(opened => opened.url));
+      },
+      openedWindows: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__openedWindows);
       },
       pauseAdActive: async () => {
         return page.evaluate(() => Boolean((window as unknown as BrowserTestWindow).__activePauseAdId));

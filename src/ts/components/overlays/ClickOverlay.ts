@@ -1,4 +1,5 @@
 import { Button, ButtonConfig } from '../buttons/Button';
+import { ClickThroughUtils } from '../../utils/ClickThroughUtils';
 
 /**
  * Configuration interface for a {@link ClickOverlay}.
@@ -8,6 +9,7 @@ import { Button, ButtonConfig } from '../buttons/Button';
 export interface ClickOverlayConfig extends ButtonConfig {
   /**
    * The url to open when the overlay is clicked. Set to null to disable the click handler.
+   * Only http and https URLs are opened, in a new tab without access to the player page.
    */
   url?: string;
 }
@@ -37,9 +39,7 @@ export class ClickOverlay extends Button<ClickOverlayConfig> {
     this.setUrl((<ClickOverlayConfig>this.config).url);
     const element = this.getDomElement();
     element.on('click', () => {
-      if (element.data('url')) {
-        window.open(element.data('url'), '_blank');
-      }
+      ClickThroughUtils.open(element.data('url'));
     });
   }
 

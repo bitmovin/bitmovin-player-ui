@@ -2,6 +2,7 @@ import { Ad, AdEvent, PlayerAPI, PlayerEvent, PlayerEventCallback } from 'bitmov
 import { DOM } from '../../DOM';
 import { UIInstanceManager } from '../../UIManager';
 import { i18n } from '../../localization/i18n';
+import { ClickThroughUtils } from '../../utils/ClickThroughUtils';
 import { NON_LINEAR_AD_ENDED_EVENTS, NON_LINEAR_AD_STARTED_EVENT } from '../../utils/NonLinearAdEvents';
 import { Button, ButtonConfig, ButtonStyle } from '../buttons/Button';
 import { Container, ContainerConfig } from '../Container';
@@ -59,7 +60,7 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
   public readonly dismissButton: Button<ButtonConfig>;
   /**
    * Button that opens the pause ad's click-through. It is the keyboard and assistive technology equivalent of
-   * clicking the creative, and is only shown when the ad has a click-through destination.
+   * clicking the creative, and is only shown when the ad has an http or https click-through destination.
    */
   public readonly clickThroughButton: Button<ButtonConfig>;
   private readonly clickCatcher: PauseAdClickCatcher;
@@ -155,17 +156,17 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
    * Like linear ads (see `AdClickOverlay`), the action opens the destination and then reports it
    * through `clickThroughUrlOpened`, which only tracks the click.
    * The action becomes a no-op when this ad ends or is replaced, or this overlay becomes hidden.
-   * Returns `undefined` when there is no click-through destination.
+   * Returns `undefined` when there is no click-through destination. A destination other than an http or https URL
+   * counts as none: it is neither opened nor reported.
    */
   getClickThroughAction(): (() => void) | undefined {
     const ad = this.activePauseAd;
-    if (!ad?.clickThroughUrl) {
+    if (!ClickThroughUtils.getSafeUrl(ad?.clickThroughUrl)) {
       return undefined;
     }
 
     return () => {
-      if (this.activePauseAd === ad && this.isShown()) {
-        window.open(ad.clickThroughUrl, '_blank');
+      if (this.activePauseAd === ad && this.isShown() && ClickThroughUtils.open(ad.clickThroughUrl)) {
         ad.clickThroughUrlOpened?.();
       }
     };
@@ -178,8 +179,8 @@ export class PauseAdStatusOverlay extends Container<ContainerConfig> {
 
     this.activePauseAd = event.ad;
 
-    // Without a destination, clicks continue to reach the controls below.
-    if (event.ad.clickThroughUrl) {
+    // Without a destination that can be opened, clicks continue to reach the controls below.
+    if (ClickThroughUtils.getSafeUrl(event.ad.clickThroughUrl)) {
       this.clickCatcher.show();
       this.clickThroughButton.show();
     } else {

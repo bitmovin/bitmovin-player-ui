@@ -77,9 +77,24 @@ describe('PauseAdStatusOverlay', () => {
       getClickCatcher()['onClickEvent']();
 
       expect(windowOpen).toHaveBeenCalledTimes(1);
-      expect(windowOpen).toHaveBeenCalledWith('https://example.com', '_blank');
+      expect(windowOpen).toHaveBeenCalledWith('https://example.com/', '_blank', 'noopener,noreferrer');
       expect(clickThroughUrlOpened).toHaveBeenCalledTimes(1);
     });
+
+    it.each(['javascript:void(opener.__xss=document.domain)', ' JavaScript:alert(1)', 'data:text/html,ad', ''])(
+      'should stay hidden and neither open nor report the click-through %p',
+      clickThroughUrl => {
+        const clickThroughUrlOpened = jest.fn();
+        firePauseAdStarted({ clickThroughUrl, clickThroughUrlOpened });
+
+        getClickCatcher()['onClickEvent']();
+
+        expect(getClickCatcher().isHidden()).toBe(true);
+        expect(pauseAdStatusOverlay.getClickThroughAction()).toBeUndefined();
+        expect(windowOpen).not.toHaveBeenCalled();
+        expect(clickThroughUrlOpened).not.toHaveBeenCalled();
+      },
+    );
 
     it('stays hidden when the ad carries no click-through destination', () => {
       const clickThroughUrlOpened = jest.fn();
@@ -143,6 +158,12 @@ describe('PauseAdStatusOverlay', () => {
 
     it.each([
       ['https://example.com', true],
+      ['http://example.com', true],
+      ['/relative/landing', true],
+      ['javascript:void(opener.__xss=document.domain)', false],
+      ['JAVASCRIPT:alert(1)', false],
+      ['data:text/html,ad', false],
+      ['', false],
       [null, false],
       [undefined, false],
     ])('should be shown for a click-through URL %p: %p', (clickThroughUrl, expectedShown) => {
@@ -160,7 +181,7 @@ describe('PauseAdStatusOverlay', () => {
       getClickThroughButton()['onClickEvent']();
 
       expect(windowOpen).toHaveBeenCalledTimes(1);
-      expect(windowOpen).toHaveBeenCalledWith('https://example.com', '_blank');
+      expect(windowOpen).toHaveBeenCalledWith('https://example.com/', '_blank', 'noopener,noreferrer');
       expect(clickThroughUrlOpened).toHaveBeenCalledTimes(1);
       expect(playerMock.ads.skip).not.toHaveBeenCalled();
     });
@@ -193,6 +214,16 @@ describe('PauseAdStatusOverlay', () => {
         'Mehr erfahren, öffnet in einem neuen Tab',
       );
       setTextSpy.mockRestore();
+    });
+
+    it('should neither open nor report a javascript: click-through when activated', () => {
+      const clickThroughUrlOpened = jest.fn();
+      firePauseAdStarted({ clickThroughUrl: 'javascript:void(opener.__xss=document.domain)', clickThroughUrlOpened });
+
+      getClickThroughButton()['onClickEvent']();
+
+      expect(windowOpen).not.toHaveBeenCalled();
+      expect(clickThroughUrlOpened).not.toHaveBeenCalled();
     });
 
     it('should be hidden when a following ad has no click-through destination', () => {

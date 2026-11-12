@@ -15,6 +15,7 @@ import { mountDefaultControlBarUi } from './helpers/control-bar';
 const CLICK_CATCHER = '.bmpui-ui-pause-ad-click-catcher';
 
 const CLICK_THROUGH_URL = 'https://example.com/pause-ad';
+const OPENED_CLICK_THROUGH = { url: CLICK_THROUGH_URL, target: '_blank', features: 'noopener,noreferrer' };
 
 test('clicking the Ad badge does not open or dismiss the creative', async ({ page }) => {
   const ui = await mountDefaultControlBarUi(page, { live: false });
@@ -66,9 +67,10 @@ for (const hostReset of [false, true]) {
       await page.locator(CLICK_CATCHER).evaluate(element => document.activeElement === element),
       'the pointer-only catcher must not take browser focus',
     ).toBe(false);
-    expect(await ui.player.openedUrls(), 'a click on the creative must open the click-through').toEqual([
-      CLICK_THROUGH_URL,
-    ]);
+    expect(
+      await ui.player.openedWindows(),
+      'a click on the creative must open the click-through without giving it access to the player page',
+    ).toEqual([OPENED_CLICK_THROUGH]);
     expect(await ui.player.clickThroughCount(), 'the opened click-through must be reported to the ad').toBe(1);
   });
 
@@ -93,9 +95,30 @@ test('the Learn more button opens the click-through by keyboard', async ({ page 
   await learnMore.focus();
   await page.keyboard.press('Enter');
 
-  expect(await ui.player.openedUrls(), 'the button must open the click-through').toEqual([CLICK_THROUGH_URL]);
+  expect(
+    await ui.player.openedWindows(),
+    'the button must open the click-through without giving it access to the player page',
+  ).toEqual([OPENED_CLICK_THROUGH]);
   expect(await ui.player.clickThroughCount(), 'the opened click-through must be reported to the ad').toBe(1);
   expect(await ui.player.pauseAdActive(), 'opening the click-through must not end the ad').toBe(true);
+});
+
+test('a javascript: click-through is not offered, opened or run', async ({ page }) => {
+  const ui = await mountDefaultControlBarUi(page, { live: false });
+  await ui.player.startPauseAd({ clickThroughUrl: 'javascript:void(window.__clickThroughScriptRan=true)' });
+
+  await expect(page.getByRole('button', { name: 'Close', exact: true })).toBeVisible();
+  await expect(page.locator('.bmpui-ui-button-pause-ad-click-through'), 'there is no Learn more to offer').toBeHidden();
+  await expect(page.locator(CLICK_CATCHER), 'there is nothing to route a click to').toBeHidden();
+
+  await page.locator('#player').click();
+
+  expect(await ui.player.openedUrls()).toEqual([]);
+  expect(await ui.player.clickThroughCount(), 'nothing opened means no click-through').toBe(0);
+  expect(
+    await page.evaluate(() => '__clickThroughScriptRan' in window),
+    'the click-through script must not run in the player page',
+  ).toBe(false);
 });
 
 test('a creative without a destination has no Learn more button', async ({ page }) => {
