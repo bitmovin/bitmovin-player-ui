@@ -30,7 +30,22 @@ describe('AdStatusOverlay', () => {
 
     playerMock.eventEmitter.fireAdStartedEvent();
 
-    expect(announceMock).toHaveBeenCalledWith(expectedMessage);
+    expect(announceMock).toHaveBeenCalledWith(expectedMessage, expect.anything());
+  });
+
+  it.each([
+    ['its id', { id: 'ad-1' }, 'ad-1'],
+    ['the ad object without an id', { id: undefined }, undefined],
+  ])('should announce the start once per ad, identified by %s', (_, adData, expectedSubject) => {
+    playerMock.eventEmitter.fireAdStartedEvent(adData);
+
+    const [, options] = announceMock.mock.calls[0];
+    expect(options.oncePer.topic).toBe('adStarted');
+    if (expectedSubject === undefined) {
+      expect(options.oncePer.subject).toMatchObject({ isLinear: true });
+    } else {
+      expect(options.oncePer.subject).toBe(expectedSubject);
+    }
   });
 
   it('should not announce a non-linear ad', () => {

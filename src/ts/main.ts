@@ -19,6 +19,7 @@ export { StorageUtils } from './utils/StorageUtils';
 export { UIPreferencesManager } from './utils/UIPreferencesManager';
 export { ErrorUtils } from './utils/ErrorUtils';
 export { ShadowDomManager } from './utils/ShadowDomManager';
+export type { AnnounceOptions } from './utils/StatusAnnouncer';
 // Localization
 export {
   i18n,

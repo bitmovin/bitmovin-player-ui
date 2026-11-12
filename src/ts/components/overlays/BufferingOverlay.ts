@@ -92,9 +92,9 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     player.on(player.exports.PlayerEvent.TimeShifted, hideOverlay);
     player.on(player.exports.PlayerEvent.SourceUnloaded, hideOverlay);
 
-    // Show overlay if player is already stalled at init
+    // A stall that is already ongoing at init takes the same delayed path, so it is shown and announced once
     if (player.isStalled()) {
-      this.show();
+      showOverlay();
     }
   }
 

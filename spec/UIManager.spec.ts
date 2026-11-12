@@ -464,8 +464,29 @@ describe('UIManager', () => {
       const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
 
       uiManager.announce('Added to watchlist');
+      uiManager.announce('Upload failed', { assertive: true });
 
-      expect(announceSpy).toHaveBeenCalledWith('Added to watchlist');
+      expect(announceSpy.mock.calls).toEqual([
+        ['Added to watchlist', undefined],
+        ['Upload failed', { assertive: true }],
+      ]);
+    });
+
+    it.each([
+      ['an ad break finishes', (player: TestingPlayerAPI) => player.eventEmitter.fireAdBreakFinishedEvent()],
+      ['the source is unloaded', (player: TestingPlayerAPI) => player.eventEmitter.fireSourceUnloadedEvent()],
+    ])('should announce the same ad again after %s', (_, endAds) => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const regionAnnounce = jest.spyOn(uiManager['config'].statusAnnouncer['statusRegion'], 'announce');
+      const announceAdStarted = () =>
+        uiManager.announce('Ad started', { oncePer: { topic: 'adStarted', subject: 'ad-1' } });
+
+      announceAdStarted();
+      announceAdStarted();
+      endAds(playerMock);
+      announceAdStarted();
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(2);
     });
 
     it('should only announce messages of the active UI variant', () => {

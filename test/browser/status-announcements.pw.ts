@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect, MountOptions, mountUi, test } from './harness';
+import { recordLiveRegionWrites } from './helpers/live-regions';
 
 /**
  * Status changes that do not move focus must reach screen reader users through a live region
@@ -12,6 +13,8 @@ import { expect, MountOptions, mountUi, test } from './harness';
 
 /** Delay between clearing the live region and writing the message, see `StatusAnnouncer`. */
 const ANNOUNCE_DELAY_MS = 100;
+/** Time after which the live region is emptied again, see `StatusAnnouncer`. */
+const CLEAR_DELAY_MS = 5000;
 /** `BufferingOverlayConfig.showDelayMs` default. */
 const BUFFERING_SHOW_DELAY_MS = 1000;
 
@@ -22,18 +25,23 @@ async function mountWithPausedClock(page: Page, options: MountOptions = {}) {
 }
 
 for (const factory of ['default', 'smallScreen', 'tv'] as const) {
-  test(`the ${factory} UI renders one empty, visually hidden status region at mount`, async ({ page }) => {
+  test(`the ${factory} UI renders one empty, visually hidden status and alert region at mount`, async ({ page }) => {
     await mountUi(page, { factory });
 
     const status = page.getByRole('status');
+    const alert = page.getByRole('alert');
     await expect(status).toHaveCount(1);
     await expect(status).toHaveAttribute('aria-live', 'polite');
     await expect(status).toHaveAttribute('aria-atomic', 'true');
-    await expect(status).toHaveText('');
+    await expect(alert).toHaveCount(1);
+    await expect(alert).toHaveAttribute('aria-live', 'assertive');
 
-    const box = await status.boundingBox();
-    expect(box, 'the status region must be rendered, or screen readers ignore it').not.toBeNull();
-    expect(box!.width * box!.height, 'the status region must not take visible space').toBeLessThanOrEqual(1);
+    for (const region of [status, alert]) {
+      await expect(region).toHaveText('');
+      const box = await region.boundingBox();
+      expect(box, 'a live region must be rendered, or screen readers ignore it').not.toBeNull();
+      expect(box!.width * box!.height, 'a live region must not take visible space').toBeLessThanOrEqual(1);
+    }
   });
 }
 
@@ -89,6 +97,24 @@ test('a skippable ad announces when it can be skipped', async ({ page }) => {
   await expect(status).toHaveText('You can skip the ad now');
 });
 
+test('switching to the small-screen ads UI during an ad does not repeat its announcements', async ({ page }) => {
+  const ui = await mountWithPausedClock(page);
+  const writes = await recordLiveRegionWrites(page.getByRole('status'));
+  await ui.player.startLinearAd({ skippableAfter: 0 });
+  await page.clock.runFor(ANNOUNCE_DELAY_MS + CLEAR_DELAY_MS);
+
+  await ui.player.resize(600);
+  await page.clock.runFor(ANNOUNCE_DELAY_MS);
+
+  const smallScreenAdsUi = page.locator('.bmpui-ui-smallscreen.bmpui-ui-ads');
+  await expect(smallScreenAdsUi, 'the ads UI must switch to its small-screen variant').toBeVisible();
+  await expect(
+    smallScreenAdsUi.getByRole('button', { name: 'Skip' }),
+    'the replayed ad start must still set up the new variant',
+  ).toBeVisible();
+  expect(await writes()).toEqual(['Ad started You can skip the ad now']);
+});
+
 test('the end of playback is announced', async ({ page }) => {
   const ui = await mountWithPausedClock(page);
 
@@ -98,13 +124,26 @@ test('the end of playback is announced', async ({ page }) => {
   await expect(page.getByRole('status')).toHaveText('Playback finished');
 });
 
-test('a fatal error is exposed as an alert and not repeated in the status region', async ({ page }) => {
+test('fatal errors are written into the alert region after the error overlay is shown', async ({ page }) => {
   const ui = await mountWithPausedClock(page);
+  const alert = page.getByRole('alert');
+  const overlay = page.locator('.bmpui-ui-errormessage-overlay');
+  const writes = await recordLiveRegionWrites(alert);
 
   await ui.player.raiseError(1000, 'UNKNOWN_ERROR');
+
+  await expect(overlay).toBeVisible();
+  await expect(overlay).toContainText('Error is unknown');
+  await expect(alert, 'the error must be written after the overlay is shown').toHaveText('');
+
+  await page.clock.runFor(ANNOUNCE_DELAY_MS);
+  await expect(alert).toHaveText('Error is unknown (UNKNOWN_ERROR)');
+  await expect(page.getByRole('alert'), 'the visible overlay must not be a second alert').toHaveCount(1);
+  await expect(page.getByRole('status'), 'errors must not also be announced politely').toHaveText('');
+
+  await ui.player.raiseError(1100, 'SETUP_ERROR');
   await page.clock.runFor(ANNOUNCE_DELAY_MS);
 
-  await expect(page.getByRole('alert')).toBeVisible();
-  await expect(page.getByRole('alert')).toContainText('Error is unknown');
-  await expect(page.getByRole('status')).toHaveText('');
+  await expect(overlay).toContainText('General setup error');
+  expect(await writes()).toEqual(['Error is unknown (UNKNOWN_ERROR)', 'General setup error (SETUP_ERROR)']);
 });

@@ -21,7 +21,7 @@ import { UIPreferencesManager } from './utils/UIPreferencesManager';
 import { TimestampLinkUtils } from './utils/TimestampLinkUtils';
 import { BufferingOverlay } from './components/overlays/BufferingOverlay';
 import { ShadowDomManager } from './utils/ShadowDomManager';
-import { StatusAnnouncer } from './utils/StatusAnnouncer';
+import { AnnounceOptions, StatusAnnouncer } from './utils/StatusAnnouncer';
 import { AdBreakTracker } from './utils/AdBreakTracker';
 import { ResumePositionTracker } from './utils/ResumePositionTracker';
 import { ComponentConfigManager } from './utils/ComponentConfigManager';
@@ -575,6 +575,11 @@ export class UIManager {
       this.activeNonLinearAdStartedEvent = undefined;
     });
 
+    // Ads of a later break can reuse an ad id and must be announced again, see AnnounceOptions.oncePer
+    const forgetAnnouncedSubjects = () => this.config.statusAnnouncer.forgetAnnouncedSubjects();
+    wrappedPlayer.on(player.exports.PlayerEvent.AdBreakFinished, forgetAnnouncedSubjects);
+    wrappedPlayer.on(player.exports.PlayerEvent.SourceUnloaded, forgetAnnouncedSubjects);
+
     let isSourceLoaded = player.getSource() != null;
     player.on(player.exports.PlayerEvent.SourceLoaded, () => {
       isSourceLoaded = true;
@@ -932,13 +937,14 @@ export class UIManager {
    * Repeating the same message announces it again. Messages that arrive within about 100 ms of each other are
    * read together. Pass plain text; markup is not interpreted.
    *
-   * Do not use this for errors that need immediate attention, or to repeat what the focused control already
-   * conveys, such as the state of a toggle button.
+   * Do not use this to repeat what the focused control already conveys, such as the state of a toggle button.
+   * Errors that stop playback can be announced with {@link AnnounceOptions.assertive}.
    *
    * @param message the localized, plain-text message to announce
+   * @param options how and how often to announce the message
    */
-  announce(message: string): void {
-    this.config.statusAnnouncer.announce(message);
+  announce(message: string, options?: AnnounceOptions): void {
+    this.config.statusAnnouncer.announce(message, options);
   }
 
   /**
@@ -1141,13 +1147,16 @@ export class UIInstanceManager {
    *
    * Components call this when they visibly show a status change that does not move focus, e.g. a buffering
    * indicator. Only the active UI variant is announced; calls from inactive variants are ignored, so components
-   * that exist in several variants do not announce twice. See {@link UIManager.announce} for the behavior.
+   * that exist in several variants do not announce twice. Events that are replayed into a variant that becomes
+   * active, such as the start of the current ad, need {@link AnnounceOptions.oncePer} to not be announced again.
+   * See {@link UIManager.announce} for the behavior.
    *
    * @param message the localized, plain-text message to announce
+   * @param options how and how often to announce the message
    */
-  announce(message: string): void {
+  announce(message: string, options?: AnnounceOptions): void {
     if (this.active) {
-      this.config.statusAnnouncer?.announce(message);
+      this.config.statusAnnouncer?.announce(message, options);
     }
   }
 

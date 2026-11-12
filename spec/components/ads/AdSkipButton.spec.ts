@@ -25,7 +25,7 @@ describe('AdSkipButton', () => {
 
   it('should announce once when the ad becomes skippable', () => {
     (playerMock.getCurrentTime as jest.Mock).mockReturnValue(0);
-    playerMock.eventEmitter.fireAdStartedEvent({ skippableAfter: 5 });
+    playerMock.eventEmitter.fireAdStartedEvent({ id: 'ad-1', skippableAfter: 5 });
     playAt(4);
 
     expect(announceMock).not.toHaveBeenCalled();
@@ -34,7 +34,9 @@ describe('AdSkipButton', () => {
     playAt(6);
 
     expect(announceMock).toHaveBeenCalledTimes(1);
-    expect(announceMock).toHaveBeenCalledWith('You can skip the ad now');
+    expect(announceMock).toHaveBeenCalledWith('You can skip the ad now', {
+      oncePer: { topic: 'adSkippable', subject: 'ad-1' },
+    });
   });
 
   it('should announce again for the next skippable ad', () => {

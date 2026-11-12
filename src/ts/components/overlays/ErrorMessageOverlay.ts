@@ -86,14 +86,17 @@ export interface ErrorMessageOverlayConfig extends ContainerConfig {
 /**
  * Overlays the player and displays error messages.
  *
- * The overlay has the `alert` role, so screen readers announce a displayed error immediately. Errors are therefore
- * not announced through {@link UIInstanceManager.announce} as well.
+ * A displayed error is also announced to screen readers through the assertive alert region of
+ * {@link UIInstanceManager.announce}. That region is already rendered and empty before the error, which is what
+ * makes screen readers announce it reliably. The overlay itself has no live region role, so the error is
+ * announced once.
  *
  * @category Components
  */
 export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
   private errorLabel: Label<LabelConfig>;
   private tvNoiseBackground: TvNoiseCanvas;
+  private uimanager?: UIInstanceManager;
 
   constructor(config: ErrorMessageOverlayConfig = {}) {
     super(config);
@@ -107,9 +110,6 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
         cssClass: 'ui-errormessage-overlay',
         components: [this.tvNoiseBackground, this.errorLabel],
         hidden: true,
-        // A fatal error interrupts playback and needs the user's attention. Browsers raise an alert event when an
-        // `alert` element becomes visible, which `status` lacks (WCAG 4.1.3).
-        role: 'alert',
       },
       this.config,
     );
@@ -117,6 +117,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
 
   configure(player: PlayerAPI | MobileV3PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+    this.uimanager = uimanager;
 
     const config = this.getConfig();
 
@@ -158,6 +159,20 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     this.errorLabel.setText(errorMessage);
     this.tvNoiseBackground.start();
     this.show();
+    // An error stops playback and needs the user's attention, so it interrupts the screen reader (WCAG 4.1.3)
+    this.uimanager?.announce(this.getRenderedErrorText() || errorMessage, { assertive: true });
+  }
+
+  /**
+   * Returns the text the label renders. Custom messages can contain markup, e.g. a list, which must not be read
+   * out as tags.
+   */
+  private getRenderedErrorText(): string | undefined {
+    if (!this.errorLabel.hasDomElement()) {
+      return undefined;
+    }
+    const labelElement = this.errorLabel.getDomElement().get(0) as HTMLElement | undefined;
+    return labelElement ? labelElement.textContent : undefined;
   }
 
   private clear(): void {
@@ -172,6 +187,7 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     super.release();
 
     this.clear();
+    this.uimanager = undefined;
   }
 }
 

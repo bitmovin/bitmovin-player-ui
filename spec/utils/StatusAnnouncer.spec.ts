@@ -3,12 +3,13 @@ import { StatusAnnouncer } from '../../src/ts/utils/StatusAnnouncer';
 describe('StatusAnnouncer', () => {
   let announcer: StatusAnnouncer;
   let region: HTMLElement;
+  let alertRegion: HTMLElement;
 
   beforeEach(() => {
     jest.useFakeTimers();
     announcer = new StatusAnnouncer();
-    region = announcer.getDomElement().get(0) as HTMLElement;
-    document.body.appendChild(region);
+    [region, alertRegion] = announcer.getDomElement().get() as HTMLElement[];
+    document.body.append(region, alertRegion);
   });
 
   afterEach(() => {
@@ -21,6 +22,66 @@ describe('StatusAnnouncer', () => {
     expect(region.getAttribute('aria-live')).toBe('polite');
     expect(region.getAttribute('aria-atomic')).toBe('true');
     expect(region.textContent).toBe('');
+  });
+
+  it('should create one empty assertive alert region next to it', () => {
+    expect(alertRegion.getAttribute('role')).toBe('alert');
+    expect(alertRegion.getAttribute('aria-live')).toBe('assertive');
+    expect(alertRegion.textContent).toBe('');
+  });
+
+  it('should write assertive messages to the alert region only', () => {
+    announcer.announce('Error is unknown', { assertive: true });
+    jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+
+    expect(alertRegion.textContent).toBe('Error is unknown');
+    expect(region.textContent).toBe('');
+  });
+
+  it('should announce a second, different alert', () => {
+    announcer.announce('Error is unknown', { assertive: true });
+    jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+
+    announcer.announce('General setup error', { assertive: true });
+
+    expect(alertRegion.textContent).toBe('');
+    jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
+    expect(alertRegion.textContent).toBe('General setup error');
+  });
+
+  describe('once per subject', () => {
+    let regionAnnounce: jest.SpyInstance;
+    const announceAdStarted = (subject: unknown) =>
+      announcer.announce('Ad started', { oncePer: { topic: 'adStarted', subject } });
+
+    beforeEach(() => {
+      regionAnnounce = jest.spyOn(announcer['statusRegion'], 'announce');
+    });
+
+    it('should not announce the same subject twice for a topic', () => {
+      announceAdStarted('ad-1');
+      announceAdStarted('ad-1');
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      ['a different subject', 'ad-2', 'adStarted'],
+      ['the same subject for a different topic', 'ad-1', 'adSkippable'],
+    ])('should announce %s', (_, subject, topic) => {
+      announceAdStarted('ad-1');
+      announcer.announce('message', { oncePer: { topic, subject } });
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(2);
+    });
+
+    it('should announce a subject again after forgetting announced subjects', () => {
+      announceAdStarted('ad-1');
+      announcer.forgetAnnouncedSubjects();
+      announceAdStarted('ad-1');
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(2);
+    });
   });
 
   it('should clear the region first and write the message after a delay', () => {
@@ -78,13 +139,16 @@ describe('StatusAnnouncer', () => {
     expect(region.textContent).toBe('Casting to <img src=x onerror=alert(1)>');
   });
 
-  it('should drop pending messages and remove the region on release', () => {
+  it('should drop pending messages and remove both regions on release', () => {
     announcer.announce('Buffering');
+    announcer.announce('Error is unknown', { assertive: true });
 
     announcer.release();
     jest.advanceTimersByTime(StatusAnnouncer.ANNOUNCE_DELAY_MS);
 
     expect(region.textContent).toBe('');
+    expect(alertRegion.textContent).toBe('');
     expect(region.parentNode).toBeNull();
+    expect(alertRegion.parentNode).toBeNull();
   });
 });

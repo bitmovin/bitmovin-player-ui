@@ -35,6 +35,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   private skippableMessage?: LocalizableText;
   private skipOffset: number = -1;
   private skippableAnnounced: boolean = false;
+  private currentAdIdentity?: unknown;
   private player?: PlayerAPI;
 
   constructor(config: AdSkipButtonConfig = {}) {
@@ -82,7 +83,10 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
         // Announce once per ad; this handler runs on every time update
         if (!this.skippableAnnounced) {
           this.skippableAnnounced = true;
-          uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.adSkippable')));
+          // The ad start is replayed into a UI variant that becomes active during the ad, which resets this button
+          uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.adSkippable')), {
+            oncePer: { topic: 'adSkippable', subject: this.currentAdIdentity },
+          });
         }
       }
     };
@@ -91,6 +95,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
       const ad = event.ad as LinearAd;
       this.skipOffset = ad.skippableAfter;
       this.skippableAnnounced = false;
+      // On mobile SDKs every event carries a new ad object, so the id identifies the ad where there is one
+      this.currentAdIdentity = ad && ad.id != null ? ad.id : ad;
       this.untilSkippableMessage = (ad.uiConfig && ad.uiConfig.untilSkippableMessage) || config.untilSkippableMessage;
       this.skippableMessage = (ad.uiConfig && ad.uiConfig.skippableMessage) || config.skippableMessage;
 

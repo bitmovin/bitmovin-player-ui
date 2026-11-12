@@ -56,7 +56,12 @@ export class AdStatusOverlay extends Container<ContainerConfig> {
               totalAdsCount: totalNumberOfAds,
             })
           : i18n.getLocalizer('announcements.adStarted');
-      uimanager.announce(i18n.performLocalization(message));
+      // AdStarted is replayed into a UI variant that becomes active during the ad, e.g. on a resize. On mobile SDKs
+      // every event carries a new ad object, so the id identifies the ad where there is one.
+      const ad = event.ad;
+      uimanager.announce(i18n.performLocalization(message), {
+        oncePer: { topic: 'adStarted', subject: ad && ad.id != null ? ad.id : ad },
+      });
     });
   }
 }
