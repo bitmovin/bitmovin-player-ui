@@ -154,3 +154,58 @@ test('on TV, spatial navigation alone moves remote focus one item per key press'
   await page.keyboard.press('Enter');
   await expect(options.nth(2)).toHaveAttribute('aria-checked', 'true');
 });
+
+test('on TV, End then Enter selects the option that End focused', async ({ page }) => {
+  await mountTvUi(page, { live: false, videoQualities: VIDEO_QUALITIES });
+  await openSettings(page);
+  await page.keyboard.press('Enter');
+  const qualityMenu = page.getByRole('menu', { name: 'Video Quality' });
+  const back = qualityMenu.getByRole('menuitem', { name: 'Video Quality' });
+  const lastOption = qualityMenu.getByRole('menuitemradio', { name: '720p' });
+  await expect(back).toBeFocused();
+
+  await page.keyboard.press('End');
+  await expect(lastOption).toBeFocused();
+  await page.keyboard.press('Enter');
+
+  // Remote navigation must activate the focused option, not the item it last moved to itself
+  await expect(lastOption).toHaveAttribute('aria-checked', 'true');
+  await expect(qualityMenu, 'the back button must not have been activated').toBeVisible();
+});
+
+test('on TV, ArrowDown after Home continues from the item that Home focused', async ({ page }) => {
+  await mountTvUi(page, { live: false, videoQualities: VIDEO_QUALITIES });
+  await openSettings(page);
+  await page.keyboard.press('Enter');
+  const qualityMenu = page.getByRole('menu', { name: 'Video Quality' });
+  const back = qualityMenu.getByRole('menuitem', { name: 'Video Quality' });
+  const options = qualityMenu.getByRole('menuitemradio');
+  await expect(back).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await expect(options.nth(1)).toBeFocused();
+
+  await page.keyboard.press('Home');
+  await expect(back).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+
+  await expect(options.nth(0)).toBeFocused();
+});
+
+test('arrow keys reach interactive rows outside the tab order and skip hidden controls in custom layouts', async ({
+  page,
+}) => {
+  await mountUi(page, { factory: 'customSettingsPanel' });
+  const settingsMenu = await openSettings(page);
+  const interactiveRow = settingsMenu.getByRole('menuitem', { name: 'Interactive row' });
+  const speedSelect = settingsMenu.getByRole('combobox');
+  await expect(settingsMenu.getByRole('button', { name: 'Hidden action' })).toBeHidden();
+  await interactiveRow.focus();
+
+  await page.keyboard.press('ArrowDown');
+  await expect(speedSelect, 'the hidden button in front of the select must not take the focus').toBeFocused();
+
+  await interactiveRow.focus();
+  await page.keyboard.press('ArrowUp');
+  await expect(speedSelect, 'ArrowUp on the first item should wrap to the last').toBeFocused();
+});

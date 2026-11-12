@@ -1,4 +1,5 @@
 import { Button, ButtonConfig } from '../../../src/ts/components/buttons/Button';
+import { InteractiveSettingsPanelItem } from '../../../src/ts/components/settings/InteractiveSettingsPanelItem';
 import { SelectBox } from '../../../src/ts/components/settings/SelectBox';
 import { SettingsPanel, SettingsPanelConfig } from '../../../src/ts/components/settings/SettingsPanel';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../../../src/ts/components/settings/SettingsPanelItem';
@@ -157,6 +158,52 @@ describe('SettingsPanel menu keyboard navigation', () => {
 
       expect(document.activeElement).toBe(selectElement);
       expect(event.defaultPrevented).toBe(false);
+    });
+  });
+
+  describe('with an interactive item that is not in the tab order', () => {
+    beforeEach(() => {
+      settingsPanel.release();
+      document.body.innerHTML = '';
+
+      // tabIndex -1 is the default inherited from Component, the page can still focus the item initially
+      const interactive = new InteractiveSettingsPanelItem<SettingsPanelItemConfig>({ label: 'Interactive' });
+      settingsPanel = mountPanel(new SettingsPanelPage({ components: [interactive, menuItem('Quality')] }));
+    });
+
+    it('should move from and to the interactive item', () => {
+      focus(itemByLabel('Interactive'));
+
+      press('ArrowDown');
+      expect(focusedLabel()).toBe('Quality');
+
+      press('ArrowDown');
+      expect(focusedLabel()).toBe('Interactive');
+    });
+  });
+
+  describe('with a row whose first control is hidden or disabled', () => {
+    let selectBox: SelectBox;
+
+    beforeEach(() => {
+      settingsPanel.release();
+      document.body.innerHTML = '';
+
+      selectBox = new SelectBox();
+      const hiddenButton = new Button<ButtonConfig>({ text: 'Hidden' });
+      hiddenButton.hide();
+      const disabledButton = new Button<ButtonConfig>({ text: 'Disabled' });
+      disabledButton.getDomElement().attr('disabled', 'true');
+      const row = new SettingsPanelItem({ components: [hiddenButton, disabledButton, selectBox] });
+      settingsPanel = mountPanel(new SettingsPanelPage({ components: [menuItem('Quality'), row] }));
+    });
+
+    it('should focus the first control that can take focus', () => {
+      focus(itemByLabel('Quality'));
+
+      press('ArrowDown');
+
+      expect(document.activeElement).toBe(selectBox.getDomElement().get(0));
     });
   });
 

@@ -44,6 +44,8 @@ interface BrowserTestWindow extends Window {
         buildSmallScreenUI(player: object, config: object): UiHandle;
         buildTvUI(player: object, config: object): UiHandle;
       };
+      /** Component and manager classes, for layouts that integrators compose themselves. */
+      [className: string]: unknown;
     };
   };
   __fire(event: string, data?: object): void;
@@ -107,8 +109,14 @@ export interface MountOptions {
   hostReset?: boolean;
   /** Live stream (`true`) or VOD. */
   live?: boolean;
-  /** UI factory to exercise. Add another value only when a browser scenario needs it. */
-  factory?: 'default' | 'smallScreen' | 'tv';
+  /**
+   * UI factory to exercise. Add another value only when a browser scenario needs it.
+   *
+   * `customSettingsPanel` is not a UIFactory layout but a minimal layout an integrator could compose: a Settings
+   * button and a settings page whose first item is an interactive row outside the tab order, followed by a row that
+   * wraps a hidden button in front of a speed select box.
+   */
+  factory?: 'default' | 'smallScreen' | 'tv' | 'customSettingsPanel';
   /**
    * Remove the `ShadowRoot` global before the UI loads, emulating engines without Shadow DOM support
    * such as the PS4 browser.
@@ -386,6 +394,35 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         case 'tv':
           browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildTvUI(player, uiConfig);
           break;
+        case 'customSettingsPanel': {
+          type Constructor = new (...args: unknown[]) => object;
+          const ui = browserWindow.bitmovin.playerui as unknown as Record<string, Constructor> & {
+            UIManager: new (player: object, ui: object, config: object) => UiHandle;
+          };
+          const settingsPanel = new ui.SettingsPanel({
+            hidden: true,
+            components: [
+              new ui.SettingsPanelPage({
+                components: [
+                  new ui.InteractiveSettingsPanelItem({ label: 'Interactive row' }),
+                  new ui.SettingsPanelItem({
+                    label: 'Speed',
+                    components: [new ui.Button({ text: 'Hidden action', hidden: true })],
+                    settingComponent: new ui.PlaybackSpeedSelectBox(),
+                  }),
+                ],
+              }),
+            ],
+          });
+          const uiContainer = new ui.UIContainer({
+            components: [
+              new ui.ControlBar({ components: [new ui.SettingsToggleButton({ settingsPanel })] }),
+              settingsPanel,
+            ],
+          });
+          browserWindow.__ui = new ui.UIManager(player, uiContainer, uiConfig);
+          break;
+        }
         default: {
           const unsupportedFactory: never = uiFactory;
           throw new Error(`unsupported UI factory: ${String(unsupportedFactory)}`);

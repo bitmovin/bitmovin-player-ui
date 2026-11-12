@@ -9,6 +9,7 @@ import { PlayerAPI } from 'bitmovin-player';
 import { Component, ComponentConfig } from '../Component';
 import { getKeyMapForPlatform } from '../../spatialnavigation/getKeyMapForPlatform';
 import { Action } from '../../spatialnavigation/types';
+import { InteractiveSettingsPanelItem } from './InteractiveSettingsPanelItem';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -71,7 +72,7 @@ export enum NavigationDirection {
 const MENU_ITEM_ROLES = ['menuitem', 'menuitemradio', 'menuitemcheckbox'];
 
 /**
- * Keys that move focus between menu items, following the WAI-ARIA APG menu pattern.
+ * Keys that move focus between menu items, taken from the keyboard interaction of the WAI-ARIA APG menu pattern.
  */
 const MENU_NAVIGATION_KEYS = ['ArrowDown', 'ArrowUp', 'Home', 'End'];
 
@@ -400,11 +401,13 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   }
 
   /**
-   * Moves focus between the menu items of the active page with the arrow keys, Home and End, as the WAI-ARIA menu
-   * pattern expects. Tab keeps moving through the items too, so the panel stays usable the way it was before.
+   * Moves focus between the menu items of the active page with the arrow keys, Home and End, following the
+   * keyboard interaction of the WAI-ARIA menu pattern. Unlike that pattern, Tab keeps moving through the items, so the
+   * panel stays usable the way it was before.
    *
-   * Layouts with spatial navigation (TV) handle the arrow keys in a capture-phase document listener and consume
-   * them before they reach this handler, so remote navigation is not handled twice.
+   * Layouts with spatial navigation (TV) consume these keys before they reach this handler: the arrow keys in the
+   * capture-phase document listener of `SpatialNavigation`, Home and End in `SettingsPanelNavigationGroup`,
+   * which keeps its own record of the focused item in sync.
    */
   private handleMenuKeyDown = (event: KeyboardEvent): void => {
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
@@ -464,8 +467,9 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
   /**
    * Collects the visible menu items of the page in document order, together with the element to focus for each.
-   * A menu item that is not focusable itself, e.g. a row wrapping a native select, is focused through its first
-   * focusable descendant. Items without any focusable element are skipped.
+   * Interactive items and items in the tab order are focused themselves. Any other menu item, e.g. a row wrapping a
+   * native select, is focused through its first visible descendant in the tab order. Items without any such element
+   * are skipped.
    */
   private getMenuItemFocusTargets(page: SettingsPanelPage): MenuItemFocusTarget[] {
     const menuItems: MenuItemFocusTarget[] = [];
@@ -476,11 +480,14 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       }
 
       const element = component.getDomElement().get(0);
-      if (element && MENU_ITEM_ROLES.includes(element.getAttribute('role'))) {
+      if (element && MENU_ITEM_ROLES.includes(element.getAttribute('role')) && this.isRendered(element)) {
+        // Interactive items handle Enter/Space themselves, even when they are only focusable programmatically
         const focusTarget =
-          element.tabIndex >= 0
+          component instanceof InteractiveSettingsPanelItem || element.tabIndex >= 0
             ? element
-            : Array.from(element.querySelectorAll<HTMLElement>('*')).find(descendant => descendant.tabIndex >= 0);
+            : Array.from(element.querySelectorAll<HTMLElement>('*')).find(
+                descendant => descendant.tabIndex >= 0 && this.isRendered(descendant, element),
+              );
 
         if (focusTarget && !menuItems.some(menuItem => menuItem.focusTarget === focusTarget)) {
           menuItems.push({ item: element, focusTarget });
@@ -495,6 +502,28 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     page.getComponents().forEach(collect);
 
     return menuItems;
+  }
+
+  /**
+   * Checks that an element can take focus: it is not disabled, not inside a hidden component up to `root`, and, where
+   * the browser can tell, actually rendered (e.g. not hidden through custom CSS).
+   */
+  private isRendered(element: HTMLElement, root: HTMLElement = element): boolean {
+    if ((element as HTMLButtonElement).disabled) {
+      return false;
+    }
+
+    const hiddenClass = this.prefixCss('hidden');
+    for (let current: HTMLElement | null = element; current; current = current.parentElement) {
+      if (current.classList.contains(hiddenClass)) {
+        return false;
+      }
+      if (current === root) {
+        break;
+      }
+    }
+
+    return typeof element.checkVisibility === 'function' ? element.checkVisibility() : true;
   }
 
   // Support adding settingsPanelPages after initialization
