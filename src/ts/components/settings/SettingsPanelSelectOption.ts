@@ -69,4 +69,9 @@ export class SettingsPanelSelectOption extends InteractiveSettingsPanelItem<Sett
     // Initial state
     handleSelectedOptionChanged();
   }
+
+  protected opensSubMenu(): boolean {
+    // An option selects a value of the setting, it does not open the list of options again
+    return false;
+  }
 }

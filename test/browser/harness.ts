@@ -44,6 +44,8 @@ interface BrowserTestWindow extends Window {
         buildSmallScreenUI(player: object, config: object): UiHandle;
         buildTvUI(player: object, config: object): UiHandle;
       };
+      /** Component and manager classes, for layouts that integrators compose themselves. */
+      [className: string]: unknown;
     };
   };
   __fire(event: string, data?: object): void;
@@ -107,8 +109,14 @@ export interface MountOptions {
   hostReset?: boolean;
   /** Live stream (`true`) or VOD. */
   live?: boolean;
-  /** UI factory to exercise. Add another value only when a browser scenario needs it. */
-  factory?: 'default' | 'smallScreen' | 'tv';
+  /**
+   * UI factory to exercise. Add another value only when a browser scenario needs it.
+   *
+   * `customSettingsPanel` is not a UIFactory layout but a minimal layout an integrator could compose: a Settings
+   * button and a settings page whose first item is an interactive row outside the tab order, followed by a row that
+   * wraps a hidden button and a button hidden with `visibility: hidden` in front of a speed select box.
+   */
+  factory?: 'default' | 'smallScreen' | 'tv' | 'customSettingsPanel';
   /**
    * Remove the `ShadowRoot` global before the UI loads, emulating engines without Shadow DOM support
    * such as the PS4 browser.
@@ -120,6 +128,11 @@ export interface MountOptions {
   hideDelay?: number;
   /** Available video qualities for scenarios that need a quality Settings row. */
   videoQualities?: { id: string; label: string }[];
+  /**
+   * Available audio tracks for scenarios that need the audio track Settings row or TV list box. None of them is the
+   * active track.
+   */
+  audioTracks?: { id: string; label: string }[];
   /**
    * Source metadata the UI renders in the title bar. Without it the metadata labels stay empty and
    * occupy no space, so a scenario about title-bar layout has to supply it.
@@ -215,6 +228,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     withoutShadowRoot = false,
     hideDelay = -1,
     videoQualities = [],
+    audioTracks = [],
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -246,7 +260,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, availableAudioTracks, hideDelay }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -317,7 +331,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getVideoQuality: () => ({ id: 'video-1', label: 'Auto' }),
         getAvailableVideoQualities: () => availableVideoQualities,
         getAudioQuality: () => ({ id: 'audio-q-1', label: 'Auto' }),
-        getAvailableAudio: (): never[] => [],
+        getAvailableAudio: () => availableAudioTracks,
         getVideoBufferLength: () => 0,
         getAudioBufferLength: () => 0,
         getThumbnail: (): null => null,
@@ -386,13 +400,53 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         case 'tv':
           browserWindow.__ui = browserWindow.bitmovin.playerui.UIFactory.buildTvUI(player, uiConfig);
           break;
+        case 'customSettingsPanel': {
+          type Constructor = new (...args: unknown[]) => {
+            getDomElement(): { css(name: string, value: string): void };
+          };
+          const ui = browserWindow.bitmovin.playerui as unknown as Record<string, Constructor> & {
+            UIManager: new (player: object, ui: object, config: object) => UiHandle;
+          };
+          const invisibleButton = new ui.Button({ text: 'Invisible action' });
+          invisibleButton.getDomElement().css('visibility', 'hidden');
+          const settingsPanel = new ui.SettingsPanel({
+            hidden: true,
+            components: [
+              new ui.SettingsPanelPage({
+                components: [
+                  new ui.InteractiveSettingsPanelItem({ label: 'Interactive row' }),
+                  new ui.SettingsPanelItem({
+                    label: 'Speed',
+                    components: [new ui.Button({ text: 'Hidden action', hidden: true }), invisibleButton],
+                    settingComponent: new ui.PlaybackSpeedSelectBox(),
+                  }),
+                ],
+              }),
+            ],
+          });
+          const uiContainer = new ui.UIContainer({
+            components: [
+              new ui.ControlBar({ components: [new ui.SettingsToggleButton({ settingsPanel })] }),
+              settingsPanel,
+            ],
+          });
+          browserWindow.__ui = new ui.UIManager(player, uiContainer, uiConfig);
+          break;
+        }
         default: {
           const unsupportedFactory: never = uiFactory;
           throw new Error(`unsupported UI factory: ${String(unsupportedFactory)}`);
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
+    {
+      isLive: live,
+      uiFactory: factory,
+      uiMetadata: metadata,
+      availableVideoQualities: videoQualities,
+      availableAudioTracks: audioTracks,
+      hideDelay,
+    },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);

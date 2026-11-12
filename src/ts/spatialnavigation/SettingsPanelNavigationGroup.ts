@@ -3,6 +3,11 @@ import { Action, Focusable } from './types';
 import { SettingsPanel, SettingsPanelConfig } from '../components/settings/SettingsPanel';
 import { resolveAllComponents } from './helper/resolveAllComponents';
 import { InteractiveSettingsPanelItem } from '../components/settings/InteractiveSettingsPanelItem';
+import { NodeEventSubscriber } from './NodeEventSubscriber';
+import { Component } from '../components/Component';
+import { isFocusable } from './TypeGuards';
+import { toHtmlElement } from './helper/toHtmlElement';
+import { isElementRendered } from '../utils/isElementRendered';
 
 export class SettingsPanelNavigationGroupConfig {
   /**
@@ -20,6 +25,7 @@ export class SettingsPanelNavigationGroupConfig {
 export class SettingsPanelNavigationGroup extends NavigationGroup {
   private readonly settingsPanel: SettingsPanel<SettingsPanelConfig>;
   private readonly config: SettingsPanelNavigationGroupConfig;
+  private readonly keyEventSubscriber = new NodeEventSubscriber();
 
   constructor(
     settingsPanel: SettingsPanel<SettingsPanelConfig>,
@@ -46,6 +52,47 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
       this.activeComponent = undefined;
       this.focusFirstComponent();
     });
+
+    this.keyEventSubscriber.on(document, 'keydown', this.handleHomeEndKey, true);
+  }
+
+  /**
+   * Handles Home and End, which the settings panel otherwise handles on its own, so that the item focused through
+   * them is also the one this group navigates from and activates. The key maps of spatial navigation do not map
+   * these keys.
+   */
+  private handleHomeEndKey = (event: KeyboardEvent): void => {
+    if (event.key !== 'Home' && event.key !== 'End') {
+      return;
+    }
+
+    // Only while this group owns the focus, i.e. the panel is shown and no other group is active
+    if (!this.getActiveComponent() || this.settingsPanel.isHidden()) {
+      return;
+    }
+
+    // Unlike the arrow keys, which only move to neighbours on screen, Home/End pick from the whole list. It also holds
+    // hidden rows and the non-focusable labels of title rows, which must not become the target.
+    const panelElement = this.settingsPanel.getDomElement().get(0);
+    const hiddenClass = `${this.settingsPanel.getConfig().cssPrefix}-hidden`;
+    const components = this.getComponents().filter(
+      component =>
+        component instanceof Component &&
+        isFocusable(component) &&
+        isElementRendered(toHtmlElement(component), hiddenClass, panelElement),
+    );
+    if (components.length === 0) {
+      return;
+    }
+
+    this.focusComponent(event.key === 'Home' ? components[0] : components[components.length - 1]);
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  override release(): void {
+    this.keyEventSubscriber.release();
+    super.release();
   }
 
   // Dynamically resolve all components from the SettingsPanels active page. The SettingsPanel is crated dynamically and

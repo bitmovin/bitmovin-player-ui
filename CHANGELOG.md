@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Screen readers not announcing which option is selected in the settings sub-pages (e.g. quality, speed, audio, subtitles and subtitle style) and in the TV list boxes. The options are now exposed as `menuitemradio` with `aria-checked`, which is kept in sync with the selection.
+- Settings menus and the context menu only being navigable with Tab although they are exposed as ARIA menus. Arrow Up/Down now move between the menu items and wrap around, and Home/End jump to the first and last item. Unlike the ARIA menu pattern, Tab still moves through the items as before. On TV, remote navigation is unchanged, and Home/End move the remote focus.
+- Title rows of settings sub-pages and TV list boxes being announced as menu items. The title now names the menu instead, and the back and reset buttons in that row are exposed as menu items. The settings menu is named after the Settings button, the context menu no longer nests a menu inside a menu, and select options no longer claim to open a popup.
 
 ## [4.23.1] - 2026-11-05
 
