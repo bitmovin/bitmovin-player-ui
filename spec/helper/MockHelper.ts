@@ -47,7 +47,6 @@ export namespace MockHelper {
     const uiMock = getUiMock();
     const UiInstanceManagerMockClass: jest.Mock<UIInstanceManager> = jest.fn().mockImplementation(() => ({
       onConfigured: getEventDispatcherMock(),
-      onInactive: getEventDispatcherMock(),
       hasSpatialNavigation: jest.fn().mockReturnValue(false),
       getSubtitleSettingsManager: jest.fn().mockReturnValue(new SubtitleSettingsManager()),
       getConfig: jest.fn().mockReturnValue({
@@ -69,6 +68,7 @@ export namespace MockHelper {
       onSeeked: getEventDispatcherMock(),
       onRelease: getEventDispatcherMock(),
       onComponentViewModeChanged: getEventDispatcherMock(),
+      onInactive: getEventDispatcherMock(),
       uiWrapperElement: generateDOMMock(),
     }));
 

@@ -185,8 +185,9 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
   }
 
   /**
-   * Whether keyboard focus is inside this container and keeps it in {@link ViewMode.Persistent}, see
-   * {@link keepShownWhileKeyboardFocused}. Always false for containers that do not track keyboard focus.
+   * Whether keyboard focus is inside this container and keeps it in {@link ViewMode.Persistent}. Only containers that
+   * stay shown while they are keyboard focused track this, e.g. the {@link ControlBar}, {@link TitleBar} and
+   * {@link SettingsPanel}. Always false for all other containers.
    */
   hasKeyboardFocusWithin(): boolean {
     return this.keyboardFocusedWithin;
