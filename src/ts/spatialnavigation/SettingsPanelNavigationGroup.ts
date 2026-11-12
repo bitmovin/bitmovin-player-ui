@@ -4,6 +4,10 @@ import { SettingsPanel, SettingsPanelConfig } from '../components/settings/Setti
 import { resolveAllComponents } from './helper/resolveAllComponents';
 import { InteractiveSettingsPanelItem } from '../components/settings/InteractiveSettingsPanelItem';
 import { NodeEventSubscriber } from './NodeEventSubscriber';
+import { Component } from '../components/Component';
+import { isFocusable } from './TypeGuards';
+import { toHtmlElement } from './helper/toHtmlElement';
+import { isElementRendered } from '../utils/isElementRendered';
 
 export class SettingsPanelNavigationGroupConfig {
   /**
@@ -67,7 +71,16 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
       return;
     }
 
-    const components = this.getComponents();
+    // Unlike the arrow keys, which only move to neighbours on screen, Home/End pick from the whole list. It also holds
+    // hidden rows and the non-focusable labels of title rows, which must not become the target.
+    const panelElement = this.settingsPanel.getDomElement().get(0);
+    const hiddenClass = `${this.settingsPanel.getConfig().cssPrefix}-hidden`;
+    const components = this.getComponents().filter(
+      component =>
+        component instanceof Component &&
+        isFocusable(component) &&
+        isElementRendered(toHtmlElement(component), hiddenClass, panelElement),
+    );
     if (components.length === 0) {
       return;
     }

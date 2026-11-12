@@ -1,6 +1,6 @@
 import { SettingsPanel, SettingsPanelConfig } from '../../src/ts/components/settings/SettingsPanel';
 import { InteractiveSettingsPanelItem } from '../../src/ts/components/settings/InteractiveSettingsPanelItem';
-import { SettingsPanelItemConfig } from '../../src/ts/components/settings/SettingsPanelItem';
+import { SettingsPanelItem, SettingsPanelItemConfig } from '../../src/ts/components/settings/SettingsPanelItem';
 import { SettingsPanelPage } from '../../src/ts/components/settings/SettingsPanelPage';
 import { SettingsPanelNavigationGroup } from '../../src/ts/spatialnavigation/SettingsPanelNavigationGroup';
 
@@ -36,6 +36,30 @@ describe('SettingsPanelNavigationGroup', () => {
     expect(group.getActiveComponent()).toBe(items[expected]);
     expect(document.activeElement).toBe(items[expected].getDomElement().get(0));
     expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('should skip hidden items on End', () => {
+    items[2].hide();
+    group.enable();
+
+    press('End');
+
+    expect(group.getActiveComponent()).toBe(items[1]);
+  });
+
+  it('should skip the label of a title row on Home', () => {
+    group.release();
+    document.body.innerHTML = '';
+    const titleRow = new SettingsPanelItem({ label: 'Title', isSetting: false });
+    settingsPanel = new SettingsPanel({ components: [new SettingsPanelPage({ components: [titleRow, ...items] })] });
+    document.body.appendChild(settingsPanel.getDomElement().get(0));
+    group = new SettingsPanelNavigationGroup(settingsPanel);
+    group.enable();
+    group['focusComponent'](items[2]);
+
+    press('Home');
+
+    expect(group.getActiveComponent()).toBe(items[0]);
   });
 
   it('should leave Home and End alone while the group is disabled', () => {

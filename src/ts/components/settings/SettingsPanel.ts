@@ -10,6 +10,7 @@ import { Component, ComponentConfig } from '../Component';
 import { getKeyMapForPlatform } from '../../spatialnavigation/getKeyMapForPlatform';
 import { Action } from '../../spatialnavigation/types';
 import { InteractiveSettingsPanelItem } from './InteractiveSettingsPanelItem';
+import { isElementRendered } from '../../utils/isElementRendered';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -504,26 +505,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return menuItems;
   }
 
-  /**
-   * Checks that an element can take focus: it is not disabled, not inside a hidden component up to `root`, and, where
-   * the browser can tell, actually rendered (e.g. not hidden through custom CSS).
-   */
   private isRendered(element: HTMLElement, root: HTMLElement = element): boolean {
-    if ((element as HTMLButtonElement).disabled) {
-      return false;
-    }
-
-    const hiddenClass = this.prefixCss('hidden');
-    for (let current: HTMLElement | null = element; current; current = current.parentElement) {
-      if (current.classList.contains(hiddenClass)) {
-        return false;
-      }
-      if (current === root) {
-        break;
-      }
-    }
-
-    return typeof element.checkVisibility === 'function' ? element.checkVisibility() : true;
+    return isElementRendered(element, this.prefixCss('hidden'), root);
   }
 
   // Support adding settingsPanelPages after initialization

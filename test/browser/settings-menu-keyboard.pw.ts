@@ -200,12 +200,51 @@ test('arrow keys reach interactive rows outside the tab order and skip hidden co
   const interactiveRow = settingsMenu.getByRole('menuitem', { name: 'Interactive row' });
   const speedSelect = settingsMenu.getByRole('combobox');
   await expect(settingsMenu.getByRole('button', { name: 'Hidden action' })).toBeHidden();
+  await expect(settingsMenu.getByText('Invisible action')).toBeHidden();
   await interactiveRow.focus();
 
   await page.keyboard.press('ArrowDown');
-  await expect(speedSelect, 'the hidden button in front of the select must not take the focus').toBeFocused();
+  await expect(speedSelect, 'the hidden buttons in front of the select must not take the focus').toBeFocused();
 
   await interactiveRow.focus();
   await page.keyboard.press('ArrowUp');
   await expect(speedSelect, 'ArrowUp on the first item should wrap to the last').toBeFocused();
+});
+
+test('on TV, End on the settings menu skips rows hidden for lack of options', async ({ page }) => {
+  // Without subtitle tracks the Subtitles row, the last one on the page, is hidden
+  await mountTvUi(page, { live: false, videoQualities: VIDEO_QUALITIES });
+  const settingsMenu = await openSettings(page);
+  const speed = settingsMenu.getByRole('menuitem', { name: /Speed/ });
+
+  await page.keyboard.press('End');
+  await expect(speed).toBeFocused();
+  await page.keyboard.press('Enter');
+
+  await expect(page.getByRole('menu', { name: 'Speed' }), 'Enter must open the row that End focused').toBeVisible();
+});
+
+test('on TV, Home on a titled list box selects the first track, not the title', async ({ page }) => {
+  await mountTvUi(page, {
+    live: false,
+    audioTracks: [
+      { id: 'en', label: 'English' },
+      { id: 'de', label: 'German' },
+    ],
+  });
+  // The toggle button is announced as "Settings" like the main one, so it is located by its class instead
+  await page.locator('.bmpui-ui-audio-track-list-box-toggle-button').click();
+  const audioMenu = page.getByRole('menu', { name: 'Audio Track' });
+  const english = audioMenu.getByRole('menuitemradio', { name: 'English' });
+  const german = audioMenu.getByRole('menuitemradio', { name: 'German' });
+  await expect(audioMenu).toBeVisible();
+
+  await page.keyboard.press('End');
+  await expect(german).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(english).toBeFocused();
+  await page.keyboard.press('Enter');
+
+  await expect(english).toHaveAttribute('aria-checked', 'true');
+  await expect(german).toHaveAttribute('aria-checked', 'false');
 });
