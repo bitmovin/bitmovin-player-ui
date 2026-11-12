@@ -97,6 +97,15 @@ export class ItemSelectionList extends ListSelector<ListSelectorConfig> {
     }
   }
 
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
+    // Renders the item labels in the new language
+    if (this.hasDomElement()) {
+      this.updateDomItems(this.selectedItem);
+    }
+  }
+
   protected onItemsChangedEvent() {
     super.onItemsChangedEvent();
     this.updateDomItems(this.selectedItem);

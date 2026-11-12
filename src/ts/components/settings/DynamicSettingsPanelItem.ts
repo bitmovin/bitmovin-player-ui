@@ -99,6 +99,7 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
   }
 
   protected onLanguageChanged(): void {
+    super.onLanguageChanged();
     this.handleSelectedItemChanged();
   }
 

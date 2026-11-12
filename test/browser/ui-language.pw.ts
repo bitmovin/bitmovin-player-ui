@@ -66,6 +66,54 @@ test('a localization config applied at runtime updates the mounted UI', async ({
   ).toBeVisible();
 });
 
+test('a runtime localization config names the player, the seek bar and the volume slider in the new language', async ({
+  page,
+}) => {
+  const ui = await mountUi(page, { live: false });
+  const controlBar = page.locator('.bmpui-ui-controlbar');
+  const seekBar = controlBar.getByRole('slider', { name: 'Video timeline', exact: true });
+  const volumeSlider = controlBar.getByRole('slider', { name: 'Volume', exact: true });
+  await expect(seekBar).toBeAttached();
+  await expect(volumeSlider).toBeAttached();
+
+  await ui.setLocalizationConfig({ language: 'de' });
+
+  await expect(page.getByRole('region', { name: 'Videoplayer', exact: true })).toBeVisible();
+  const germanSeekBar = controlBar.getByRole('slider', { name: 'Video-Timeline', exact: true });
+  await expect(germanSeekBar, 'the seek bar name must be in the new language').toBeAttached();
+  await expect(germanSeekBar, 'the seek bar value must be in the new language').toHaveAttribute(
+    'aria-valuetext',
+    '0 Sekunden aus 10 Minuten 0 Sekunden',
+  );
+  const germanVolumeSlider = controlBar.getByRole('slider', { name: 'Lautstärke', exact: true });
+  await expect(germanVolumeSlider, 'the volume slider name must be in the new language').toBeAttached();
+  await expect(germanVolumeSlider, 'the volume value must be in the new language').toHaveAttribute(
+    'aria-valuetext',
+    'Wert: 100',
+  );
+});
+
+test('a runtime localization config names the live indicator in the new language', async ({ page }) => {
+  const ui = await mountUi(page, { live: true });
+  await expect(page.getByRole('button', { name: 'Live, jump to live edge', exact: true })).toBeVisible();
+
+  await ui.setLocalizationConfig({ language: 'fr' });
+
+  await expect(
+    page.getByRole('button', { name: 'En direct, aller au direct', exact: true }),
+    'the name must match the visible label in the new language',
+  ).toHaveText('En direct');
+});
+
+test('the context menu names its items in the new UI language', async ({ page }) => {
+  const ui = await mountUi(page, { live: false });
+
+  await ui.setLanguage('de');
+  await page.locator('.bmpui-ui-uicontainer').click({ button: 'right' });
+
+  await expect(page.getByRole('menuitem', { name: 'Player Insights anzeigen', exact: true })).toBeVisible();
+});
+
 test('the mounted UI keeps following language changes after the language-changed dispatcher was replaced', async ({
   page,
 }) => {

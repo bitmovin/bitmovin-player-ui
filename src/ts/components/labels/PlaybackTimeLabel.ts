@@ -91,9 +91,13 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       const domElement = this.getDomElement();
       domElement.attr('tabindex', '0');
       domElement.attr('role', 'button');
-      // Keep the visible label in the accessible name so speech input can target the control.
-      const liveLabel = i18n.performLocalization(i18n.getLocalizer('live'));
-      this.setAriaLabel(i18n.getLocalizer('live.jumpToLiveEdge', { liveLabel }));
+      // Keep the visible label in the accessible name so speech input can target the control. Both are localized
+      // together, so that the name keeps matching the visible label when the UI language changes.
+      this.setAriaLabel(() =>
+        i18n.performLocalization(
+          i18n.getLocalizer('live.jumpToLiveEdge', { liveLabel: i18n.performLocalization(i18n.getLocalizer('live')) }),
+        ),
+      );
       this.onClick.subscribe(liveClickHandler);
       domElement.on('keydown', liveKeyDownHandler);
     };

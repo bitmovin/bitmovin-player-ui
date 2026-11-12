@@ -80,10 +80,12 @@ export class Label<Config extends LabelConfig> extends Component<Config> {
   }
 
   protected onLanguageChanged(): void {
-    // updating the text if it's not a (localization) function can lead to
-    // hardcoded default strings sometimes overwriting the actual value
-    if (typeof this.config.text === 'function') {
-      this.setText(this.config.text);
+    super.onLanguageChanged();
+
+    // Only the current text is localized again, and only if it is a (localization) function. Applying the configured
+    // text instead would replace a text that was set at runtime, e.g. a status message or a time.
+    if (typeof this.text === 'function') {
+      this.setText(this.text);
     }
   }
 

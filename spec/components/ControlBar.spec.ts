@@ -1,6 +1,5 @@
 import { ControlBar } from '../../src/ts/components/ControlBar';
 import { i18n } from '../../src/ts/localization/i18n';
-import { MockHelper } from '../helper/MockHelper';
 
 describe('ControlBar', () => {
   let controlBar: ControlBar;
@@ -20,13 +19,12 @@ describe('ControlBar', () => {
     ['de', 'Videoplayer Kontrollen'],
     ['fr', 'Barre de contrôle'],
   ])('should update its aria-label when the UI language changes to %p', (language, expectedAriaLabel) => {
-    const domMock = MockHelper.generateDOMMock();
-    jest.spyOn(controlBar, 'hasDomElement').mockReturnValue(true);
-    jest.spyOn(controlBar, 'getDomElement').mockReturnValue(domMock);
+    const element = controlBar.getDomElement().get(0);
+    expect(element.getAttribute('aria-label')).toBe('Video player controls');
 
     i18n.setLanguage(language);
 
-    expect(domMock.attr).toHaveBeenCalledWith('aria-label', expectedAriaLabel);
+    expect(element.getAttribute('aria-label')).toBe(expectedAriaLabel);
   });
 
   it('should not create its DOM element when the UI language changes before it is rendered', () => {

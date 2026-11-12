@@ -227,6 +227,15 @@ export class SeekBar extends Component<SeekBarConfig> {
     }
   }
 
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
+    // The value text, e.g. "5 seconds of 10 minutes", and a name that contains the current time are localized too
+    if (this.hasDomElement()) {
+      this.setAriaSliderValues();
+    }
+  }
+
   private getPlaybackPositionPercentage(): number {
     if (this.player.isLive()) {
       return 100 - (100 / this.player.getMaxTimeShift()) * this.player.getTimeShift();
@@ -741,7 +750,7 @@ export class SeekBar extends Component<SeekBarConfig> {
         id: this.config.id,
         class: this.getCssClasses(),
         role: 'slider',
-        'aria-label': i18n.performLocalization(this.config.ariaLabel),
+        'aria-label': this.localizeAriaLabel(this.config.ariaLabel),
         tabindex: this.config.tabIndex.toString(),
       },
       this,

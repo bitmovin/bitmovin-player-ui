@@ -31,6 +31,10 @@ export interface VolumeSliderConfig extends SeekBarConfig {
  */
 export class VolumeSlider extends SeekBar {
   private volumeTransition: VolumeTransition;
+  /**
+   * The volume that the value text of the slider describes, so that it can be localized again.
+   */
+  private ariaVolumeValue?: number;
 
   constructor(config: VolumeSliderConfig = {}) {
     super(config);
@@ -49,11 +53,20 @@ export class VolumeSlider extends SeekBar {
   }
 
   private setVolumeAriaSliderValues(value: number) {
+    this.ariaVolumeValue = value;
     this.getDomElement().attr('aria-valuenow', Math.ceil(value).toString());
     this.getDomElement().attr(
       'aria-valuetext',
       `${i18n.performLocalization(i18n.getLocalizer('seekBar.value'))}: ${Math.ceil(value)}`,
     );
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
+    if (this.ariaVolumeValue !== undefined) {
+      this.setVolumeAriaSliderValues(this.ariaVolumeValue);
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {

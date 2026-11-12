@@ -105,15 +105,30 @@ describe('UIContainer', () => {
       expect(domMock.attr).toHaveBeenCalledWith('lang', expectedLanguage);
     });
 
-    it('should update the localized aria-label together with the lang attribute', () => {
+    it.each([
+      ['fr', 'Lecteur vidéo'],
+      ['de', 'Videoplayer'],
+    ])('should update the localized aria-label together with the lang attribute to %p', (language, expectedName) => {
+      // A DOM mock that keeps its attributes, rendered with the accessible name like Container renders it
+      const attributes = new Map<string, string>();
       const domMock = generateDOMMock();
-      jest.spyOn(uiContainer, 'hasDomElement').mockReturnValue(true);
-      jest.spyOn(uiContainer, 'getDomElement').mockReturnValue(domMock);
+      domMock.attr.mockImplementation(((name: string, value?: string) => {
+        if (value === undefined) {
+          return attributes.get(name) ?? null;
+        }
+        attributes.set(name, value);
+        return domMock;
+      }) as typeof domMock.attr);
+      jest.spyOn(Container.prototype as any, 'toDomElement').mockImplementation(function (this: UIContainer) {
+        return domMock.attr('aria-label', this['localizeAriaLabel'](this.getConfig().ariaLabel));
+      });
+      uiContainer.getDomElement();
+      expect(attributes.get('aria-label')).toBe('Video player');
 
-      i18n.setLanguage('fr');
+      i18n.setLanguage(language);
 
-      expect(domMock.attr).toHaveBeenCalledWith('lang', 'fr');
-      expect(domMock.attr).toHaveBeenCalledWith('aria-label', 'Lecteur vidéo');
+      expect(attributes.get('lang')).toBe(language);
+      expect(attributes.get('aria-label')).toBe(expectedName);
     });
 
     it('should not update the lang attribute after the UI has been released', () => {

@@ -72,7 +72,7 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
       {
         id: this.config.id,
         class: this.getCssClasses(),
-        'aria-label': i18n.performLocalization(this.config.ariaLabel),
+        'aria-label': this.localizeAriaLabel(this.config.ariaLabel),
       },
       this,
     );
@@ -124,6 +124,12 @@ export class SelectBox extends ListSelector<ListSelectorConfig> {
 
       this.selectElement.append(optionElement);
     }
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+    // Renders the option labels in the new language
+    this.updateDomItems(this.selectedItem);
   }
 
   protected onItemsChangedEvent() {
