@@ -110,6 +110,13 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     // the user may navigate into sub-pages while the panel is open.
     settingsPanel.onActivePageChanged.subscribe(() => this.updateAriaPanelIdRefs());
 
+    // Name the menu after the button that opens it, as in the WAI-ARIA APG menu button pattern, unless the root page
+    // already has a name of its own (e.g. the title of a ListBox).
+    const rootPageElement = settingsPanel.getRootPage().getDomElement();
+    if (!rootPageElement.attr('aria-label') && !rootPageElement.attr('aria-labelledby')) {
+      rootPageElement.attr('aria-labelledby', this.getConfig().id);
+    }
+
     // Sync aria-expanded with the panel's current visibility in case the panel was
     // already shown before `configure()` ran (`hidden: false`, manual `show()`, etc.).
     this.getDomElement().attr('aria-expanded', settingsPanel.isShown() ? 'true' : 'false');

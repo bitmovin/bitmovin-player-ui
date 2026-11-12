@@ -56,6 +56,7 @@ export class PlayerContextMenu extends ContextMenu<PlayerContextMenuConfig> {
 
     this.addComponent(
       new SettingsPanelPage({
+        ariaLabel: i18n.getLocalizer('contextMenu.title'),
         components: [
           new PlayerInfoContextMenuItem(),
           new SettingsPanelSeparator(),

@@ -149,6 +149,8 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       });
 
     page.configure(this.player, this.uimanager);
+    // The back button shows the title of the sub page, so it also names the menu
+    page.getDomElement().attr('aria-labelledby', backButton.getConfig().id);
 
     const setting = this.settingComponent;
     if (setting instanceof SubtitleSettingSelectBox) {

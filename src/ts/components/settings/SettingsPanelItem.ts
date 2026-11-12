@@ -36,6 +36,9 @@ export interface SettingsPanelItemConfig extends ContainerConfig {
   /**
    * Indicates if the SettingsPanelItem is representing an actual setting or if it just a label. E.g. when used
    * as a title.
+   *
+   * Rows that are no setting default to `role="none"`, so assistive technologies do not announce titles as menu
+   * items. Interactive controls inside such a row need a menu item role of their own.
    */
   isSetting?: boolean;
 }
@@ -61,11 +64,16 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
 
     this.settingComponent = config.settingComponent;
 
+    const isTitleRow = config.isSetting === false;
+
     this.config = this.mergeConfig(
       config,
       {
         cssClass: 'ui-settings-panel-item',
         role: 'menuitem',
+        // Title rows only structure the menu, the controls inside them are the menu items. They must not be
+        // focusable, or browsers ignore role="none".
+        ...(isTitleRow ? { role: 'none', tabIndex: null } : {}),
         addSettingAsComponent: true,
         isSetting: true,
         labelStyle: LabelStyle.Text,
@@ -121,7 +129,9 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
         // TODO fire only when state has really changed (e.g. check if visibility has really changed)
         this.onActiveChangedEvent();
 
-        this.getDomElement().attr('aria-haspopup', 'true');
+        if (this.opensSubMenu()) {
+          this.getDomElement().attr('aria-haspopup', 'true');
+        }
       };
 
       this.settingComponent.onItemAdded.subscribe(handleConfigItemChanged);
@@ -130,6 +140,14 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
       // Initialize hidden state
       handleConfigItemChanged();
     }
+  }
+
+  /**
+   * Whether activating this item opens the options of its {@link ListSelector} setting in another menu, which is
+   * announced through `aria-haspopup`.
+   */
+  protected opensSubMenu(): boolean {
+    return true;
   }
 
   protected onLanguageChanged(): void {

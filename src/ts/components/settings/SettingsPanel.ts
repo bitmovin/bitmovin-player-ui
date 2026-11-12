@@ -66,6 +66,29 @@ export enum NavigationDirection {
 }
 
 /**
+ * Roles of the items that the arrow keys move between on a settings page (`role="menu"`).
+ */
+const MENU_ITEM_ROLES = ['menuitem', 'menuitemradio', 'menuitemcheckbox'];
+
+/**
+ * Keys that move focus between menu items, following the WAI-ARIA APG menu pattern.
+ */
+const MENU_NAVIGATION_KEYS = ['ArrowDown', 'ArrowUp', 'Home', 'End'];
+
+/**
+ * Focused elements that use the arrow keys themselves, so menu navigation must leave them alone.
+ */
+const ARROW_KEY_CONTROLS_SELECTOR = 'select, input, textarea, [contenteditable], [role="slider"], [role="spinbutton"]';
+
+/**
+ * A menu item and the element that receives focus for it.
+ */
+interface MenuItemFocusTarget {
+  item: HTMLElement;
+  focusTarget: HTMLElement;
+}
+
+/**
  * A panel containing a list of {@link SettingsPanelPage items}.
  *
  * To configure pages just pass them in the components array.
@@ -165,6 +188,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
       player.on(player.exports.PlayerEvent.PlayerResized, handleResize);
     }
+
+    this.getDomElement().on('keydown', this.handleMenuKeyDown);
 
     const maybeCloseSettingsPanel = (event: KeyboardEvent) => {
       const action = getKeyMapForPlatform()[event.keyCode];
@@ -369,6 +394,107 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     if (this.hideTimeout) {
       this.hideTimeout.clear();
     }
+    if (this.hasDomElement()) {
+      this.getDomElement().off('keydown', this.handleMenuKeyDown);
+    }
+  }
+
+  /**
+   * Moves focus between the menu items of the active page with the arrow keys, Home and End, as the WAI-ARIA menu
+   * pattern expects. Tab keeps moving through the items too, so the panel stays usable the way it was before.
+   *
+   * Layouts with spatial navigation (TV) handle the arrow keys in a capture-phase document listener and consume
+   * them before they reach this handler, so remote navigation is not handled twice.
+   */
+  private handleMenuKeyDown = (event: KeyboardEvent): void => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+
+    if (!MENU_NAVIGATION_KEYS.includes(event.key)) {
+      return;
+    }
+
+    const activePage = this.getActivePage();
+    if (!activePage) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    if (target.matches(ARROW_KEY_CONTROLS_SELECTOR)) {
+      return;
+    }
+
+    const menuItems = this.getMenuItemFocusTargets(activePage);
+    if (menuItems.length === 0) {
+      return;
+    }
+
+    const currentIndex = menuItems.findIndex(
+      ({ item, focusTarget }) => focusTarget === target || item.contains(target),
+    );
+    const isMenuContainer = target === this.getDomElement().get(0) || target === activePage.getDomElement().get(0);
+    if (currentIndex < 0 && !isMenuContainer) {
+      return;
+    }
+
+    const lastIndex = menuItems.length - 1;
+    let nextIndex: number;
+    switch (event.key) {
+      case 'ArrowDown':
+        nextIndex = currentIndex < 0 || currentIndex === lastIndex ? 0 : currentIndex + 1;
+        break;
+      case 'ArrowUp':
+        nextIndex = currentIndex <= 0 ? lastIndex : currentIndex - 1;
+        break;
+      case 'Home':
+        nextIndex = 0;
+        break;
+      case 'End':
+        nextIndex = lastIndex;
+        break;
+      default:
+        return;
+    }
+
+    // Keeps the page from scrolling, without stopping propagation so the UI still registers the user interaction
+    event.preventDefault();
+    menuItems[nextIndex].focusTarget.focus();
+  };
+
+  /**
+   * Collects the visible menu items of the page in document order, together with the element to focus for each.
+   * A menu item that is not focusable itself, e.g. a row wrapping a native select, is focused through its first
+   * focusable descendant. Items without any focusable element are skipped.
+   */
+  private getMenuItemFocusTargets(page: SettingsPanelPage): MenuItemFocusTarget[] {
+    const menuItems: MenuItemFocusTarget[] = [];
+
+    const collect = (component: Component<ComponentConfig>) => {
+      if (component.isHidden()) {
+        return;
+      }
+
+      const element = component.getDomElement().get(0);
+      if (element && MENU_ITEM_ROLES.includes(element.getAttribute('role'))) {
+        const focusTarget =
+          element.tabIndex >= 0
+            ? element
+            : Array.from(element.querySelectorAll<HTMLElement>('*')).find(descendant => descendant.tabIndex >= 0);
+
+        if (focusTarget && !menuItems.some(menuItem => menuItem.focusTarget === focusTarget)) {
+          menuItems.push({ item: element, focusTarget });
+        }
+      }
+
+      if (component instanceof Container) {
+        component.getComponents().forEach(collect);
+      }
+    };
+
+    page.getComponents().forEach(collect);
+
+    return menuItems;
   }
 
   // Support adding settingsPanelPages after initialization

@@ -31,7 +31,6 @@ export class ContextMenu<Config extends ContextMenuConfig = ContextMenuConfig> e
         hideDelay: -1,
         hideOnControlsHide: false,
         hidden: true,
-        role: 'menu',
       } as Config,
       this.config,
     );
