@@ -28,6 +28,12 @@ export interface BufferingOverlayConfig extends ContainerConfig {
  * @category Components
  */
 export class BufferingOverlay extends Container<BufferingOverlayConfig> {
+  /**
+   * One stall is announced once, also when a UI variant that is set up during the stall shows its own overlay.
+   * The episode ends when the overlay hides, which every UI variant observes.
+   */
+  private static readonly ANNOUNCEMENT_TOPIC = 'buffering';
+
   private indicators: Component<ComponentConfig>[];
   private overlayShowTimeout?: Timeout;
 
@@ -60,7 +66,9 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
     const overlayShowTimeout = new Timeout(config.showDelayMs, () => {
       uimanager.onBufferingShow.dispatch(this);
       this.show();
-      uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.buffering')));
+      uimanager.announce(i18n.performLocalization(i18n.getLocalizer('announcements.buffering')), {
+        oncePer: { topic: BufferingOverlay.ANNOUNCEMENT_TOPIC, subject: 'ongoing' },
+      });
     });
     this.overlayShowTimeout = overlayShowTimeout;
 
@@ -77,6 +85,7 @@ export class BufferingOverlay extends Container<BufferingOverlayConfig> {
 
     const hideOverlay = () => {
       overlayShowTimeout.clear();
+      uimanager.forgetAnnounced(BufferingOverlay.ANNOUNCEMENT_TOPIC);
       uimanager.onBufferingHide.dispatch(this);
       this.hide();
     };

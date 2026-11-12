@@ -16,8 +16,9 @@ export interface AnnounceOptions {
   /**
    * Announce the message only once per `subject` for this `topic`, e.g. once per ad. Use it for status that the UI
    * can receive more than once for the same subject, such as the start of the current ad, which is replayed into a
-   * UI variant that becomes active during the ad. Only the latest subject per topic is remembered, and all are
-   * forgotten when an ad break finishes or the source is unloaded.
+   * UI variant that becomes active during the ad. Only the latest subject per topic is remembered. All are
+   * forgotten when an ad break finishes or the source is unloaded, and a single topic with
+   * {@link UIInstanceManager.forgetAnnounced}.
    */
   oncePer?: {
     topic: string;
@@ -35,11 +36,14 @@ class LiveRegion {
   private readonly clearTextTimeout: Timeout;
   private pendingMessages: string[] = [];
 
-  constructor(role: 'status' | 'alert', politeness: 'polite' | 'assertive') {
+  constructor(role: 'status' | 'alert') {
     this.element = document.createElement('div');
     this.element.className = '{{PREFIX}}-ui-status-announcer';
     this.element.setAttribute('role', role);
-    this.element.setAttribute('aria-live', politeness);
+    // `alert` is implicitly assertive. Adding aria-live="assertive" to it makes iOS VoiceOver read it twice.
+    if (role === 'status') {
+      this.element.setAttribute('aria-live', 'polite');
+    }
     this.element.setAttribute('aria-atomic', 'true');
 
     this.writeTimeout = new Timeout(StatusAnnouncer.ANNOUNCE_DELAY_MS, this.flush);
@@ -100,9 +104,10 @@ export class StatusAnnouncer {
    */
   static readonly CLEAR_DELAY_MS = 5000;
 
-  private readonly statusRegion = new LiveRegion('status', 'polite');
-  private readonly alertRegion = new LiveRegion('alert', 'assertive');
-  private announcedSubjects: { [topic: string]: unknown } = {};
+  private readonly statusRegion = new LiveRegion('status');
+  private readonly alertRegion = new LiveRegion('alert');
+  // A Map, so a topic can never collide with an Object.prototype member such as `__proto__`
+  private readonly announcedSubjects = new Map<string, unknown>();
 
   /**
    * Returns both live regions, which the owner has to attach to the DOM before the first announcement.
@@ -123,13 +128,10 @@ export class StatusAnnouncer {
 
     const oncePer = options.oncePer;
     if (oncePer) {
-      if (
-        Object.prototype.hasOwnProperty.call(this.announcedSubjects, oncePer.topic) &&
-        this.announcedSubjects[oncePer.topic] === oncePer.subject
-      ) {
+      if (this.announcedSubjects.has(oncePer.topic) && this.announcedSubjects.get(oncePer.topic) === oncePer.subject) {
         return;
       }
-      this.announcedSubjects[oncePer.topic] = oncePer.subject;
+      this.announcedSubjects.set(oncePer.topic, oncePer.subject);
     }
 
     (options.assertive ? this.alertRegion : this.statusRegion).announce(trimmedMessage);
@@ -139,7 +141,14 @@ export class StatusAnnouncer {
    * Forgets the subjects remembered for {@link AnnounceOptions.oncePer}, so they are announced again.
    */
   forgetAnnouncedSubjects(): void {
-    this.announcedSubjects = {};
+    this.announcedSubjects.clear();
+  }
+
+  /**
+   * Forgets the subject remembered for one {@link AnnounceOptions.oncePer} topic, so it is announced again.
+   */
+  forgetAnnounced(topic: string): void {
+    this.announcedSubjects.delete(topic);
   }
 
   release(): void {

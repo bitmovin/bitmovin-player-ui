@@ -26,7 +26,9 @@ describe('StatusAnnouncer', () => {
 
   it('should create one empty assertive alert region next to it', () => {
     expect(alertRegion.getAttribute('role')).toBe('alert');
-    expect(alertRegion.getAttribute('aria-live')).toBe('assertive');
+    // Implicitly assertive; an explicit aria-live makes iOS VoiceOver read alerts twice
+    expect(alertRegion.hasAttribute('aria-live')).toBe(false);
+    expect(alertRegion.getAttribute('aria-atomic')).toBe('true');
     expect(alertRegion.textContent).toBe('');
   });
 
@@ -73,6 +75,24 @@ describe('StatusAnnouncer', () => {
       announcer.announce('message', { oncePer: { topic, subject } });
 
       expect(regionAnnounce).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not announce the same subject twice for a topic named like an Object.prototype member', () => {
+      announcer.announce('message', { oncePer: { topic: '__proto__', subject: 'ad-1' } });
+      announcer.announce('message', { oncePer: { topic: '__proto__', subject: 'ad-1' } });
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(1);
+    });
+
+    it('should announce a subject again after forgetting only its topic', () => {
+      announceAdStarted('ad-1');
+      announcer.announce('message', { oncePer: { topic: 'adSkippable', subject: 'ad-1' } });
+
+      announcer.forgetAnnounced('adStarted');
+      announceAdStarted('ad-1');
+      announcer.announce('message', { oncePer: { topic: 'adSkippable', subject: 'ad-1' } });
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(3);
     });
 
     it('should announce a subject again after forgetting announced subjects', () => {

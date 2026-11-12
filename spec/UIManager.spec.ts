@@ -472,6 +472,20 @@ describe('UIManager', () => {
       ]);
     });
 
+    it('should let inactive UI variants forget an announced topic', () => {
+      const uiManager = new UIManager(playerMock, [adUi, defaultUi]);
+      const [adUiManager, defaultUiManager] = uiManager['uiInstanceManagers'];
+      const regionAnnounce = jest.spyOn(uiManager['config'].statusAnnouncer['statusRegion'], 'announce');
+      const announceBuffering = () =>
+        defaultUiManager.announce('Buffering', { oncePer: { topic: 'buffering', subject: 'ongoing' } });
+
+      announceBuffering();
+      adUiManager.forgetAnnounced('buffering');
+      announceBuffering();
+
+      expect(regionAnnounce).toHaveBeenCalledTimes(2);
+    });
+
     it.each([
       ['an ad break finishes', (player: TestingPlayerAPI) => player.eventEmitter.fireAdBreakFinishedEvent()],
       ['the source is unloaded', (player: TestingPlayerAPI) => player.eventEmitter.fireSourceUnloadedEvent()],

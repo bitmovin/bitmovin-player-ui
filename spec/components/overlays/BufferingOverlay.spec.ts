@@ -7,6 +7,7 @@ describe('BufferingOverlay', () => {
   let playerMock: TestingPlayerAPI;
   let uiInstanceManagerMock: UIInstanceManager;
   let announceMock: jest.Mock;
+  let forgetAnnouncedMock: jest.Mock;
   let bufferingOverlay: BufferingOverlay;
 
   beforeEach(() => {
@@ -15,6 +16,8 @@ describe('BufferingOverlay', () => {
     uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
     announceMock = jest.fn();
     uiInstanceManagerMock.announce = announceMock;
+    forgetAnnouncedMock = jest.fn();
+    uiInstanceManagerMock.forgetAnnounced = forgetAnnouncedMock;
     (uiInstanceManagerMock as any).onBufferingShow = MockHelper.getEventDispatcherMock();
     (uiInstanceManagerMock as any).onBufferingHide = MockHelper.getEventDispatcherMock();
   });
@@ -34,13 +37,25 @@ describe('BufferingOverlay', () => {
   const fireStallEnded = () =>
     playerMock.eventEmitter.fireEvent({ type: playerMock.exports.PlayerEvent.StallEnded, timestamp: 0 });
 
-  it('should announce buffering when a stall lasts longer than the show delay', () => {
+  it('should announce buffering once per stall when a stall lasts longer than the show delay', () => {
     configureOverlay();
     fireStallStarted();
     jest.advanceTimersByTime(showDelayMs);
 
     expect(announceMock).toHaveBeenCalledTimes(1);
-    expect(announceMock).toHaveBeenCalledWith('Buffering');
+    expect(announceMock).toHaveBeenCalledWith('Buffering', {
+      oncePer: { topic: 'buffering', subject: expect.anything() },
+    });
+  });
+
+  it('should end the announced stall when the overlay hides, so the next stall is announced', () => {
+    configureOverlay();
+    fireStallStarted();
+    jest.advanceTimersByTime(showDelayMs);
+
+    fireStallEnded();
+
+    expect(forgetAnnouncedMock).toHaveBeenCalledWith('buffering');
   });
 
   it('should not announce a stall that ends before the show delay', () => {
@@ -66,7 +81,7 @@ describe('BufferingOverlay', () => {
 
       expect(bufferingOverlay.isShown()).toBe(true);
       expect(announceMock).toHaveBeenCalledTimes(1);
-      expect(announceMock).toHaveBeenCalledWith('Buffering');
+      expect(announceMock).toHaveBeenCalledWith('Buffering', expect.anything());
     });
 
     it('should announce once when the player also reports the ongoing stall', () => {

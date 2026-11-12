@@ -164,15 +164,23 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
   }
 
   /**
-   * Returns the text the label renders. Custom messages can contain markup, e.g. a list, which must not be read
-   * out as tags.
+   * Returns the text the label renders, one line per paragraph, list item or line break. Custom messages can
+   * contain markup, e.g. a list, which must neither be read out as tags nor run its items together.
    */
   private getRenderedErrorText(): string | undefined {
     if (!this.errorLabel.hasDomElement()) {
       return undefined;
     }
     const labelElement = this.errorLabel.getDomElement().get(0) as HTMLElement | undefined;
-    return labelElement ? labelElement.textContent : undefined;
+    if (!labelElement) {
+      return undefined;
+    }
+
+    return textWithLineBreaks(labelElement)
+      .split('\n')
+      .map(line => line.replace(/\s+/g, ' ').trim())
+      .filter(line => line !== '')
+      .join('\n');
   }
 
   private clear(): void {
@@ -189,6 +197,58 @@ export class ErrorMessageOverlay extends Container<ErrorMessageOverlayConfig> {
     this.clear();
     this.uimanager = undefined;
   }
+}
+
+const BLOCK_ELEMENT_TAGS = [
+  'ADDRESS',
+  'BLOCKQUOTE',
+  'DD',
+  'DIV',
+  'DL',
+  'DT',
+  'FIGCAPTION',
+  'FIGURE',
+  'FOOTER',
+  'H1',
+  'H2',
+  'H3',
+  'H4',
+  'H5',
+  'H6',
+  'HEADER',
+  'HR',
+  'LI',
+  'OL',
+  'P',
+  'PRE',
+  'SECTION',
+  'TABLE',
+  'TR',
+  'UL',
+];
+
+/**
+ * Like `textContent`, but with a line break around block elements and for `<br>`. `innerText` would do the same,
+ * but only for rendered elements, and it forces a layout.
+ */
+function textWithLineBreaks(node: Node): string {
+  let text = '';
+  for (let i = 0; i < node.childNodes.length; i++) {
+    const child = node.childNodes[i];
+    if (child.nodeType === Node.TEXT_NODE) {
+      text += child.textContent;
+    } else if (child.nodeType === Node.ELEMENT_NODE) {
+      const tagName = (child as Element).tagName.toUpperCase();
+      if (tagName === 'BR') {
+        text += '\n';
+      } else if (BLOCK_ELEMENT_TAGS.indexOf(tagName) !== -1) {
+        text += '\n' + textWithLineBreaks(child) + '\n';
+      } else {
+        text += textWithLineBreaks(child);
+      }
+    }
+  }
+  return text;
 }
 
 function customizeErrorMessage(

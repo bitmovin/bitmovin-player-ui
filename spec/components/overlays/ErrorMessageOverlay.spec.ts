@@ -41,10 +41,18 @@ describe('ErrorMessageOverlay', () => {
       expect(shownWhenAnnounced).toEqual([true]);
     });
 
-    it('should announce the text the label renders instead of markup of a custom message', () => {
+    it.each([
+      ['markup', 'Try again <ul><li>later</li></ul>', 'Try again\nlater'],
+      ['paragraphs', '<p>License expired</p><p>Contact support</p>', 'License expired\nContact support'],
+      [
+        'list items and line breaks',
+        '<p>Try:</p><ul><li>Reload</li><li>Another <b>browser</b></li></ul>Code<br>1000',
+        'Try:\nReload\nAnother browser\nCode\n1000',
+      ],
+    ])('should announce the text the label renders for a custom message with %s', (_, message, expected) => {
       const announceMock = jest.fn();
       uiInstanceManagerMock.announce = announceMock;
-      errorMessageOverlay = new ErrorMessageOverlay({ messages: { 1000: 'Try again <ul><li>later</li></ul>' } });
+      errorMessageOverlay = new ErrorMessageOverlay({ messages: { 1000: message } });
       errorMessageOverlay['tvNoiseBackground'] = { start: () => {} } as any;
       errorMessageOverlay.getDomElement();
       errorMessageOverlay.configure(playerMock, uiInstanceManagerMock);
@@ -56,7 +64,7 @@ describe('ErrorMessageOverlay', () => {
         timestamp: 0,
       });
 
-      expect(announceMock).toHaveBeenCalledWith('Try again later', { assertive: true });
+      expect(announceMock).toHaveBeenCalledWith(expected, { assertive: true });
     });
 
     it('adds an event listener for source loaded event', () => {

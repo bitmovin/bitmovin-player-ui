@@ -34,7 +34,9 @@ for (const factory of ['default', 'smallScreen', 'tv'] as const) {
     await expect(status).toHaveAttribute('aria-live', 'polite');
     await expect(status).toHaveAttribute('aria-atomic', 'true');
     await expect(alert).toHaveCount(1);
-    await expect(alert).toHaveAttribute('aria-live', 'assertive');
+    // `alert` is implicitly assertive; an explicit aria-live makes iOS VoiceOver read it twice
+    await expect(alert).not.toHaveAttribute('aria-live');
+    await expect(alert).toHaveAttribute('aria-atomic', 'true');
 
     for (const region of [status, alert]) {
       await expect(region).toHaveText('');
@@ -66,6 +68,32 @@ test('a stall shorter than the buffering threshold is not announced', async ({ p
   await page.clock.runFor(BUFFERING_SHOW_DELAY_MS + ANNOUNCE_DELAY_MS);
 
   await expect(page.getByRole('status')).toHaveText('');
+});
+
+test('switching to the small-screen UI during a stall does not announce the stall again', async ({ page }) => {
+  const ui = await mountWithPausedClock(page);
+  const writes = await recordLiveRegionWrites(page.getByRole('status'));
+  await ui.player.startStall();
+  await page.clock.runFor(BUFFERING_SHOW_DELAY_MS + ANNOUNCE_DELAY_MS);
+
+  await ui.player.resize(600);
+  await page.clock.runFor(BUFFERING_SHOW_DELAY_MS + ANNOUNCE_DELAY_MS);
+
+  await expect(page.locator('.bmpui-ui-smallscreen'), 'the UI must switch to its small-screen variant').toBeVisible();
+  expect(await writes()).toEqual(['Buffering']);
+});
+
+test('a later, separate stall is announced again', async ({ page }) => {
+  const ui = await mountWithPausedClock(page);
+  const writes = await recordLiveRegionWrites(page.getByRole('status'));
+  await ui.player.startStall();
+  await page.clock.runFor(BUFFERING_SHOW_DELAY_MS + ANNOUNCE_DELAY_MS);
+  await ui.player.endStall();
+
+  await ui.player.startStall();
+  await page.clock.runFor(BUFFERING_SHOW_DELAY_MS + ANNOUNCE_DELAY_MS);
+
+  expect(await writes()).toEqual(['Buffering', 'Buffering']);
 });
 
 test('the start of a linear ad is announced through the same region after switching to the ads UI', async ({

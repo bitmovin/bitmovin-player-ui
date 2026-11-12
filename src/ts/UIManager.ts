@@ -1161,6 +1161,17 @@ export class UIInstanceManager {
   }
 
   /**
+   * Forgets what was announced for a {@link AnnounceOptions.oncePer} topic, so the next message for that topic is
+   * announced again, e.g. when the status it describes has ended. Unlike {@link announce}, this also works from
+   * inactive UI variants, because they observe the same end of the status.
+   *
+   * @param topic the `oncePer` topic to forget
+   */
+  forgetAnnounced(topic: string): void {
+    this.config.statusAnnouncer?.forgetAnnounced(topic);
+  }
+
+  /**
    * Fires when the UI is fully configured and added to the DOM.
    * @returns {EventDispatcher}
    */
