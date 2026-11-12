@@ -177,11 +177,11 @@ export interface BrowserPlayerController {
    */
   startLinearAd(options?: LinearAdOptions): Promise<void>;
 
-  /**
-   * Ends the linear ad started by {@link BrowserPlayerController.startLinearAd} and its ad break, which makes the UI
-   * manager switch back to the content variant.
-   */
+  /** Ends the active linear ad, without ending its ad break. */
   finishLinearAd(): Promise<void>;
+
+  /** Ends the ad break, which makes the UI manager switch back to the content variant. */
+  finishAdBreak(): Promise<void>;
 
   /** How often the UI requested to skip the active linear ad, including requests the player ignored. */
   linearAdSkipRequests(): Promise<number>;
@@ -477,9 +477,17 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         await page.evaluate(() => {
           const browserWindow = window as unknown as BrowserTestWindow;
           browserWindow.__activeLinearAdSkippableAfter = undefined;
-          const PlayerEvent = browserWindow.bitmovin.player.PlayerEvent;
-          browserWindow.__fire(PlayerEvent.AdFinished, { ad: { id: 'linear-ad-1', isLinear: true } });
-          browserWindow.__fire(PlayerEvent.AdBreakFinished, { adBreak: { id: 'linear-ad-break-1', scheduleTime: 0 } });
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdFinished, {
+            ad: { id: 'linear-ad-1', isLinear: true },
+          });
+        });
+      },
+      finishAdBreak: async () => {
+        await page.evaluate(() => {
+          const browserWindow = window as unknown as BrowserTestWindow;
+          browserWindow.__fire(browserWindow.bitmovin.player.PlayerEvent.AdBreakFinished, {
+            adBreak: { id: 'linear-ad-break-1', scheduleTime: 0 },
+          });
         });
       },
       linearAdSkipRequests: async () => {

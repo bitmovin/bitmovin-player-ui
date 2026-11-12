@@ -26,6 +26,7 @@ test('enables the seek bar again after the ad break', async ({ page }) => {
   await expect(page.locator(ADS_UI)).toBeVisible();
 
   await ui.player.finishLinearAd();
+  await ui.player.finishAdBreak();
 
   const seekBar = page.getByRole('slider', { name: /Video timeline/ });
   await expect(seekBar).toBeEnabled();

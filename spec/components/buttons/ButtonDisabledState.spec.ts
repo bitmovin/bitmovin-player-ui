@@ -6,7 +6,7 @@ const buttonFactories = [
   { name: 'ToggleButton', create: () => new ToggleButton<ToggleButtonConfig>({}) },
 ];
 
-describe('Button', () => {
+describe('Button disabled state', () => {
   it.each(buttonFactories)('should not activate a disabled $name', ({ create }) => {
     const button = create();
     const onClickSpy = jest.fn();

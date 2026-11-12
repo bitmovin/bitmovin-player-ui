@@ -7,7 +7,7 @@ let uiInstanceManagerMock: UIInstanceManager;
 let adSkipButton: AdSkipButton;
 let attributes: Map<string, string>;
 
-describe('AdSkipButton', () => {
+describe('AdSkipButton disabled state', () => {
   const skippableAfter = 5;
 
   beforeEach(() => {

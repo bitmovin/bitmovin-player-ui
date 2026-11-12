@@ -1,9 +1,9 @@
+import { AdLinearityChangedEvent, PlayerEvent } from 'bitmovin-player';
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { SeekBar } from '../../../src/ts/components/seekbar/SeekBar';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { Timeout } from '../../../src/ts/utils/Timeout';
 import { DOM } from '../../../src/ts/DOM';
-import { AdLinearityChangedEvent, PlayerEvent } from 'bitmovin-player';
 
 let playerMock: TestingPlayerAPI;
 let uiInstanceManagerMock: UIInstanceManager;
