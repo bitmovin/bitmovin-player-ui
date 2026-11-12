@@ -239,6 +239,36 @@ describe('SettingsPanel focus management', () => {
       otherToggleButton.release();
     });
 
+    it.each([
+      { direction: 'Tab', shiftKey: false },
+      { direction: 'Shift+Tab', shiftKey: true },
+    ])('should keep handling $direction when showing the controls restores the panel', ({ shiftKey }) => {
+      // An open sub-page is saved on hide, which makes showing the controls restore the panel
+      settingsPanel.setActivePage(subPage);
+      settingsPanel.hide();
+      uiManager.onControlsShow.dispatch(null);
+      expect(settingsPanel.isShown()).toBe(true);
+      const edgeItem = shiftKey ? element(firstItem) : element(secondItem);
+      edgeItem.focus();
+
+      pressTab(edgeItem, shiftKey);
+
+      expect(settingsPanel.isHidden()).toBe(true);
+      expect(document.activeElement).toBe(element(toggleButton));
+    });
+
+    it('should return focus to the button that opened the panel without having focus', () => {
+      settingsPanel.hide();
+      // Assistive technology can activate the button with a synthetic click while another control has focus
+      element(opener).focus();
+      toggleButton['onClickEvent']();
+      element(firstItem).focus();
+
+      settingsPanel.hide();
+
+      expect(document.activeElement).toBe(element(toggleButton));
+    });
+
     it('should stop handling Tab once the panel is hidden', () => {
       settingsPanel.hide();
       settingsPanel.getDomElement().removeAttr('inert');

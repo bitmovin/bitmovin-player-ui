@@ -103,6 +103,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   // The element that had focus before the panel was shown, so hiding the panel can return focus to it
   private focusReturnTarget: HTMLElement | null = null;
   private isReturningFocus = false;
+  // The control that opened the panel, kept while a closed panel can still be restored
+  private opener: HTMLElement | null = null;
   // Restores the tab sequence of a hidden panel on platforms without `inert`
   private restoreTabSequence: (() => void) | null = null;
 
@@ -368,6 +370,23 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
     return this.settingsPanelEvents.onActivePageChanged.getEvent();
   }
 
+  /**
+   * Sets the control that opens the panel, e.g. a {@link SettingsToggleButton}. When the panel closes while it has
+   * focus, focus returns to this control. Without an opener, focus returns to the element that had focus when the
+   * panel was shown. The opener is kept while a closed panel can be restored, and cleared when its state is reset.
+   * @param opener the opening element, or null to clear it
+   */
+  setOpener(opener: HTMLElement | null): void {
+    this.opener = opener;
+  }
+
+  /**
+   * Returns the control that opened the panel, as set by {@link setOpener}, or null.
+   */
+  getOpener(): HTMLElement | null {
+    return this.opener;
+  }
+
   hideAndReset(): void {
     this.shouldResetStateImmediately = true;
     this.hide();
@@ -402,7 +421,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       this.restoreTabSequence = null;
     }
     // Capture the opener before the onShow subscribers move focus into the panel
-    this.focusReturnTarget = this.getFocusedElementOutsidePanel();
+    this.focusReturnTarget = this.opener ?? this.getFocusedElementOutsidePanel();
     super.onShowEvent();
   }
 
@@ -426,6 +445,11 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       } finally {
         this.isReturningFocus = false;
       }
+    }
+
+    // A panel closed without a saved state opens fresh next time, possibly from another control
+    if (this.currentState === null) {
+      this.opener = null;
     }
 
     // The panel stays visible while it fades out. Keep its items out of the tab sequence and away from the pointer
@@ -498,6 +522,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
   }
 
   private resetState(): void {
+    this.opener = null;
     this.activePage = this.getRootPage();
     this.navigationStack = [];
     this.pageOpeners = [];

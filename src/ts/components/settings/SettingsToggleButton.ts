@@ -93,19 +93,19 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
           .slice()
           .filter(settingsPanel => settingsPanel.getConfig().hideOnOtherSettingsPanelOpening)
           .forEach(settingsPanel => settingsPanel.hide());
+        settingsPanel.setOpener(this.getDomElement().get(0));
       }
       settingsPanel.toggleHidden();
-
-      // Only the button that opened the panel continues the tab sequence from it, also when several buttons share
-      // the panel. The listener is removed again when the panel hides.
-      if (settingsPanel.isShown()) {
-        settingsPanel.getDomElement().on('keydown', this.handleSettingsPanelKeyDown);
-      }
     });
     settingsPanel.onShow.subscribe(() => {
       // Set toggle status to on when the settings panel shows
       this.on();
       this.getDomElement().attr('aria-expanded', 'true');
+      // Only the button that opened the panel continues the tab sequence from it, also when several buttons share
+      // the panel or the panel is restored when the controls show again
+      if (settingsPanel.getOpener() === this.getDomElement().get(0)) {
+        settingsPanel.getDomElement().on('keydown', this.handleSettingsPanelKeyDown);
+      }
     });
     settingsPanel.onHide.subscribe(() => {
       // Set toggle status to off when the settings panel hides

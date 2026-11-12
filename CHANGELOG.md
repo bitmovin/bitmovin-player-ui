@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `SettingsPanel.setOpener()` and `SettingsPanel.getOpener()` to set the control that keyboard focus returns to when the panel closes. `SettingsToggleButton` sets itself as the opener.
+
 ### Fixed
 
 - Keyboard focus getting lost when the settings panel or the context menu closes. Focus now returns to the control that opened it, and going back from a settings sub-page focuses the item that opened the sub-page. The context menu now also moves focus to its first item when it opens.
