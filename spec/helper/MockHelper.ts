@@ -66,6 +66,7 @@ export namespace MockHelper {
       onSeeked: getEventDispatcherMock(),
       onRelease: getEventDispatcherMock(),
       onComponentViewModeChanged: getEventDispatcherMock(),
+      onInactive: getEventDispatcherMock(),
       uiWrapperElement: generateDOMMock(),
     }));
 
