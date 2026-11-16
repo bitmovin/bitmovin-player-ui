@@ -6,6 +6,7 @@ import { ArrayUtils } from '../../utils/ArrayUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
 import { FocusUtils } from '../../utils/FocusUtils';
+import { getKeyboardEventKey } from '../../utils/getKeyboardEventKey';
 
 /**
  * Configuration interface for the {@link SettingsToggleButton}.
@@ -163,7 +164,7 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
    * item continues with the control after this button. Leaving the panel this way closes it.
    */
   private handleSettingsPanelKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) {
+    if (getKeyboardEventKey(event) !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) {
       return;
     }
 

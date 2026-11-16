@@ -219,6 +219,30 @@ describe('SettingsPanel focus management', () => {
       expect(document.activeElement).toBe(element(toggleButton));
     });
 
+    it.each([
+      { direction: 'Tab', shiftKey: false, edgeItem: () => element(secondItem), defaultPrevented: false },
+      { direction: 'Shift+Tab', shiftKey: true, edgeItem: () => element(firstItem), defaultPrevented: true },
+    ])(
+      'should close the panel on $direction reported only as keyCode 9 without a key',
+      ({ shiftKey, edgeItem, defaultPrevented }) => {
+        edgeItem().focus();
+
+        const event = new KeyboardEvent('keydown', {
+          keyCode: 9,
+          shiftKey,
+          bubbles: true,
+          cancelable: true,
+        } as KeyboardEventInit);
+        // jsdom defaults `key` to an empty string, while old engines leave it undefined
+        Object.defineProperty(event, 'key', { value: undefined });
+        edgeItem().dispatchEvent(event);
+
+        expect(event.defaultPrevented).toBe(defaultPrevented);
+        expect(settingsPanel.isHidden()).toBe(true);
+        expect(document.activeElement).toBe(element(toggleButton));
+      },
+    );
+
     it('should leave Tab between items to the browser', () => {
       element(firstItem).focus();
 
