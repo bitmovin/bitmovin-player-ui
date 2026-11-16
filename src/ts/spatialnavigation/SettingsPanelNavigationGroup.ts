@@ -1,8 +1,11 @@
 import { NavigationGroup } from './NavigationGroup';
 import { Action, Focusable } from './types';
+import { isComponent } from './TypeGuards';
 import { SettingsPanel, SettingsPanelConfig } from '../components/settings/SettingsPanel';
 import { resolveAllComponents } from './helper/resolveAllComponents';
 import { InteractiveSettingsPanelItem } from '../components/settings/InteractiveSettingsPanelItem';
+import { NodeEventSubscriber } from './NodeEventSubscriber';
+import { toHtmlElement } from './helper/toHtmlElement';
 
 export class SettingsPanelNavigationGroupConfig {
   /**
@@ -20,6 +23,8 @@ export class SettingsPanelNavigationGroupConfig {
 export class SettingsPanelNavigationGroup extends NavigationGroup {
   private readonly settingsPanel: SettingsPanel<SettingsPanelConfig>;
   private readonly config: SettingsPanelNavigationGroupConfig;
+  private readonly panelEventSubscriber = new NodeEventSubscriber();
+  private isTrackingPanelFocus = false;
 
   constructor(
     settingsPanel: SettingsPanel<SettingsPanelConfig>,
@@ -47,6 +52,36 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
       this.focusFirstComponent();
     });
   }
+
+  override enable(): void {
+    if (!this.isTrackingPanelFocus) {
+      this.isTrackingPanelFocus = true;
+      this.panelEventSubscriber.on(toHtmlElement(this.settingsPanel), 'focusin', this.onPanelFocusIn);
+    }
+
+    super.enable();
+  }
+
+  override release(): void {
+    this.panelEventSubscriber.release();
+    this.isTrackingPanelFocus = false;
+    super.release();
+  }
+
+  // The SettingsPanel moves focus on its own, e.g. back to the item that opened a sub-page when navigating back.
+  // Continue navigating from there instead of from the previously active component.
+  private readonly onPanelFocusIn = (event: FocusEvent): void => {
+    if (!this.activeComponent) {
+      return;
+    }
+
+    const focusedComponent = this.getComponents()
+      .filter(isComponent)
+      .find(component => toHtmlElement(component) === event.target);
+    if (focusedComponent && focusedComponent !== this.activeComponent) {
+      this.activeComponent = focusedComponent;
+    }
+  };
 
   // Dynamically resolve all components from the SettingsPanels active page. The SettingsPanel is crated dynamically and
   // during navigating between pages. To keep the navigation working, we need to resolve all components lazy.

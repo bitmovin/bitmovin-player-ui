@@ -7,6 +7,10 @@ const componentFactories: { [componentName: string]: ComponentFactory } = {
   CastUIContainer: () => new PlayerUI.CastUIContainer({ components: [] }),
   QuickSeekButton: () => new PlayerUI.QuickSeekButton({ cssPrefix: 'ui' }),
   SettingsPanel: () => new PlayerUI.SettingsPanel({ components: [] }),
+  SettingsToggleButton: () =>
+    new PlayerUI.SettingsToggleButton({
+      settingsPanel: new PlayerUI.SettingsPanel({ components: [new PlayerUI.SettingsPanelPage({})] }),
+    }),
   UIContainer: () => new PlayerUI.UIContainer({ components: [] }),
 };
 

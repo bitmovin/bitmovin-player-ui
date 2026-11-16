@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `SettingsPanel.setOpener()` and `SettingsPanel.getOpener()` to set the control that keyboard focus returns to when the panel closes. `SettingsToggleButton` sets itself as the opener.
+
+### Fixed
+
+- Keyboard focus getting lost when the settings panel or the context menu closes. Focus now returns to the control that opened it, and going back from a settings sub-page focuses the item that opened the sub-page. The context menu now also moves focus to its first item when it opens.
+- Tab leaving the player from the last settings panel item. Tab and Shift+Tab now leave the panel towards the controls around the Settings button and close the panel.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed
