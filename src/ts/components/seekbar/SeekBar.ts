@@ -20,6 +20,7 @@ import { i18n } from '../../localization/i18n';
 import { BrowserUtils } from '../../utils/BrowserUtils';
 import { TimelineMarkersHandler } from '../../utils/TimelineMarkersHandler';
 import { getMinBufferLevel } from '../../utils/getMinBufferLevel';
+import { getKeyboardEventKey } from '../../utils/getKeyboardEventKey';
 
 /**
  * Configuration interface for the {@link SeekBar} component.
@@ -967,7 +968,7 @@ export class SeekBar extends Component<SeekBarConfig> {
   // Lets users dismiss the seek preview without moving the pointer or focus (WCAG 1.4.13 Content on Hover or Focus).
   // The event is neither prevented nor stopped, so other Escape handlers (e.g. closing a menu) still run.
   private dismissSeekPreviewOnEscape = (e: KeyboardEvent): void => {
-    if (e.key === 'Escape' && this.hasLabel() && this.getLabel().isShown()) {
+    if (getKeyboardEventKey(e) === 'Escape' && this.hasLabel() && this.getLabel().isShown()) {
       this.isSeekPreviewDismissed = true;
       this.hideSeekPreview();
     }

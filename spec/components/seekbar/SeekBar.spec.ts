@@ -347,6 +347,21 @@ describe('SeekBar', () => {
       expect(otherEscapeHandler).toHaveBeenCalledWith(event);
     });
 
+    it.each([
+      ['the legacy key "Esc"', 'Esc', 0],
+      ['keyCode 27 without a key', undefined, 27],
+    ])('should hide the label when Escape is reported as %s', (_, key, keyCode) => {
+      hoverSeekBar();
+
+      const event = new KeyboardEvent('keydown', { keyCode, bubbles: true, cancelable: true } as KeyboardEventInit);
+      // jsdom defaults `key` to an empty string, while old engines leave it undefined
+      Object.defineProperty(event, 'key', { value: key });
+      document.dispatchEvent(event);
+
+      expect(label.isHidden()).toBe(true);
+      expect(event.defaultPrevented).toBe(false);
+    });
+
     it.each(['Enter', 'ArrowLeft', ' '])('should keep the label visible when %p is pressed', key => {
       hoverSeekBar();
 

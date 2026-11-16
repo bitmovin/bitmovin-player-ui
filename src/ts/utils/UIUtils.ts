@@ -27,6 +27,8 @@ export namespace UIUtils {
 
   // From: https://github.com/nfriend/ts-keycode-enum/blob/master/Key.enum.ts
   export enum KeyCode {
+    Tab = 9,
+    Escape = 27,
     LeftArrow = 37,
     UpArrow = 38,
     RightArrow = 39,
