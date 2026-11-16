@@ -11,6 +11,7 @@ import { getKeyMapForPlatform } from '../../spatialnavigation/getKeyMapForPlatfo
 import { Action } from '../../spatialnavigation/types';
 import { InteractiveSettingsPanelItem } from './InteractiveSettingsPanelItem';
 import { isElementRendered } from '../../utils/isElementRendered';
+import { getKeyboardEventKey } from '../../utils/getKeyboardEventKey';
 
 /**
  * Configuration interface for a {@link SettingsPanel}.
@@ -415,7 +416,8 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
       return;
     }
 
-    if (!MENU_NAVIGATION_KEYS.includes(event.key)) {
+    const key = getKeyboardEventKey(event);
+    if (!MENU_NAVIGATION_KEYS.includes(key)) {
       return;
     }
 
@@ -444,7 +446,7 @@ export class SettingsPanel<Config extends SettingsPanelConfig> extends Container
 
     const lastIndex = menuItems.length - 1;
     let nextIndex: number;
-    switch (event.key) {
+    switch (key) {
       case 'ArrowDown':
         nextIndex = currentIndex < 0 || currentIndex === lastIndex ? 0 : currentIndex + 1;
         break;

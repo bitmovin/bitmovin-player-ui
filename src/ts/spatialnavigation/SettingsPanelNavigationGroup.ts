@@ -8,6 +8,7 @@ import { Component } from '../components/Component';
 import { isFocusable } from './TypeGuards';
 import { toHtmlElement } from './helper/toHtmlElement';
 import { isElementRendered } from '../utils/isElementRendered';
+import { getKeyboardEventKey } from '../utils/getKeyboardEventKey';
 
 export class SettingsPanelNavigationGroupConfig {
   /**
@@ -62,7 +63,8 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
    * these keys.
    */
   private handleHomeEndKey = (event: KeyboardEvent): void => {
-    if (event.key !== 'Home' && event.key !== 'End') {
+    const key = getKeyboardEventKey(event);
+    if (key !== 'Home' && key !== 'End') {
       return;
     }
 
@@ -85,7 +87,7 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
       return;
     }
 
-    this.focusComponent(event.key === 'Home' ? components[0] : components[components.length - 1]);
+    this.focusComponent(key === 'Home' ? components[0] : components[components.length - 1]);
     event.preventDefault();
     event.stopPropagation();
   };

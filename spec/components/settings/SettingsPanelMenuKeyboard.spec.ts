@@ -43,6 +43,26 @@ describe('SettingsPanel menu keyboard navigation', () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
+  it.each`
+    start        | key          | keyCode | expected
+    ${'Quality'} | ${'Down'}    | ${0}    | ${'Speed'}
+    ${'Speed'}   | ${'Up'}      | ${0}    | ${'Quality'}
+    ${'Quality'} | ${undefined} | ${40}   | ${'Speed'}
+    ${'Speed'}   | ${undefined} | ${38}   | ${'Quality'}
+    ${'Speed'}   | ${undefined} | ${36}   | ${'Quality'}
+    ${'Speed'}   | ${undefined} | ${35}   | ${'Audio'}
+  `(
+    'should move focus from $start to $expected on legacy key $key with keyCode $keyCode',
+    ({ start, key, keyCode, expected }) => {
+      focus(itemByLabel(start));
+
+      const event = pressLegacy(key, keyCode);
+
+      expect(focusedLabel()).toBe(expected);
+      expect(event.defaultPrevented).toBe(true);
+    },
+  );
+
   it.each(['ArrowDown', 'Home'])('should focus the first item on %s while the panel itself has focus', key => {
     focus(settingsPanel.getDomElement().get(0));
 
@@ -262,6 +282,14 @@ describe('SettingsPanel menu keyboard navigation', () => {
 
   function press(key: string, init: KeyboardEventInit = {}): KeyboardEvent {
     const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init });
+    document.activeElement.dispatchEvent(event);
+    return event;
+  }
+
+  function pressLegacy(key: string | undefined, keyCode: number): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', { keyCode, bubbles: true, cancelable: true } as KeyboardEventInit);
+    // jsdom defaults `key` to an empty string, while old engines leave it undefined
+    Object.defineProperty(event, 'key', { value: key });
     document.activeElement.dispatchEvent(event);
     return event;
   }

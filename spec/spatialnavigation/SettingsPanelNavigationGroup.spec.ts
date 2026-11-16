@@ -38,6 +38,27 @@ describe('SettingsPanelNavigationGroup', () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
+  it.each`
+    keyCode | expected
+    ${36}   | ${0}
+    ${35}   | ${2}
+  `('should handle keyCode $keyCode without a key before the settings panel sees it', ({ keyCode, expected }) => {
+    const panelKeyDownHandler = jest.fn();
+    settingsPanel.getDomElement().get(0).addEventListener('keydown', panelKeyDownHandler);
+    group.enable();
+    group['focusComponent'](items[1]);
+
+    const event = new KeyboardEvent('keydown', { keyCode, bubbles: true, cancelable: true } as KeyboardEventInit);
+    // jsdom defaults `key` to an empty string, while old engines leave it undefined
+    Object.defineProperty(event, 'key', { value: undefined });
+    document.activeElement.dispatchEvent(event);
+
+    expect(group.getActiveComponent()).toBe(items[expected]);
+    expect(document.activeElement).toBe(items[expected].getDomElement().get(0));
+    expect(event.defaultPrevented).toBe(true);
+    expect(panelKeyDownHandler).not.toHaveBeenCalled();
+  });
+
   it('should skip hidden items on End', () => {
     items[2].hide();
     group.enable();
