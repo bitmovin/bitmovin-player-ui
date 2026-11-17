@@ -16,6 +16,8 @@ import { StorageUtils } from '../src/ts/utils/StorageUtils';
 import { prefixCss } from '../src/ts/components/DummyComponent';
 import { RecommendationConfig, TimelineMarker } from '../src/ts/UIConfig';
 import { FullscreenToggleButton } from '../src/ts/components/buttons/FullscreenToggleButton';
+import { i18n, I18n, LanguageChangedArgument } from '../src/ts/localization/i18n';
+import { EventDispatcher } from '../src/ts/EventDispatcher';
 
 jest.mock('../src/ts/DOM');
 
@@ -689,6 +691,90 @@ describe('UIManager', () => {
         new UIManager(playerMock, MockHelper.generateDOMMock() as any);
         expect(onSpy).not.toHaveBeenCalledWith('playlisttransition', expect.any(Function));
       });
+    });
+  });
+  describe('setLocalizationConfig', () => {
+    let languageChangedListener: jest.Mock;
+
+    beforeEach(() => {
+      UIManager['activeInstances'] = [];
+      i18n.setConfig({ language: 'en' });
+      languageChangedListener = jest.fn();
+      i18n.getConfig().events.onLanguageChanged.subscribe(languageChangedListener);
+    });
+
+    afterEach(() => {
+      i18n.getConfig().events.onLanguageChanged.unsubscribe(languageChangedListener);
+      UIManager['activeInstances'] = [];
+      i18n.setConfig({ language: 'en' });
+    });
+
+    function createUiManager(localization?: { language: string }): UIManager {
+      return new UIManager(MockHelper.getPlayerMock(), [{ ui: new UIContainer({ components: [] }) }], {
+        localization,
+      });
+    }
+
+    it('should notify a mounted UI when the language changes at runtime', () => {
+      createUiManager();
+
+      UIManager.setLocalizationConfig({ language: 'fr' });
+
+      expect(i18n.getLanguage()).toBe('fr');
+      expect(languageChangedListener).toHaveBeenCalledTimes(1);
+      expect(languageChangedListener).toHaveBeenCalledWith(i18n, { newLanguage: 'fr', oldLanguage: 'en' });
+    });
+
+    it.each([
+      ['no UI exists yet', (): void => undefined, 'fr'],
+      ['the UI has been released', (): void => createUiManager().release(), 'fr'],
+      ['the language stays the same', (): void => void createUiManager(), 'en'],
+    ])('should not notify when %s', (_, arrange, language) => {
+      arrange();
+
+      UIManager.setLocalizationConfig({ language });
+
+      expect(languageChangedListener).not.toHaveBeenCalled();
+    });
+
+    it('should apply the localization config of a new UI manager silently', () => {
+      createUiManager({ language: 'de' });
+
+      expect(i18n.getLanguage()).toBe('de');
+      expect(languageChangedListener).not.toHaveBeenCalled();
+    });
+
+    it('should notify a replacing language-changed dispatcher', () => {
+      createUiManager();
+      const replacingDispatcher = new EventDispatcher<I18n, LanguageChangedArgument>();
+      const replacingListener = jest.fn();
+      replacingDispatcher.subscribe(replacingListener);
+
+      UIManager.setLocalizationConfig({ language: 'fr', events: { onLanguageChanged: replacingDispatcher } });
+
+      expect(replacingListener).toHaveBeenCalledWith(i18n, { newLanguage: 'fr', oldLanguage: 'en' });
+    });
+
+    it('should keep updating mounted components after the dispatcher was replaced, and stop on release', () => {
+      const uiListenerCount = i18n['uiLanguageChanged']['listeners'].length;
+      const uiContainer = new UIContainer({ components: [] });
+      const onLanguageChangedSpy = jest.spyOn(uiContainer as any, 'onLanguageChanged');
+      const uiManager = new UIManager(MockHelper.getPlayerMock(), [{ ui: uiContainer }]);
+
+      UIManager.setLocalizationConfig({
+        language: 'fr',
+        events: { onLanguageChanged: new EventDispatcher<I18n, LanguageChangedArgument>() },
+      });
+      i18n.setLanguage('nl');
+      UIManager.setLocalizationConfig({ language: 'de' });
+
+      expect(onLanguageChangedSpy).toHaveBeenCalledTimes(3);
+
+      uiManager.release();
+      i18n.setLanguage('es');
+
+      expect(onLanguageChangedSpy).toHaveBeenCalledTimes(3);
+      expect(i18n['uiLanguageChanged']['listeners']).toHaveLength(uiListenerCount);
     });
   });
 });

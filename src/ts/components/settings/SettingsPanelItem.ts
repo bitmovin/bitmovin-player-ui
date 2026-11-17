@@ -133,6 +133,7 @@ export class SettingsPanelItem<Config extends SettingsPanelItemConfig> extends C
   }
 
   protected onLanguageChanged(): void {
+    super.onLanguageChanged();
     if (this.label instanceof Label && typeof this.config.label === 'function') {
       this.label.setText(this.config.label);
     }

@@ -701,6 +701,75 @@ describe('SubtitleOverlay', () => {
       expect(updateComponentsSpy).toHaveBeenCalled();
     });
   });
+
+  describe('subtitle language', () => {
+    beforeEach(() => {
+      playerMock = MockHelper.getPlayerMock() as jest.Mocked<TestingPlayerAPI>;
+      uiInstanceManagerMock = MockHelper.getUiInstanceManagerMock();
+
+      subtitleOverlay = new SubtitleOverlay();
+      jest.spyOn(subtitleOverlay, 'getDomElement').mockReturnValue(MockHelper.generateDOMMock());
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    function configureWithSubtitleTracks(tracks: Array<Record<string, unknown>>): void {
+      (playerMock as any).subtitles = { list: jest.fn().mockReturnValue(tracks) };
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+    }
+
+    it.each([
+      ['de', 'de'],
+      [' pt-BR ', 'pt-BR'],
+      ['und', ''],
+      ['UND', ''],
+      ['', ''],
+      [undefined, ''],
+    ])('should set the label language for a cue of a track with language %p to %p', (trackLang, expectedLang) => {
+      configureWithSubtitleTracks([
+        { id: 'other', lang: 'fr' },
+        { id: 'subtitleId', lang: trackLang },
+      ]);
+
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
+
+      expect(label.lang).toBe(expectedLang);
+    });
+
+    it('should mark the label language as unknown for a forced track, which the subtitle list does not contain', () => {
+      // The player lists only selectable tracks, so the language of a forced track cannot be resolved and must not
+      // fall back to the UI language.
+      configureWithSubtitleTracks([{ id: 'subtitle-de', lang: 'de' }]);
+
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent({ subtitleId: 'forced-es' }));
+
+      expect(label.lang).toBe('');
+      expect(label.getDomElement().attr).toHaveBeenCalledWith('lang', '');
+    });
+
+    it('should mark the label language as unknown when the subtitles API is not available', () => {
+      (playerMock as any).subtitles = undefined;
+      subtitleOverlay.configure(playerMock, uiInstanceManagerMock);
+
+      const label = subtitleOverlay.generateLabel(createSubtitleCueEvent());
+
+      expect(label.lang).toBe('');
+    });
+  });
+
+  describe('SubtitleLabel language', () => {
+    it.each(['de', ''])('should render the lang attribute %p when the label has a language', lang => {
+      const label = new SubtitleLabel({ text: 'Test Subtitle', lang });
+
+      expect(label.getDomElement().attr).toHaveBeenCalledWith('lang', lang);
+    });
+
+    it('should not render a lang attribute when the label has no language, so that it inherits the UI language', () => {
+      const label = new SubtitleLabel({ text: 'Test Subtitle' });
+
+      expect(label.getDomElement().attr).not.toHaveBeenCalledWith('lang', expect.anything());
+    });
+  });
 });
 
 function getMergedCssClasses(mergeConfigMock: jest.Mock): string[] {

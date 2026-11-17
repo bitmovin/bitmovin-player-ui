@@ -124,12 +124,16 @@ export class Component<Config extends ComponentConfig> {
   private static readonly CLASS_DISABLED = 'disabled';
 
   /**
-   * Stable handler reference for language change events, delegates to the overridable
-   * {@link #onLanguageChanged} method. Using a private arrow field ensures that
-   * subscribe/unsubscribe always use the same reference, even when subclasses override
+   * Stable handler reference for language change events. It localizes the accessible name again and then delegates to
+   * the overridable {@link #onLanguageChanged} method. The accessible name is refreshed here instead of in that
+   * method, so that subclasses that override it without calling super still get their name localized. Using a private
+   * arrow field ensures that subscribe/unsubscribe always use the same reference, even when subclasses override
    * {@link #onLanguageChanged}.
    */
-  private readonly languageChangedHandler = () => this.onLanguageChanged();
+  private readonly languageChangedHandler = () => {
+    this.refreshLocalizedAriaLabel();
+    this.onLanguageChanged();
+  };
 
   /**
    * Configuration object of this component.
@@ -140,6 +144,13 @@ export class Component<Config extends ComponentConfig> {
    * The component's DOM element.
    */
   private element: DOM;
+
+  /**
+   * The accessible name that is currently applied, and the text it was localized to. For a toggle button, this is the
+   * name of its current state. It is localized again when the UI language changes.
+   */
+  private appliedAriaLabel?: LocalizableText;
+  private appliedAriaLabelText?: string;
 
   /**
    * Flag that keeps track of the hidden state.
@@ -260,7 +271,7 @@ export class Component<Config extends ComponentConfig> {
     );
     this.viewMode = ViewMode.Temporary;
 
-    i18n.getConfig().events.onLanguageChanged.subscribe(this.languageChangedHandler);
+    i18n.onUiLanguageChanged.subscribe(this.languageChangedHandler);
   }
 
   /**
@@ -321,14 +332,15 @@ export class Component<Config extends ComponentConfig> {
    * Subclasses that need to release resources should override this method and call super.release().
    */
   release(): void {
-    i18n.getConfig().events.onLanguageChanged.unsubscribe(this.languageChangedHandler);
+    i18n.onUiLanguageChanged.unsubscribe(this.languageChangedHandler);
   }
 
   /**
    * Called when the UI language changes. Subclasses can override this method to update
-   * their localized content (e.g. labels, button text).
+   * their localized content (e.g. labels, button text), and should call super.onLanguageChanged().
    *
-   * The base implementation is a no-op.
+   * The accessible name is already localized again before this method is called, see
+   * {@link refreshLocalizedAriaLabel}. The base implementation is a no-op.
    */
   protected onLanguageChanged(): void {
     // Override in subclasses to react to language changes
@@ -379,8 +391,52 @@ export class Component<Config extends ComponentConfig> {
     return Boolean(this.element);
   }
 
+  /**
+   * Localizes the applied accessible name again, so that it matches the UI language. Plain strings are not localized,
+   * and a name that was changed directly on the DOM element is kept.
+   */
+  protected refreshLocalizedAriaLabel(): void {
+    if (!this.hasDomElement() || typeof this.appliedAriaLabel !== 'function') {
+      return;
+    }
+
+    if (this.getDomElement().attr('aria-label') !== this.appliedAriaLabelText) {
+      return;
+    }
+
+    this.setAriaLabel(this.appliedAriaLabel);
+  }
+
+  /**
+   * Checks whether the DOM element shows the accessible name that was applied for the given label, i.e. it was neither
+   * replaced through {@link setAriaLabel} nor changed directly on the element.
+   */
+  protected isAppliedAriaLabel(label: LocalizableText): boolean {
+    return (
+      this.hasDomElement() &&
+      this.appliedAriaLabel === label &&
+      this.getDomElement().attr('aria-label') === this.appliedAriaLabelText
+    );
+  }
+
+  /**
+   * Localizes an accessible name for the `aria-label` attribute and remembers it, so that
+   * {@link refreshLocalizedAriaLabel} can localize it again when the UI language changes. Components that set the
+   * `aria-label` attribute while creating their DOM element use it instead of {@link setAriaLabel}.
+   */
+  protected localizeAriaLabel(label: LocalizableText): string {
+    this.appliedAriaLabel = label;
+    this.appliedAriaLabelText = i18n.performLocalization(label);
+
+    return this.appliedAriaLabelText;
+  }
+
   setAriaLabel(label: LocalizableText): void {
-    this.setAriaAttr('label', i18n.performLocalization(label));
+    const text = i18n.performLocalization(label);
+    // Applied first, because it creates the DOM element on first use, which records the configured name
+    this.setAriaAttr('label', text);
+    this.appliedAriaLabel = label;
+    this.appliedAriaLabelText = text;
   }
 
   setAriaAttr(name: string, value: string) {

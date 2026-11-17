@@ -63,6 +63,8 @@ export class AdCounterLabel extends AdMessageLabel<AdCounterLabelConfig> {
   }
 
   protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
     if (this.adBreakTracker?.currentAdIndex > 0 || this.player?.ads?.isLinearAdActive?.()) {
       this.setAdCounterFromAdBreakTracker(this.adBreakTracker?.currentAdIndex, this.adBreakTracker?.totalNumberOfAds);
     }

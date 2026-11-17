@@ -1,7 +1,6 @@
 import { ComponentConfig, Component, ViewModeChangedEventArgs, ViewMode } from './Component';
 import { DOM } from '../DOM';
 import { ArrayUtils } from '../utils/ArrayUtils';
-import { i18n } from '../localization/i18n';
 
 /**
  * Configuration interface for a {@link Container}.
@@ -150,7 +149,7 @@ export class Container<Config extends ContainerConfig> extends Component<Config>
         id: this.config.id,
         class: this.getCssClasses(),
         role: this.config.role,
-        'aria-label': i18n.performLocalization(this.config.ariaLabel),
+        'aria-label': this.localizeAriaLabel(this.config.ariaLabel),
       },
       this,
     );

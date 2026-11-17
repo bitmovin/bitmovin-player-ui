@@ -6,7 +6,7 @@ import * as vocabularyNl from './languages/nl.json';
 import * as vocabularyPt from './languages/pt.json';
 
 import { LocalizationConfig } from '../UIManager';
-import { EventDispatcher } from '../EventDispatcher';
+import { Event, EventDispatcher } from '../EventDispatcher';
 
 export const defaultVocabularies: Vocabularies = {
   de: vocabularyDe,
@@ -17,6 +17,9 @@ export const defaultVocabularies: Vocabularies = {
   pt: vocabularyPt,
 };
 
+/**
+ * @category Localization
+ */
 export interface LanguageChangedArgument {
   newLanguage: string;
   oldLanguage: string;
@@ -158,6 +161,11 @@ export class I18n {
   private vocabulary: CustomVocabulary<Record<string, string>>;
   private vocabularies: Vocabularies;
   private config: LocalizationConfig;
+  /**
+   * Notifies UI components about language changes. Unlike the configurable `events.onLanguageChanged`, it is never
+   * replaced, so components always unsubscribe from the dispatcher they subscribed to.
+   */
+  private readonly uiLanguageChanged = new EventDispatcher<I18n, LanguageChangedArgument>();
 
   constructor(config: LocalizationConfig) {
     this.setConfig(config);
@@ -179,6 +187,39 @@ export class I18n {
     return this.config;
   }
 
+  /**
+   * Returns the language of the active vocabulary, e.g. `en` or `de`.
+   */
+  public getLanguage(): string {
+    return this.language;
+  }
+
+  /**
+   * Fires when the UI language changes. Unlike the `events.onLanguageChanged` dispatcher of the localization config,
+   * this event stays the same when the localization config is replaced, so a subscription made once keeps receiving
+   * language changes and can always be removed again. UI components use it to update their texts.
+   */
+  public get onUiLanguageChanged(): Event<I18n, LanguageChangedArgument> {
+    return this.uiLanguageChanged.getEvent();
+  }
+
+  /**
+   * Fires {@link onUiLanguageChanged} and the configured `events.onLanguageChanged` dispatcher if the active language
+   * differs from `oldLanguage`. {@link setLanguage} and `UIManager.setLocalizationConfig` call it, so it is only needed
+   * after changing the language through {@link setConfig}.
+   *
+   * @param oldLanguage the language that was active before the change
+   */
+  public notifyLanguageChanged(oldLanguage: string): void {
+    if (this.language === oldLanguage) {
+      return;
+    }
+
+    const args = { newLanguage: this.language, oldLanguage };
+    this.uiLanguageChanged.dispatch(this, args);
+    this.config.events?.onLanguageChanged?.dispatch(this, args);
+  }
+
   public setLanguage(language: string): void {
     const oldLanguage = this.language;
 
@@ -191,10 +232,7 @@ export class I18n {
     }
 
     this.initializeVocabulary(this.vocabularies);
-
-    if (this.language !== oldLanguage) {
-      this.config.events.onLanguageChanged.dispatch(this, { newLanguage: this.language, oldLanguage: oldLanguage });
-    }
+    this.notifyLanguageChanged(oldLanguage);
   }
 
   private static containsLanguage(vocabularies: Vocabularies, language: string) {

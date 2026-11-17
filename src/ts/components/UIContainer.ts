@@ -536,6 +536,31 @@ export class UIContainer extends Container<UIContainerConfig> {
       container.addClass(this.prefixCss('no-flexbox'));
     }
 
+    this.updateLanguageAttribute(container);
+
     return container;
+  }
+
+  protected onLanguageChanged(): void {
+    // The accessible name has already been localized, in the language that the `lang` attribute announces
+    super.onLanguageChanged();
+
+    if (this.hasDomElement()) {
+      this.updateLanguageAttribute(this.getDomElement());
+    }
+  }
+
+  /**
+   * Marks the UI with the language of the active localization so that assistive technologies pronounce the UI
+   * texts correctly.
+   */
+  private updateLanguageAttribute(element: DOM): void {
+    const language = i18n.getLanguage();
+
+    if (language) {
+      element.attr('lang', language);
+    } else {
+      element.removeAttr('lang');
+    }
   }
 }

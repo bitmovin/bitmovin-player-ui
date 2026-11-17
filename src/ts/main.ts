@@ -28,6 +28,7 @@ export {
   CustomVocabulary,
   LocalizableText,
   Localizer,
+  LanguageChangedArgument,
 } from './localization/i18n';
 // Spatial Navigation
 export { SpatialNavigation } from './spatialnavigation/SpatialNavigation';

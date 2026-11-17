@@ -112,6 +112,8 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   }
 
   protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+
     if (this.updateSkipMessageHandler && typeof this.skipOffset === 'number' && this.skipOffset >= 0) {
       this.updateSkipMessageHandler();
     }
