@@ -149,6 +149,19 @@ export class DynamicSettingsPanelItem extends InteractiveSettingsPanelItem<Dynam
       });
 
     page.configure(this.player, this.uimanager);
+    // The back button shows the title of the sub page, so its visible label also names the menu. The label is
+    // referenced instead of the button, because the accessible name of the button can differ from its visible text,
+    // e.g. when it also says that it navigates back.
+    const labelClass = this.prefixCss('label');
+    const backButtonLabel = Array.from(backButton.getDomElement().get(0).children).find(child =>
+      child.classList.contains(labelClass),
+    );
+    if (backButtonLabel) {
+      backButtonLabel.id = `${backButton.getConfig().id}-label`;
+      page.getDomElement().attr('aria-labelledby', backButtonLabel.id);
+    } else {
+      page.getDomElement().attr('aria-labelledby', backButton.getConfig().id);
+    }
 
     const setting = this.settingComponent;
     if (setting instanceof SubtitleSettingSelectBox) {

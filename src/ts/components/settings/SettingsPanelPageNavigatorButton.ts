@@ -49,6 +49,8 @@ export class SettingsPanelPageNavigatorButton extends Button<SettingsPanelPageNa
       config,
       {
         buttonStyle: ButtonStyle.Text,
+        // Navigator buttons live inside settings pages, which are menus
+        role: 'menuitem',
       },
       this.config,
     );

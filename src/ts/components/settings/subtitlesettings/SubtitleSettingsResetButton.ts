@@ -21,6 +21,8 @@ export class SubtitleSettingsResetButton extends Button<ButtonConfig> {
         cssClass: 'ui-settings-panel-navigation-text-button',
         text: i18n.getLocalizer('reset'),
         buttonStyle: ButtonStyle.Text,
+        // The button sits in the title row of the subtitle settings page, which is a menu
+        role: 'menuitem',
       },
       this.config,
     );

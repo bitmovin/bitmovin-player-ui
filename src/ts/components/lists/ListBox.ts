@@ -6,7 +6,7 @@ import { SettingsPanelPage } from '../settings/SettingsPanelPage';
 import { SettingsPanelSelectOption } from '../settings/SettingsPanelSelectOption';
 import { SettingsPanelItem } from '../settings/SettingsPanelItem';
 import { LocalizableText } from '../../localization/i18n';
-import { Label, LabelStyle } from '../labels/Label';
+import { Label, LabelConfig, LabelStyle } from '../labels/Label';
 
 export interface ListBoxConfig extends SettingsPanelConfig, ListSelectorConfig {
   /**
@@ -22,6 +22,7 @@ export interface ListBoxConfig extends SettingsPanelConfig, ListSelectorConfig {
 export class ListBox extends SettingsPanel<ListBoxConfig> {
   private readonly settingsPanelPage: SettingsPanelPage;
   private readonly listSelector: ListSelector<ListSelectorConfig>;
+  private readonly titleLabel?: Label<LabelConfig>;
 
   constructor(config: ListBoxConfig) {
     super(config);
@@ -41,10 +42,10 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
     this.addComponent(this.settingsPanelPage);
 
     if (config.title) {
-      const label = new Label({ text: config.title, cssClasses: ['title-label'] });
+      this.titleLabel = new Label({ text: config.title, cssClasses: ['title-label'] });
       this.settingsPanelPage.addComponent(
         new SettingsPanelItem({
-          label: label,
+          label: this.titleLabel,
           cssClasses: ['title-item'],
           isSetting: false,
         }),
@@ -105,6 +106,11 @@ export class ListBox extends SettingsPanel<ListBoxConfig> {
 
     this.settingsPanelPage.configure(player, uimanager);
     this.listSelector.configure(player, uimanager);
+
+    if (this.titleLabel) {
+      // The title row is not a menu item, it names the menu instead
+      this.settingsPanelPage.getDomElement().attr('aria-labelledby', this.titleLabel.getConfig().id);
+    }
 
     // `listSelector.configure()` may synchronously emit `onItemsChanged`, so only run the fallback rebuild
     // when configuration did not already trigger one.
