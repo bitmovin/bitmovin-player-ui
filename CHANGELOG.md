@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Screen readers not announcing which option is selected in the settings sub-pages (e.g. quality, speed, audio, subtitles and subtitle style) and in the TV list boxes. The options are now exposed as `menuitemradio` with `aria-checked`, which is kept in sync with the selection.
 - Untranslated vocabulary entries: the German name of the player, the German, Spanish and Portuguese names of the eco mode, and the Spanish `off` and `auto` options and subtitle font family names.
 
 ## [4.23.1] - 2026-11-05
