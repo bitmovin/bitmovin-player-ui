@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Keyboard seeking on the live seek bar calling `seek()` instead of `timeShift()` when the UI or a UI variant (e.g. the small-screen layout) was set up while a live source was already loaded.
+- Screen readers not announcing which option is selected in the settings sub-pages (e.g. quality, speed, audio, subtitles and subtitle style) and in the TV list boxes. The options are now exposed as `menuitemradio` with `aria-checked`, which is kept in sync with the selection.
+- Keyboard seeking on the live seek bar calling `seek()` instead of `timeShift()`, and the live seek bar exposing VOD-style `aria-valuenow`/`aria-valuetext`, when the seek bar was set up while a live source was already loaded. With the default UI this affected all live streams.
 
 ## [4.23.1] - 2026-11-05
 
