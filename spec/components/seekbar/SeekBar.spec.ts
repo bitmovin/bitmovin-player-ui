@@ -123,17 +123,28 @@ describe('SeekBar', () => {
       },
     );
 
-    it('should time-shift after a live source is loaded into a VOD-configured seek bar', () => {
-      mockVodSource();
-      seekbar.configure(playerMock, uiInstanceManagerMock);
+    it.each`
+      smoothPlaybackPositionUpdateIntervalMs
+      ${1}
+      ${SeekBar.SMOOTH_PLAYBACK_POSITION_UPDATE_DISABLED}
+    `(
+      'should time-shift after a live source is loaded into a VOD-configured seek bar (smoothPlaybackPositionUpdateIntervalMs=$smoothPlaybackPositionUpdateIntervalMs)',
+      ({ smoothPlaybackPositionUpdateIntervalMs }) => {
+        seekbar = new SeekBar({ smoothPlaybackPositionUpdateIntervalMs });
+        // Build the child elements before replacing the root element with the mock
+        seekbar.getDomElement();
+        jest.spyOn(seekbar, 'getDomElement').mockReturnValue(mockDomElement);
+        mockVodSource();
+        seekbar.configure(playerMock, uiInstanceManagerMock);
 
-      mockLiveSource();
-      dispatchUiUpdated();
-      pressKey(UIUtils.KeyCode.LeftArrow);
+        mockLiveSource();
+        dispatchUiUpdated();
+        pressKey(UIUtils.KeyCode.LeftArrow);
 
-      expect(timeShiftSpy).toHaveBeenCalledWith(-11);
-      expect(seekSpy).not.toHaveBeenCalled();
-    });
+        expect(timeShiftSpy).toHaveBeenCalledWith(-11);
+        expect(seekSpy).not.toHaveBeenCalled();
+      },
+    );
 
     it('should seek again after switching from a live to a VOD source', () => {
       mockLiveSource();

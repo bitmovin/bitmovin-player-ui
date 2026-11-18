@@ -57,6 +57,8 @@ interface BrowserTestWindow extends Window {
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
   __currentTime?: number;
+  /** Number of `player.seek()` calls, so tests can check that the UI time-shifts instead of seeking. */
+  __seekCount?: number;
   /** Live time-shift offset in seconds, from the stub's maximum time shift up to `0` at the live edge. */
   __timeShift?: number;
 }
@@ -195,6 +197,9 @@ export interface BrowserPlayerController {
 
   /** Current live time-shift offset (`0` is the live edge), including time shifts made through the UI. */
   timeShift(): Promise<number>;
+
+  /** Number of `player.seek()` calls, including seeks made through the UI. */
+  seekCount(): Promise<number>;
 }
 
 export interface MountedUi {
@@ -348,6 +353,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           handlers[event] = (handlers[event] || []).filter(h => h !== cb);
         },
         seek: (time: number) => {
+          browserWindow.__seekCount = (browserWindow.__seekCount || 0) + 1;
           fire(PlayerEvent.Seek, { position: browserWindow.__currentTime || 0, seekTarget: time });
           browserWindow.__currentTime = time;
           fire(PlayerEvent.TimeChanged, { time });
@@ -502,6 +508,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       timeShift: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__timeShift || 0);
+      },
+      seekCount: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__seekCount || 0);
       },
       resize: async (width: number) => {
         await page.setViewportSize({ width, height: 720 });

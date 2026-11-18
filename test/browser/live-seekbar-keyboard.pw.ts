@@ -12,7 +12,7 @@ test('live seek bar time-shifts with the keyboard when the UI is mounted while a
   await seekBar.press('ArrowLeft');
 
   await expect.poll(() => ui.player.timeShift()).toBe(-1);
-  await expect.poll(() => ui.player.currentTime(), 'a live seek bar must not seek').toBe(0);
+  await expect.poll(() => ui.player.seekCount(), 'a live seek bar must not seek').toBe(0);
   await expect(seekBar).toHaveAttribute('aria-valuetext', 'Timeshift Value: -1');
 
   await seekBar.press('End');
@@ -39,5 +39,5 @@ test('live seek bar keeps time-shifting after switching to the small-screen vari
   await seekBar.press('End');
 
   await expect.poll(() => ui.player.timeShift()).toBe(0);
-  await expect.poll(() => ui.player.currentTime(), 'a live seek bar must not seek').toBe(0);
+  await expect.poll(() => ui.player.seekCount(), 'a live seek bar must not seek').toBe(0);
 });
