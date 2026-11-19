@@ -49,6 +49,8 @@ interface BrowserTestWindow extends Window {
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
   __pausePlayback(): void;
+  __enableSubtitle(id: string): void;
+  __enabledSubtitleIds(): string[];
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
@@ -124,6 +126,8 @@ export interface MountOptions {
   hideDelay?: number;
   /** Available video qualities for scenarios that need a quality Settings row. */
   videoQualities?: { id: string; label: string }[];
+  /** Available subtitle tracks, all initially disabled, for scenarios that need the subtitle controls. */
+  subtitleTracks?: { id: string; label: string }[];
   /**
    * Source metadata the UI renders in the title bar. Without it the metadata labels stay empty and
    * occupy no space, so a scenario about title-bar layout has to supply it.
@@ -173,6 +177,12 @@ export interface BrowserPlayerController {
 
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
+
+  /** Enables a subtitle track through the player API, exclusively, the way an application would. */
+  enableSubtitle(id: string): Promise<void>;
+
+  /** Ids of the subtitle tracks the player has enabled, including changes made through the UI. */
+  enabledSubtitles(): Promise<string[]>;
 
   /** Emits the source-unloaded lifecycle event. */
   unloadSource(): Promise<void>;
@@ -225,6 +235,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     withoutShadowRoot = false,
     hideDelay = -1,
     videoQualities = [],
+    subtitleTracks = [],
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -256,7 +267,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, availableSubtitleTracks, hideDelay }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -288,6 +299,30 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       // trap is not enough: the stub has to really own every key. Take the surface from the real
       // Player prototype (no instance needed) so it tracks the player version we build against,
       // then override the handful of members that influence the browser scenarios below.
+      // Like the real player, reports enabling and disabling through SubtitleEnabled/SubtitleDisabled,
+      // which the subtitle controls use to update their selection.
+      const subtitles = availableSubtitleTracks.map(track => ({ ...track, kind: 'subtitle', enabled: false }));
+      const disableSubtitle = (id: string) => {
+        const track = subtitles.find(subtitle => subtitle.id === id);
+        if (track?.enabled) {
+          track.enabled = false;
+          fire(PlayerEvent.SubtitleDisabled, { subtitle: { ...track } });
+        }
+      };
+      const enableSubtitle = (id: string, exclusive = false) => {
+        const track = subtitles.find(subtitle => subtitle.id === id);
+        if (!track || track.enabled) {
+          return;
+        }
+        if (exclusive) {
+          subtitles.filter(subtitle => subtitle.enabled).forEach(subtitle => disableSubtitle(subtitle.id));
+        }
+        track.enabled = true;
+        fire(PlayerEvent.SubtitleEnabled, { subtitle: { ...track } });
+      };
+      browserWindow.__enableSubtitle = id => enableSubtitle(id, true);
+      browserWindow.__enabledSubtitleIds = () => subtitles.filter(subtitle => subtitle.enabled).map(({ id }) => id);
+
       const apiNames = Object.getOwnPropertyNames(browserWindow.bitmovin.player.Player.prototype).filter(
         name => name !== 'constructor',
       );
@@ -332,7 +367,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getVideoBufferLength: () => 0,
         getAudioBufferLength: () => 0,
         getThumbnail: (): null => null,
-        subtitles: { list: (): never[] => [] },
+        subtitles: {
+          list: () => subtitles.map(subtitle => ({ ...subtitle })),
+          enable: enableSubtitle,
+          disable: disableSubtitle,
+        },
         ads: {
           isLinearAdActive: () => false,
           getActiveAd: (): null => null,
@@ -417,7 +456,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
+    {
+      isLive: live,
+      uiFactory: factory,
+      uiMetadata: metadata,
+      availableVideoQualities: videoQualities,
+      availableSubtitleTracks: subtitleTracks,
+      hideDelay,
+    },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
@@ -479,6 +525,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           },
           { entered: cue, cueStartTime: start },
         );
+      },
+      enableSubtitle: async (id: string) => {
+        await page.evaluate(subtitleId => (window as unknown as BrowserTestWindow).__enableSubtitle(subtitleId), id);
+      },
+      enabledSubtitles: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__enabledSubtitleIds());
       },
       unloadSource: async () => {
         await page.evaluate(() => {

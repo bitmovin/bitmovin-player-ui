@@ -215,11 +215,14 @@ export class NavigationGroup {
 
   protected defaultActionHandler(action: Action): boolean {
     switch (action) {
-      case Action.SELECT:
-        if (this.activeComponent) {
-          toHtmlElement(this.activeComponent).click();
+      case Action.SELECT: {
+        const component = this.activeComponent;
+        if (!component) {
+          return false;
         }
-        return Boolean(this.activeComponent);
+        toHtmlElement(component).click();
+        return true;
+      }
       case Action.BACK:
         this.container.hide();
         return true;
