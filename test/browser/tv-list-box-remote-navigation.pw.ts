@@ -30,23 +30,23 @@ async function openSubtitleListBoxWithRemote(page: Page): Promise<void> {
 }
 
 /**
- * Records the keys whose `keydown` reached the page without being handled by the UI.
+ * Records the keys whose `keydown` default action was not prevented.
  *
- * Platforms such as the Android WebView activate the focused element on an unhandled Enter. Desktop
- * Chromium does not do that for list box options, so the scenario checks the key handling the
- * platforms rely on instead of the resulting click.
+ * Platforms such as the Android WebView activate the focused element on an Enter whose default
+ * action runs. Desktop Chromium does not do that for list box options, so the scenario checks the
+ * key handling the platforms rely on instead of the resulting click.
+ *
+ * The listener runs in the capture phase on `window`, before the UI's own key handling, so stopping
+ * the propagation cannot hide an event from it. `defaultPrevented` is only read once the dispatch has
+ * finished.
  */
-async function recordUnhandledKeys(page: Page): Promise<() => Promise<string[]>> {
-  await page.evaluate(() => {
-    const unhandledKeys: string[] = [];
-    (window as unknown as { unhandledKeys: string[] }).unhandledKeys = unhandledKeys;
-    window.addEventListener('keydown', event => {
-      if (!event.defaultPrevented) {
-        unhandledKeys.push(event.key);
-      }
-    });
+async function recordKeysWithDefaultAction(page: Page): Promise<() => Promise<string[]>> {
+  const keyEvents = await page.evaluateHandle(() => {
+    const events: KeyboardEvent[] = [];
+    window.addEventListener('keydown', event => events.push(event), true);
+    return events;
   });
-  return () => page.evaluate(() => (window as unknown as { unhandledKeys: string[] }).unhandledKeys);
+  return () => keyEvents.evaluate(events => events.filter(event => !event.defaultPrevented).map(event => event.key));
 }
 
 async function mountTvUiWithActiveSubtitle(page: Page): Promise<MountedUi> {
@@ -63,11 +63,13 @@ async function mountTvUiWithActiveSubtitle(page: Page): Promise<MountedUi> {
 
 test('opening the subtitle list box with OK keeps the active subtitle track', async ({ page }) => {
   const ui = await mountTvUiWithActiveSubtitle(page);
-  const unhandledKeys = await recordUnhandledKeys(page);
+  const keysWithDefaultAction = await recordKeysWithDefaultAction(page);
 
   await openSubtitleListBoxWithRemote(page);
 
-  expect(await unhandledKeys(), 'the UI must consume the keys that open the list box').toEqual([]);
+  expect(await keysWithDefaultAction(), 'the keys that open the list box must not run their default action').toEqual(
+    [],
+  );
   expect(await ui.player.enabledSubtitles(), 'opening the list box must not select an option').toEqual(['en']);
   await expect(page.getByRole('menuitemradio', { name: 'English' })).toBeChecked();
 });
