@@ -31,7 +31,7 @@ test('tells at the live edge and behind live apart by accessible name and indica
   await expect(atLiveEdge).toBeVisible();
   await expect.poll(() => indicatorShape(atLiveEdge)).toBe('dot');
 
-  await ui.player.timeShift(-30);
+  await ui.player.shiftTo(-30);
 
   await expect(behindLive).toBeVisible();
   await expect.poll(() => indicatorShape(behindLive)).toBe('ring');
@@ -65,7 +65,7 @@ test('should preserve a custom skin indicator in both live states', async ({ pag
   await expect(liveButton).toBeVisible();
   await expect.poll(() => content(liveButton)).toBe('"◆"');
 
-  await ui.player.timeShift(-30);
+  await ui.player.shiftTo(-30);
   const behindLive = page.getByRole('button', { name: 'Live, delayed, jump to live edge', exact: true });
   await expect(behindLive).toBeVisible();
   await expect.poll(() => content(behindLive)).toBe('"◆"');
@@ -89,7 +89,7 @@ for (const factory of ['default', 'smallScreen', 'tv'] as const) {
           await ui.player.tick();
           const atEdge = await labelGeometry(liveButton);
 
-          await ui.player.timeShift(-30);
+          await ui.player.shiftTo(-30);
           const behindLive = page.getByRole('button', { name: 'Live, delayed, jump to live edge', exact: true });
           await expect(behindLive).toBeVisible();
           expect(await labelGeometry(behindLive)).toEqual(atEdge);

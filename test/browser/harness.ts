@@ -50,7 +50,9 @@ interface BrowserTestWindow extends Window {
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
   __pausePlayback(): void;
-  __timeShift(offset: number): void;
+  __shiftTo(offset: number): void;
+  __enableSubtitle(id: string): void;
+  __enabledSubtitleIds(): string[];
   __ui?: UiHandle;
   /** Counts invocations of the active pause ad's `clickThroughUrlOpened`. See {@link MountedUi}. */
   __clickThroughCount?: number;
@@ -59,6 +61,10 @@ interface BrowserTestWindow extends Window {
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
   __currentTime?: number;
+  /** Number of `player.seek()` calls, so tests can check that the UI time-shifts instead of seeking. */
+  __seekCount?: number;
+  /** Live time-shift offset in seconds, from the stub's maximum time shift up to `0` at the live edge. */
+  __timeShift?: number;
 }
 
 const DIST = path.resolve(__dirname, '../../dist');
@@ -122,6 +128,8 @@ export interface MountOptions {
   hideDelay?: number;
   /** Available video qualities for scenarios that need a quality Settings row. */
   videoQualities?: { id: string; label: string }[];
+  /** Available subtitle tracks, all initially disabled, for scenarios that need the subtitle controls. */
+  subtitleTracks?: { id: string; label: string }[];
   /**
    * Source metadata the UI renders in the title bar. Without it the metadata labels stay empty and
    * occupy no space, so a scenario about title-bar layout has to supply it.
@@ -169,14 +177,14 @@ export interface BrowserPlayerController {
    */
   startLinearAd(): Promise<void>;
 
-  /**
-   * Shifts live playback to `offset` seconds relative to the live edge (0 is the live edge, negative is behind it),
-   * emitting the timeshift events the player emits. The UI's own `player.timeShift()` calls behave the same way.
-   */
-  timeShift(offset: number): Promise<void>;
-
   /** Emits a subtitle cue the way the player does while a subtitle track is active. */
   enterCue(cue: SubtitleCue): Promise<void>;
+
+  /** Enables a subtitle track through the player API, exclusively, the way an application would. */
+  enableSubtitle(id: string): Promise<void>;
+
+  /** Ids of the subtitle tracks the player has enabled, including changes made through the UI. */
+  enabledSubtitles(): Promise<string[]>;
 
   /** Emits the source-unloaded lifecycle event. */
   unloadSource(): Promise<void>;
@@ -198,6 +206,15 @@ export interface BrowserPlayerController {
 
   /** Current playback position, including seeks made through the UI. */
   currentTime(): Promise<number>;
+
+  /** Current live time-shift offset (`0` is the live edge), including time shifts made through the UI. */
+  timeShift(): Promise<number>;
+
+  /** Changes the live offset through the stub player, including its time-shift events. */
+  shiftTo(offset: number): Promise<void>;
+
+  /** Number of `player.seek()` calls, including seeks made through the UI. */
+  seekCount(): Promise<number>;
 }
 
 export interface MountedUi {
@@ -226,6 +243,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     withoutShadowRoot = false,
     hideDelay = -1,
     videoQualities = [],
+    subtitleTracks = [],
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -257,7 +275,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, hideDelay }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, availableSubtitleTracks, hideDelay }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -280,7 +298,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
       let playing = true;
       let sourceLoaded = true;
-      let timeShiftOffset = 0;
+      const maxTimeShift = isLive ? -100 : 0;
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
       };
@@ -289,6 +307,30 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       // trap is not enough: the stub has to really own every key. Take the surface from the real
       // Player prototype (no instance needed) so it tracks the player version we build against,
       // then override the handful of members that influence the browser scenarios below.
+      // Like the real player, reports enabling and disabling through SubtitleEnabled/SubtitleDisabled,
+      // which the subtitle controls use to update their selection.
+      const subtitles = availableSubtitleTracks.map(track => ({ ...track, kind: 'subtitle', enabled: false }));
+      const disableSubtitle = (id: string) => {
+        const track = subtitles.find(subtitle => subtitle.id === id);
+        if (track?.enabled) {
+          track.enabled = false;
+          fire(PlayerEvent.SubtitleDisabled, { subtitle: { ...track } });
+        }
+      };
+      const enableSubtitle = (id: string, exclusive = false) => {
+        const track = subtitles.find(subtitle => subtitle.id === id);
+        if (!track || track.enabled) {
+          return;
+        }
+        if (exclusive) {
+          subtitles.filter(subtitle => subtitle.enabled).forEach(subtitle => disableSubtitle(subtitle.id));
+        }
+        track.enabled = true;
+        fire(PlayerEvent.SubtitleEnabled, { subtitle: { ...track } });
+      };
+      browserWindow.__enableSubtitle = id => enableSubtitle(id, true);
+      browserWindow.__enabledSubtitleIds = () => subtitles.filter(subtitle => subtitle.enabled).map(({ id }) => id);
+
       const apiNames = Object.getOwnPropertyNames(browserWindow.bitmovin.player.Player.prototype).filter(
         name => name !== 'constructor',
       );
@@ -308,8 +350,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         isLive: () => isLive,
         getDuration: () => (isLive ? Infinity : 600),
         getCurrentTime: () => browserWindow.__currentTime || 0,
-        getTimeShift: () => timeShiftOffset,
-        getMaxTimeShift: () => (isLive ? -100 : 0),
+        getTimeShift: () => browserWindow.__timeShift || 0,
+        getMaxTimeShift: () => maxTimeShift,
         getSeekableRange: () => ({ start: 0, end: isLive ? 100 : 600 }),
         getVolume: () => 100,
         isMuted: () => false,
@@ -333,7 +375,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getVideoBufferLength: () => 0,
         getAudioBufferLength: () => 0,
         getThumbnail: (): null => null,
-        subtitles: { list: (): never[] => [] },
+        subtitles: {
+          list: () => subtitles.map(subtitle => ({ ...subtitle })),
+          enable: enableSubtitle,
+          disable: disableSubtitle,
+        },
         ads: {
           isLinearAdActive: () => false,
           getActiveAd: (): null => null,
@@ -354,15 +400,25 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           handlers[event] = (handlers[event] || []).filter(h => h !== cb);
         },
         seek: (time: number) => {
+          browserWindow.__seekCount = (browserWindow.__seekCount || 0) + 1;
           fire(PlayerEvent.Seek, { position: browserWindow.__currentTime || 0, seekTarget: time });
           browserWindow.__currentTime = time;
           fire(PlayerEvent.TimeChanged, { time });
           fire(PlayerEvent.Seeked);
           return true;
         },
-        timeShift: (offset: number) => {
-          fire(PlayerEvent.TimeShift, { position: timeShiftOffset, target: offset });
-          timeShiftOffset = offset;
+        // Like the real player, clamps the offset into the time-shift window and reports the shift
+        // through TimeShift/TimeShifted, which the seek bar uses to leave its seeking state.
+        timeShift: (offset: number, issuer = 'api') => {
+          const currentTime = browserWindow.__currentTime || 0;
+          const previousOffset = browserWindow.__timeShift || 0;
+          const targetOffset = Math.min(0, Math.max(maxTimeShift, offset));
+          fire(PlayerEvent.TimeShift, {
+            position: currentTime,
+            target: currentTime + targetOffset - previousOffset,
+            issuer,
+          });
+          browserWindow.__timeShift = targetOffset;
           fire(PlayerEvent.TimeShifted);
         },
         play: (issuer = 'api') => {
@@ -380,7 +436,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         setVolume: (): void => undefined,
         setAudio: (): void => undefined,
       };
-      browserWindow.__timeShift = offset => player.timeShift(offset);
+      browserWindow.__shiftTo = offset => player.timeShift(offset);
       browserWindow.__pausePlayback = () => {
         if (playing) {
           player.pause();
@@ -409,7 +465,14 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         }
       }
     },
-    { isLive: live, uiFactory: factory, uiMetadata: metadata, availableVideoQualities: videoQualities, hideDelay },
+    {
+      isLive: live,
+      uiFactory: factory,
+      uiMetadata: metadata,
+      availableVideoQualities: videoQualities,
+      availableSubtitleTracks: subtitleTracks,
+      hideDelay,
+    },
   );
 
   await expect(page.locator('.bmpui-ui-uicontainer'), 'exactly one UI variant should be mounted').toHaveCount(1);
@@ -459,11 +522,6 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           });
         });
       },
-      timeShift: async (offset: number) => {
-        await page.evaluate(timeShiftOffset => {
-          (window as unknown as BrowserTestWindow).__timeShift(timeShiftOffset);
-        }, offset);
-      },
       enterCue: async (cue: SubtitleCue) => {
         // The overlay identifies a cue by its start time and text, so consecutive cues need
         // distinct start times to be shown side by side instead of replacing one another.
@@ -481,6 +539,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           },
           { entered: cue, cueStartTime: start },
         );
+      },
+      enableSubtitle: async (id: string) => {
+        await page.evaluate(subtitleId => (window as unknown as BrowserTestWindow).__enableSubtitle(subtitleId), id);
+      },
+      enabledSubtitles: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__enabledSubtitleIds());
       },
       unloadSource: async () => {
         await page.evaluate(() => {
@@ -507,6 +571,15 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       currentTime: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__currentTime || 0);
+      },
+      shiftTo: async offset => {
+        await page.evaluate(value => (window as unknown as BrowserTestWindow).__shiftTo(value), offset);
+      },
+      timeShift: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__timeShift || 0);
+      },
+      seekCount: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__seekCount || 0);
       },
       resize: async (width: number) => {
         await page.setViewportSize({ width, height: 720 });
