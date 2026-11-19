@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Opening the subtitle or audio track list box in the TV UI with the remote's OK key also selecting the list box's first option, e.g. disabling the active subtitle track. Since 4.10.3.
+- The remote's OK key in the subtitle and audio track list boxes of the TV UI not selecting the option that is focused when the list box opens, and the first D-pad press not moving the focus.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed
