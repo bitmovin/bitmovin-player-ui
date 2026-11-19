@@ -35,6 +35,18 @@ describe('PlaybackTimeLabel styles', () => {
     );
   });
 
+  // The live edge state must not be conveyed by color alone (WCAG 1.4.1).
+  it('should use a hollow ring behind the live edge and a filled dot at the live edge', () => {
+    const liveSelector = '.bmpui-ui-playbacktimelabel.bmpui-ui-playbacktimelabel-live';
+
+    expect(getCssProperty(`${liveSelector}::before`, 'content')).toBe('""');
+    expect(getCssProperty(`${liveSelector}::before`, 'background-color')).toBe('transparent');
+    expect(getCssProperty(`${liveSelector}::before`, 'border')).toBe('0.1em solid currentColor');
+    expect(getCssProperty(`${liveSelector}.bmpui-ui-playbacktimelabel-live-edge::before`, 'background-color')).toBe(
+      'currentColor',
+    );
+  });
+
   // Without this the label gets wider on every time update and pushes the seek bar out of the
   // control bar. We set it ourselves so it does not depend on the page having a CSS reset.
   it('sizes the playback time label as a border box', () => {

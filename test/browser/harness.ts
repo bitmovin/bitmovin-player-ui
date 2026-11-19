@@ -39,6 +39,7 @@ interface BrowserTestWindow extends Window {
       PlayerEvent: Record<string, string>;
     };
     playerui: {
+      i18n: { setLanguage(language: string): void };
       UIFactory: {
         buildUI(player: object, config: object): UiHandle;
         buildSmallScreenUI(player: object, config: object): UiHandle;
@@ -49,6 +50,7 @@ interface BrowserTestWindow extends Window {
   __fire(event: string, data?: object): void;
   __setSourceLoaded(sourceLoaded: boolean): void;
   __pausePlayback(): void;
+  __shiftTo(offset: number): void;
   __enableSubtitle(id: string): void;
   __enabledSubtitleIds(): string[];
   __ui?: UiHandle;
@@ -208,12 +210,18 @@ export interface BrowserPlayerController {
   /** Current live time-shift offset (`0` is the live edge), including time shifts made through the UI. */
   timeShift(): Promise<number>;
 
+  /** Changes the live offset through the stub player, including its time-shift events. */
+  shiftTo(offset: number): Promise<void>;
+
   /** Number of `player.seek()` calls, including seeks made through the UI. */
   seekCount(): Promise<number>;
 }
 
 export interface MountedUi {
   player: BrowserPlayerController;
+
+  /** Changes the UI language through the public localization API. */
+  setLanguage(language: string): Promise<void>;
 
   /** Applies subtitle settings through the manager the settings panel writes to. */
   applySubtitleSettings(settings: SubtitleSettings): Promise<void>;
@@ -428,6 +436,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         setVolume: (): void => undefined,
         setAudio: (): void => undefined,
       };
+      browserWindow.__shiftTo = offset => player.timeShift(offset);
       browserWindow.__pausePlayback = () => {
         if (playing) {
           player.pause();
@@ -471,6 +480,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   let cueStart = 0;
 
   return {
+    setLanguage: async language => {
+      await page.evaluate(value => {
+        (window as unknown as BrowserTestWindow).bitmovin.playerui.i18n.setLanguage(value);
+      }, language);
+    },
     player: {
       startPauseAd: async ({ clickThroughUrl }: PauseAdOptions = {}) => {
         await page.evaluate(url => {
@@ -557,6 +571,9 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       currentTime: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__currentTime || 0);
+      },
+      shiftTo: async offset => {
+        await page.evaluate(value => (window as unknown as BrowserTestWindow).__shiftTo(value), offset);
       },
       timeShift: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__timeShift || 0);
