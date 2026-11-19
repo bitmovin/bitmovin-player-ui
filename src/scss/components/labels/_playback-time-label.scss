@@ -15,18 +15,24 @@
     cursor: pointer;
     padding: calc($icon-size * 0.25);
 
-    // Behind the live edge the indicator is a hollow ring, at the live edge a filled dot. The shape, not only the
-    // color, tells the two states apart.
+    // Keep the ring and dot the same size independently of the font and the host page's box-sizing reset.
     &::before {
+      background-color: transparent;
+      border: 0.1em solid currentColor;
+      border-radius: 50%;
+      box-sizing: border-box;
       color: $color-secondary;
-      content: '○';
-      padding-right: 0.2em;
+      content: '';
+      flex: none;
+      width: 0.6em;
+      height: 0.6em;
+      margin-right: 0.2em;
     }
 
     &.#{$prefix}-ui-playbacktimelabel-live-edge {
       &::before {
+        background-color: currentColor;
         color: $color-red;
-        content: '●';
       }
     }
   }

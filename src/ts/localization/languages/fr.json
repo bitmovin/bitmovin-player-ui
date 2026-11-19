@@ -73,7 +73,7 @@
   "default": "défaut",
   "live": "En direct",
   "live.atLiveEdge": "{liveLabel}, sans décalage",
-  "live.jumpToLiveEdge": "{liveLabel}, en différé, aller au direct",
+  "live.jumpToLiveEdge": "{liveLabel}, avec décalage, aller au direct",
   "subtitle.example": "exemple de sous-titre",
   "subtitle.select": "Sélectionner un sous-titre",
   "playingOn": "Lecture sur <strong>{castDeviceName}</strong>",

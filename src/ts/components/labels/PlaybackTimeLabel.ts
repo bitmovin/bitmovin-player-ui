@@ -128,6 +128,8 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       if (isLiveInteractionEnabled) {
         updateLiveAriaLabel();
       }
+      // Translations can grow or shrink; discard the size measured for the previous language.
+      init();
     };
 
     const updateLiveState = () => {
@@ -138,12 +140,12 @@ export class PlaybackTimeLabel extends Label<PlaybackTimeLabelConfig> {
       if (live) {
         this.getDomElement().addClass(liveCssClass);
         this.setText(i18n.getLocalizer('live'));
+        updateLiveTimeshiftState();
         if (config.hideInLivePlayback) {
           this.hide();
         } else {
           enableLiveInteraction();
         }
-        updateLiveTimeshiftState();
       } else {
         this.getDomElement().removeClass(liveCssClass);
         this.getDomElement().removeClass(liveEdgeCssClass);

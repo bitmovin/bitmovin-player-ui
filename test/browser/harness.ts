@@ -39,6 +39,7 @@ interface BrowserTestWindow extends Window {
       PlayerEvent: Record<string, string>;
     };
     playerui: {
+      i18n: { setLanguage(language: string): void };
       UIFactory: {
         buildUI(player: object, config: object): UiHandle;
         buildSmallScreenUI(player: object, config: object): UiHandle;
@@ -201,6 +202,9 @@ export interface BrowserPlayerController {
 
 export interface MountedUi {
   player: BrowserPlayerController;
+
+  /** Changes the UI language through the public localization API. */
+  setLanguage(language: string): Promise<void>;
 
   /** Applies subtitle settings through the manager the settings panel writes to. */
   applySubtitleSettings(settings: SubtitleSettings): Promise<void>;
@@ -413,6 +417,11 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   let cueStart = 0;
 
   return {
+    setLanguage: async language => {
+      await page.evaluate(value => {
+        (window as unknown as BrowserTestWindow).bitmovin.playerui.i18n.setLanguage(value);
+      }, language);
+    },
     player: {
       startPauseAd: async ({ clickThroughUrl }: PauseAdOptions = {}) => {
         await page.evaluate(url => {

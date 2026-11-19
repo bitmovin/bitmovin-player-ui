@@ -11,9 +11,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - `live.atLiveEdge` localization key for the accessible name of the LIVE indicator while playback is at the live edge.
 
+### Changed
+
+- The LIVE indicator now uses a CSS circle: hollow behind the live edge and filled at the edge. Its size stays the same in both states, independently of the font.
+- The default `live.jumpToLiveEdge` text now reads "Live, delayed, jump to live edge". Custom vocabularies should also provide the new `live.atLiveEdge` key to keep both accessible names fully localized.
+
 ### Fixed
 
-- The LIVE indicator showing whether playback is at the live edge only by the color of its dot. Behind the live edge the dot is now a hollow ring, and its accessible name tells screen reader users whether playback is at the live edge or behind it. The default `live.jumpToLiveEdge` text now reads "Live, behind live, jump to live edge". The LIVE text and its accessible name now also follow changes of the UI language.
+- The LIVE indicator conveying its state only by color. Its accessible name now distinguishes playback at the live edge from delayed playback.
+- The LIVE text and its accessible name not following UI language changes. The label is resized immediately when its translation changes.
 
 ## [4.23.1] - 2026-11-05
 

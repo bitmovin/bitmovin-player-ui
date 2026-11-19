@@ -39,8 +39,12 @@ describe('PlaybackTimeLabel styles', () => {
   it('should use a hollow ring behind the live edge and a filled dot at the live edge', () => {
     const liveSelector = '.bmpui-ui-playbacktimelabel.bmpui-ui-playbacktimelabel-live';
 
-    expect(getCssProperty(`${liveSelector}::before`, 'content')).toBe('"○"');
-    expect(getCssProperty(`${liveSelector}.bmpui-ui-playbacktimelabel-live-edge::before`, 'content')).toBe('"●"');
+    expect(getCssProperty(`${liveSelector}::before`, 'content')).toBe('""');
+    expect(getCssProperty(`${liveSelector}::before`, 'background-color')).toBe('transparent');
+    expect(getCssProperty(`${liveSelector}::before`, 'border')).toBe('0.1em solid currentColor');
+    expect(getCssProperty(`${liveSelector}.bmpui-ui-playbacktimelabel-live-edge::before`, 'background-color')).toBe(
+      'currentColor',
+    );
   });
 
   // Without this the label gets wider on every time update and pushes the seek bar out of the

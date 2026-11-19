@@ -45,6 +45,7 @@ describe('PlaybackTimeLabel', () => {
         expect(mockDomElement.attr).toHaveBeenCalledWith('tabindex', '0');
         expect(mockDomElement.attr).toHaveBeenCalledWith('role', 'button');
         expect(mockDomElement.attr).toHaveBeenCalledWith('aria-label', 'Live, at live edge');
+        expect(mockDomElement.attr).not.toHaveBeenCalledWith('aria-label', 'Live, delayed, jump to live edge');
       });
 
       it.each(['Enter', ' '])('jumps to the live edge when pressing %p', key => {
@@ -145,7 +146,7 @@ describe('PlaybackTimeLabel', () => {
 
     describe('live edge state', () => {
       const atLiveEdgeLabel = 'Live, at live edge';
-      const behindLiveEdgeLabel = 'Live, behind live, jump to live edge';
+      const behindLiveEdgeLabel = 'Live, delayed, jump to live edge';
 
       let attributes: Map<string, string>;
       let cssClasses: Set<string>;
@@ -238,7 +239,7 @@ describe('PlaybackTimeLabel', () => {
           {
             language: 'fr',
             atLiveEdgeName: 'En direct, sans décalage',
-            behindLiveName: 'En direct, en différé, aller au direct',
+            behindLiveName: 'En direct, avec décalage, aller au direct',
           },
         ])(
           'should keep the visible live label in the accessible name in $language',
