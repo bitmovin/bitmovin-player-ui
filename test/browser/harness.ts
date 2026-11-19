@@ -57,6 +57,10 @@ interface BrowserTestWindow extends Window {
   /** Id of the pause ad the stub considers active, so `player.ads.skip()` can end that ad. */
   __activePauseAdId?: string;
   __currentTime?: number;
+  /** Number of `player.seek()` calls, so tests can check that the UI time-shifts instead of seeking. */
+  __seekCount?: number;
+  /** Live time-shift offset in seconds, from the stub's maximum time shift up to `0` at the live edge. */
+  __timeShift?: number;
 }
 
 const DIST = path.resolve(__dirname, '../../dist');
@@ -190,6 +194,12 @@ export interface BrowserPlayerController {
 
   /** Current playback position, including seeks made through the UI. */
   currentTime(): Promise<number>;
+
+  /** Current live time-shift offset (`0` is the live edge), including time shifts made through the UI. */
+  timeShift(): Promise<number>;
+
+  /** Number of `player.seek()` calls, including seeks made through the UI. */
+  seekCount(): Promise<number>;
 }
 
 export interface MountedUi {
@@ -269,6 +279,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
 
       let playing = true;
       let sourceLoaded = true;
+      const maxTimeShift = isLive ? -100 : 0;
       browserWindow.__setSourceLoaded = loaded => {
         sourceLoaded = loaded;
       };
@@ -296,8 +307,8 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         isLive: () => isLive,
         getDuration: () => (isLive ? Infinity : 600),
         getCurrentTime: () => browserWindow.__currentTime || 0,
-        getTimeShift: () => 0,
-        getMaxTimeShift: () => (isLive ? -100 : 0),
+        getTimeShift: () => browserWindow.__timeShift || 0,
+        getMaxTimeShift: () => maxTimeShift,
         getSeekableRange: () => ({ start: 0, end: isLive ? 100 : 600 }),
         getVolume: () => 100,
         isMuted: () => false,
@@ -342,13 +353,27 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
           handlers[event] = (handlers[event] || []).filter(h => h !== cb);
         },
         seek: (time: number) => {
+          browserWindow.__seekCount = (browserWindow.__seekCount || 0) + 1;
           fire(PlayerEvent.Seek, { position: browserWindow.__currentTime || 0, seekTarget: time });
           browserWindow.__currentTime = time;
           fire(PlayerEvent.TimeChanged, { time });
           fire(PlayerEvent.Seeked);
           return true;
         },
-        timeShift: (): void => undefined,
+        // Like the real player, clamps the offset into the time-shift window and reports the shift
+        // through TimeShift/TimeShifted, which the seek bar uses to leave its seeking state.
+        timeShift: (offset: number, issuer = 'api') => {
+          const currentTime = browserWindow.__currentTime || 0;
+          const previousOffset = browserWindow.__timeShift || 0;
+          const targetOffset = Math.min(0, Math.max(maxTimeShift, offset));
+          fire(PlayerEvent.TimeShift, {
+            position: currentTime,
+            target: currentTime + targetOffset - previousOffset,
+            issuer,
+          });
+          browserWindow.__timeShift = targetOffset;
+          fire(PlayerEvent.TimeShifted);
+        },
         play: (issuer = 'api') => {
           playing = true;
           fire(PlayerEvent.Play, { time: 0, issuer });
@@ -480,6 +505,12 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       },
       currentTime: async () => {
         return page.evaluate(() => (window as unknown as BrowserTestWindow).__currentTime || 0);
+      },
+      timeShift: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__timeShift || 0);
+      },
+      seekCount: async () => {
+        return page.evaluate(() => (window as unknown as BrowserTestWindow).__seekCount || 0);
       },
       resize: async (width: number) => {
         await page.setViewportSize({ width, height: 720 });
