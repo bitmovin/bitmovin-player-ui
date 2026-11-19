@@ -495,11 +495,11 @@ export class SeekBar extends Component<SeekBarConfig> {
     const liveStreamDetector = new PlayerUtils.LiveStreamDetector(player, uimanager);
     liveStreamDetector.onLiveChanged.subscribe((sender, args: LiveStreamDetectorEventArgs) => {
       isLive = args.live;
+      // The initial detection runs before the smooth updater exists, so the seek bar type must not depend on it.
+      // Otherwise a UI configured while a live source is loaded keeps the VOD type and keyboard seeking calls seek().
+      this.seekBarType = isLive ? SeekBarType.Live : SeekBarType.Vod;
       if (isLive && this.smoothPlaybackPositionUpdater != null) {
         this.smoothPlaybackPositionUpdater.clear();
-        this.seekBarType = SeekBarType.Live;
-      } else {
-        this.seekBarType = SeekBarType.Vod;
       }
       switchVisibility(isLive, hasTimeShift);
     });
