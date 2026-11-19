@@ -52,7 +52,7 @@ export class RecommendationOverlay extends Container<ContainerConfig> {
       clearRecommendations();
 
       const recommendations = uimanager.getConfig().metadata.recommendations;
-      if (recommendations.length == 0) {
+      if (recommendations.length === 0) {
         return;
       }
 
