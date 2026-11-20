@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Seek bar thumbnail preview getting stuck away from the cursor (e.g. in the middle of the timeline) after the player moved without resizing, for example when a centered player's window is enlarged beyond the player's maximum width.
+- Seek bar thumbnail preview getting stuck away from the cursor after the player moved on the page without changing size, e.g. a centered player with a maximum width when the window is enlarged.
 
 ## [4.24.0] - 2026-11-19
 

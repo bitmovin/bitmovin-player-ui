@@ -1124,8 +1124,8 @@ export class SeekBar extends Component<SeekBarConfig> {
 
   private updateLabelPosition = (pixelPosition: number) => {
     // Read the bounds on every update instead of caching them: the rect is viewport-relative, so it goes stale when
-    // the player moves without resizing (e.g. a centered player when the window grows, or page scrolling), which
-    // does not trigger a PlayerResized event.
+    // the player moves horizontally without resizing (e.g. a centered player when the window grows, horizontal
+    // scrolling or layout shifts), which does not trigger a PlayerResized event.
     const uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
     this.label.setPositionInBounds(pixelPosition, uiBoundingRect);
   };
