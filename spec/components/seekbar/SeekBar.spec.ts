@@ -1,5 +1,6 @@
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
 import { SeekBar } from '../../../src/ts/components/seekbar/SeekBar';
+import { SeekBarLabel } from '../../../src/ts/components/seekbar/SeekBarLabel';
 import { UIInstanceManager } from '../../../src/ts/UIManager';
 import { Timeout } from '../../../src/ts/utils/Timeout';
 import { DOM } from '../../../src/ts/DOM';
@@ -319,6 +320,30 @@ describe('SeekBar', () => {
 
       expect(setBufferPositionSpy).toHaveBeenCalledTimes(1);
       expect(setBufferPositionSpy).toHaveBeenCalledWith(isLive ? 100 : 25);
+    });
+  });
+
+  describe('label positioning', () => {
+    it('clamps the label to the current UI bounds after the player moved without resizing', () => {
+      jest.spyOn(playerMock, 'getDuration').mockReturnValue(20);
+
+      let uiBounds = { left: 50, right: 1150 } as DOMRect;
+      const uiElement = { getBoundingClientRect: () => uiBounds };
+      (uiInstanceManagerMock.getUI() as any).getDomElement = () => ({ get: () => uiElement });
+
+      const label = new SeekBarLabel();
+      const setPositionInBoundsSpy = jest.spyOn(label, 'setPositionInBounds').mockImplementation(() => {});
+      seekbar = new SeekBar({ label });
+      seekbar.configure(playerMock, uiInstanceManagerMock);
+
+      (seekbar as any).onSeekPreviewEvent(0.9, 990, false);
+      expect(setPositionInBoundsSpy).toHaveBeenLastCalledWith(990, uiBounds);
+
+      // A centered player only moves when the window grows past its max width, which fires no PlayerResized event
+      uiBounds = { left: 400, right: 1500 } as DOMRect;
+      (seekbar as any).onSeekPreviewEvent(0.9, 990, false);
+
+      expect(setPositionInBoundsSpy).toHaveBeenLastCalledWith(990, uiBounds);
     });
   });
 });

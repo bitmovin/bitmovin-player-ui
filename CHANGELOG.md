@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Seek bar thumbnail preview getting stuck away from the cursor after the player moved on the page without changing size, e.g. a centered player with a maximum width when the window is enlarged.
+
 ## [4.24.0] - 2026-11-19
 
 ### Added
