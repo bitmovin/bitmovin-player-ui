@@ -124,8 +124,6 @@ export class SeekBar extends Component<SeekBarConfig> {
   private seekBarMarkersContainer: DOM;
   private timelineMarkersHandler: TimelineMarkersHandler;
 
-  private uiBoundingRect: DOMRect;
-
   private player: PlayerAPI;
   private uiManager: UIInstanceManager;
 
@@ -516,7 +514,6 @@ export class SeekBar extends Component<SeekBarConfig> {
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       this.refreshPlaybackPosition();
-      this.uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
@@ -1126,11 +1123,11 @@ export class SeekBar extends Component<SeekBarConfig> {
   }
 
   private updateLabelPosition = (pixelPosition: number) => {
-    if (!this.uiBoundingRect) {
-      this.uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
-    }
-
-    this.label.setPositionInBounds(pixelPosition, this.uiBoundingRect);
+    // Read the bounds on every update instead of caching them: the rect is viewport-relative, so it goes stale when
+    // the player moves without resizing (e.g. a centered player when the window grows, or page scrolling), which
+    // does not trigger a PlayerResized event.
+    const uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
+    this.label.setPositionInBounds(pixelPosition, uiBoundingRect);
   };
 
   private clearAllThickenedMarkers(): void {
