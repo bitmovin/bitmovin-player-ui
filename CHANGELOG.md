@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Missing or misleading accessible names for screen reader and speech input users: the ad click-through overlay is now named and, while the ad has no click-through URL, gives up the focus and is removed from the tab order, TV navigation and the accessibility tree, the TV subtitle and audio track list buttons are no longer announced as "Settings", the subtitle "Options" button and the back buttons of settings sub-pages are named after their visible label, the Eco Mode toggle and the watermark have descriptive localized names, the buffering indicator dots are hidden from assistive technologies, and image subtitles use the cue text as text alternative, or a generic "Subtitle image" when the source provides none (a text equivalent of the dialogue has to come from the source).
 
+## [4.24.0] - 2026-11-19
+
+### Added
+
+- `live.atLiveEdge` localization key for the accessible name of the LIVE indicator while playback is at the live edge.
+
+### Changed
+
+- The LIVE indicator now uses a CSS circle: hollow behind the live edge and filled at the edge. Its size stays the same in both states, independently of the font.
+- The default `live.jumpToLiveEdge` text now reads "Live, delayed, jump to live edge". Custom vocabularies should also provide the new `live.atLiveEdge` key to keep both accessible names fully localized.
+
+### Fixed
+
+- Screen readers not announcing which option is selected in the settings sub-pages (e.g. quality, speed, audio, subtitles and subtitle style) and in the TV list boxes. The options are now exposed as `menuitemradio` with `aria-checked`, which is kept in sync with the selection.
+- Keyboard seeking on the live seek bar calling `seek()` instead of `timeShift()`, and the live seek bar exposing VOD-style `aria-valuenow`/`aria-valuetext`, when the seek bar was set up while a live source was already loaded. With the default UI this affected all live streams.
+- Since 4.10.3, pressing OK to open the subtitle or audio track list on a TV could also select the first option. In the subtitle list, that could turn subtitles off.
+- Once either list is open, the first D-pad arrow press now moves focus, and OK selects the highlighted option.
+- The LIVE indicator conveying its state only by color. Its accessible name now distinguishes playback at the live edge from delayed playback.
+- The LIVE text and its accessible name not following UI language changes. The label is resized immediately when its translation changes.
+
 ## [4.23.1] - 2026-11-05
 
 ### Fixed

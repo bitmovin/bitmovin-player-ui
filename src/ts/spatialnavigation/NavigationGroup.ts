@@ -258,17 +258,21 @@ export class NavigationGroup {
 
   protected defaultActionHandler(action: Action): boolean {
     switch (action) {
-      case Action.SELECT:
-        if (this.activeComponent && !isFocusable(this.activeComponent)) {
+      case Action.SELECT: {
+        // Captured before the click: opening a list box disables this group, which clears the active component.
+        const component = this.activeComponent;
+        if (!component) {
+          return false;
+        }
+        if (!isFocusable(component)) {
           // Never activate a component that became unavailable while focused. Move the focus to one the viewer can
           // see and act on instead; activating that one is left to the next SELECT.
           this.focusFirstComponent();
           return true;
         }
-        if (this.activeComponent) {
-          toHtmlElement(this.activeComponent).click();
-        }
-        return Boolean(this.activeComponent);
+        toHtmlElement(component).click();
+        return true;
+      }
       case Action.BACK:
         this.container.hide();
         return true;

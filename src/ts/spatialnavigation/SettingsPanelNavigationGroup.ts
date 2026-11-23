@@ -3,6 +3,7 @@ import { Action, Focusable } from './types';
 import { SettingsPanel, SettingsPanelConfig } from '../components/settings/SettingsPanel';
 import { resolveAllComponents } from './helper/resolveAllComponents';
 import { InteractiveSettingsPanelItem } from '../components/settings/InteractiveSettingsPanelItem';
+import { isFocusable } from './TypeGuards';
 
 export class SettingsPanelNavigationGroupConfig {
   /**
@@ -58,6 +59,8 @@ export class SettingsPanelNavigationGroup extends NavigationGroup {
     pageComponents.forEach(component => {
       if (component instanceof InteractiveSettingsPanelItem) {
         componentsToConsider.push(component);
+      } else if (!component.getConfig().isSetting) {
+        componentsToConsider.push(...resolveAllComponents(component).filter(child => isFocusable(child)));
       } else {
         componentsToConsider.push(...resolveAllComponents(component));
       }
