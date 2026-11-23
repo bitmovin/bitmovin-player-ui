@@ -124,6 +124,8 @@ export class SeekBar extends Component<SeekBarConfig> {
   private seekBarMarkersContainer: DOM;
   private timelineMarkersHandler: TimelineMarkersHandler;
 
+  private uiBoundingRect: DOMRect | undefined;
+
   private player: PlayerAPI;
   private uiManager: UIInstanceManager;
 
@@ -476,6 +478,9 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.hasLabel()) {
       // Configure a seekbar label that is internal to the seekbar)
       this.getLabel().configure(player, uimanager);
+      // The cached UI bounds are viewport-relative, so they also go stale when the player moves without resizing
+      // (e.g. a centered player with a max width when the window grows), which does not fire PlayerResized.
+      window.addEventListener('resize', this.invalidateUiBoundingRect);
     }
 
     // Hide seekbar for live sources without timeshift
@@ -514,6 +519,7 @@ export class SeekBar extends Component<SeekBarConfig> {
     // is positioned absolutely and must therefore be updated when the size of the seekbar changes.
     player.on(player.exports.PlayerEvent.PlayerResized, () => {
       this.refreshPlaybackPosition();
+      this.invalidateUiBoundingRect();
     });
     // Additionally, when this code is called, the seekbar is not part of the UI yet and therefore does not have a size,
     // resulting in a wrong initial position of the marker. Refreshing it once the UI is configured solved this issue.
@@ -725,6 +731,8 @@ export class SeekBar extends Component<SeekBarConfig> {
     if (this.config.enableSeekPreview) {
       this.onSeekPreview.unsubscribe(this.seekWhileScrubbing);
     }
+
+    window.removeEventListener('resize', this.invalidateUiBoundingRect);
   }
 
   protected toDomElement(): DOM {
@@ -1122,12 +1130,16 @@ export class SeekBar extends Component<SeekBarConfig> {
     this.seekBarEvents.onSeek.dispatch(this);
   }
 
+  private invalidateUiBoundingRect = () => {
+    this.uiBoundingRect = undefined;
+  };
+
   private updateLabelPosition = (pixelPosition: number) => {
-    // Read the bounds on every update instead of caching them: the rect is viewport-relative, so it goes stale when
-    // the player moves horizontally without resizing (e.g. a centered player when the window grows, horizontal
-    // scrolling or layout shifts), which does not trigger a PlayerResized event.
-    const uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
-    this.label.setPositionInBounds(pixelPosition, uiBoundingRect);
+    if (!this.uiBoundingRect) {
+      this.uiBoundingRect = this.uiManager.getUI().getDomElement().get(0).getBoundingClientRect();
+    }
+
+    this.label.setPositionInBounds(pixelPosition, this.uiBoundingRect);
   };
 
   private clearAllThickenedMarkers(): void {
