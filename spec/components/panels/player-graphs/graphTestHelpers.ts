@@ -25,10 +25,12 @@ export interface TextCall {
  * jsdom has no 2D context. The stub records every `fillRect` and `fillText` with the fill in force, so
  * a test can name what was drawn instead of counting calls.
  */
-export function installCanvasStub(): { rects: RectCall[]; texts: TextCall[] } {
+export function installCanvasStub(): { rects: RectCall[]; texts: TextCall[]; strokes: string[] } {
   const rects: RectCall[] = [];
   const texts: TextCall[] = [];
-  const style: { fillStyle: unknown } = { fillStyle: '' };
+  /** The stroke style of every stroked path. */
+  const strokes: string[] = [];
+  const style: { fillStyle: unknown; strokeStyle: string } = { fillStyle: '', strokeStyle: '' };
   const context = {
     get fillStyle(): unknown {
       return style.fillStyle;
@@ -36,7 +38,12 @@ export function installCanvasStub(): { rects: RectCall[]; texts: TextCall[] } {
     set fillStyle(value: unknown) {
       style.fillStyle = value;
     },
-    strokeStyle: '',
+    get strokeStyle(): string {
+      return style.strokeStyle;
+    },
+    set strokeStyle(value: string) {
+      style.strokeStyle = value;
+    },
     font: '',
     textBaseline: '',
     fillRect: jest.fn((x: number, y: number, w: number, h: number) =>
@@ -44,16 +51,18 @@ export function installCanvasStub(): { rects: RectCall[]; texts: TextCall[] } {
     ),
     fillText: jest.fn((text: string, x: number, y: number) => texts.push({ text, x, y, fill: style.fillStyle })),
     strokeRect: jest.fn(),
+    strokeText: jest.fn(),
     clearRect: jest.fn(() => {
       rects.length = 0;
       texts.length = 0;
+      strokes.length = 0;
     }),
     beginPath: jest.fn(),
     closePath: jest.fn(),
     setLineDash: jest.fn(),
     moveTo: jest.fn(),
     lineTo: jest.fn(),
-    stroke: jest.fn(),
+    stroke: jest.fn(() => strokes.push(style.strokeStyle)),
     fill: jest.fn(),
     setTransform: jest.fn(),
     createLinearGradient: jest.fn(() => ({ addColorStop: jest.fn() })),
@@ -62,7 +71,7 @@ export function installCanvasStub(): { rects: RectCall[]; texts: TextCall[] } {
   HTMLCanvasElement.prototype.getContext = jest.fn(() => context) as unknown as HTMLCanvasElement['getContext'];
   Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, get: () => 600 });
 
-  return { rects, texts };
+  return { rects, texts, strokes };
 }
 
 export const PLAYER_EVENTS = {
@@ -74,6 +83,9 @@ export const PLAYER_EVENTS = {
   SegmentParsed: 'segmentparsed',
   AdBreakStarted: 'adbreakstarted',
   AdBreakFinished: 'adbreakfinished',
+  PeriodSwitched: 'periodswitched',
+  VideoQualityAdded: 'videoqualityadded',
+  AudioAdded: 'audioadded',
   Error: 'error',
   PlayerResized: 'playerresized',
 };

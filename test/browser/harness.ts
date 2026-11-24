@@ -135,6 +135,8 @@ export interface MountOptions {
    * occupy no space, so a scenario about title-bar layout has to supply it.
    */
   metadata?: { title?: string; description?: string };
+  /** Include the player graphs panel and its context menu entry, through `UIConfig.playerGraphs`. */
+  playerGraphs?: boolean;
 }
 
 export interface PauseAdOptions {
@@ -244,6 +246,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
     hideDelay = -1,
     videoQualities = [],
     subtitleTracks = [],
+    playerGraphs = false,
   } = options;
 
   await page.setContent(`<!doctype html>
@@ -275,7 +278,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
   await page.addScriptTag({ path: distFile('js/bitmovinplayer-ui.js') });
 
   await page.evaluate(
-    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, availableSubtitleTracks, hideDelay }) => {
+    ({ isLive, uiFactory, uiMetadata, availableVideoQualities, availableSubtitleTracks, hideDelay, withGraphs }) => {
       const browserWindow = window as unknown as BrowserTestWindow;
       const container = document.getElementById('player')!;
       const handlers: Record<string, PlayerEventHandler[]> = {};
@@ -372,6 +375,10 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         getAvailableVideoQualities: () => availableVideoQualities,
         getAudioQuality: () => ({ id: 'audio-q-1', label: 'Auto' }),
         getAvailableAudio: (): never[] => [],
+        // The player graphs panel reads the playing renditions and the buffer at every repaint.
+        getPlaybackVideoData: () => ({ id: 'video-1' }),
+        getPlaybackAudioData: () => ({ id: 'audio-q-1' }),
+        buffer: { getLevel: () => ({ level: 0, targetLevel: 0 }) },
         getVideoBufferLength: () => 0,
         getAudioBufferLength: () => 0,
         getThumbnail: (): null => null,
@@ -448,6 +455,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
         // an invisible UI makes `--ui` and `--headed` useless for anyone debugging a layout test.
         componentConfigOverrides: { UIContainer: { hideDelay } },
         metadata: uiMetadata,
+        playerGraphs: withGraphs,
       };
       switch (uiFactory) {
         case 'default':
@@ -472,6 +480,7 @@ export async function mountUi(page: Page, options: MountOptions = {}): Promise<M
       availableVideoQualities: videoQualities,
       availableSubtitleTracks: subtitleTracks,
       hideDelay,
+      withGraphs: playerGraphs,
     },
   );
 

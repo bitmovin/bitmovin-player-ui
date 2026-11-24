@@ -17,7 +17,7 @@ import {
   PlotGeometry,
   toX,
 } from './GraphCanvas';
-import { truncateToWidth } from './segmentTimelineLayout';
+import { spreadLabels, spreadLabelsAround, truncateToWidth } from './segmentTimelineLayout';
 
 const PADDING = 6;
 const BAND_CAPTION_HEIGHT = 18;
@@ -28,7 +28,6 @@ const BAND_HEIGHT_PER_RUNG = 24;
 /** Rungs move closer, down to this spacing, to fit a height budget. */
 const MIN_BAND_HEIGHT_PER_RUNG = 14;
 const Y_LABEL_INSET = 4;
-const Y_LABEL_BACKING_HALF_HEIGHT = 6;
 const MIN_TICK_SPACING = 18;
 const MIN_RUNG_LABEL_SPACING = 14;
 const RUNG_NAME_MIN_DROP = 6;
@@ -47,11 +46,11 @@ const MUXED_NOTE = 'muxed into the video segments';
 const UNSIZED_NOTE = 'downloads report no size (chunked transfer)';
 const BAND_BACKGROUND = 'rgba(255, 255, 255, 0.04)';
 const AXIS_COLOR = 'rgba(255, 255, 255, 0.22)';
-const GRID_COLOR = 'rgba(255, 255, 255, 0.10)';
 const VALUE_COLOR = 'rgba(255, 255, 255, 0.85)';
-const LABEL_BACKING = 'rgba(20, 20, 20, 0.85)';
+const LABEL_OUTLINE = 'rgba(30, 30, 30, 0.7)';
+const LABEL_OUTLINE_WIDTH = 3;
 const PLAYHEAD_COLOR = 'rgba(255, 255, 255, 0.45)';
-const RUNG_COLOR = 'rgba(255, 255, 255, 0.25)';
+const RUNG_COLOR = 'rgba(255, 255, 255, 0.14)';
 const RUNG_LABEL_COLOR = 'rgba(255, 255, 255, 0.45)';
 const ACTIVE_RUNG_COLOR = 'rgba(255, 255, 255, 0.7)';
 const ACTIVE_RUNG_LABEL_COLOR = 'rgba(255, 255, 255, 0.9)';
@@ -60,20 +59,33 @@ const FAILED_FILL_COLOR = 'rgba(214, 69, 69, 0.12)';
 const TOOLTIP_BACKGROUND = 'rgba(16, 16, 16, 0.94)';
 const TOOLTIP_BORDER = 'rgba(255, 255, 255, 0.3)';
 
+/**
+ * The colours of a band. The measured speed (bars, scale lines and scale values) is drawn in the band's
+ * colour, the renditions (rung lines and names) in grey and white, so the two never read as one another.
+ */
 interface Band {
   mediaType: SegmentMediaType;
   color: string;
   fillTop: string;
   fillBottom: string;
+  /** The lines at the scale ticks. */
+  grid: string;
 }
 
 const BANDS: Band[] = [
-  { mediaType: 'video', color: '#4aa8ff', fillTop: 'rgba(74, 168, 255, 0.38)', fillBottom: 'rgba(74, 168, 255, 0.05)' },
+  {
+    mediaType: 'video',
+    color: '#4aa8ff',
+    fillTop: 'rgba(74, 168, 255, 0.38)',
+    fillBottom: 'rgba(74, 168, 255, 0.05)',
+    grid: 'rgba(74, 168, 255, 0.22)',
+  },
   {
     mediaType: 'audio',
     color: '#8fd3ff',
     fillTop: 'rgba(143, 211, 255, 0.38)',
     fillBottom: 'rgba(143, 211, 255, 0.05)',
+    grid: 'rgba(143, 211, 255, 0.22)',
   },
 ];
 
@@ -104,7 +116,7 @@ interface RungHit {
  * below video, so on a shared scale it would sit on the baseline.
  *
  * The scale is logarithmic and marks the bitrate of every rendition as a rung, the one being played
- * brighter: a bitrate ladder is roughly geometric, so on a linear scale its lower rungs pile up.
+ * dashed and brighter: a bitrate ladder is roughly geometric, so on a linear scale its lower rungs pile up.
  *
  * @category Components
  */
@@ -122,7 +134,7 @@ export class DownloadSpeedGraph extends GraphCanvas {
 
   protected toDomElement(): DOM {
     const element = super.toDomElement();
-    // Overlapping rung labels are left out. Hovering a rung names every rung near the pointer.
+    // Hovering a rung names every rung near the pointer, also those a short band leaves unnamed.
     element.on('mousemove', (event: MouseEvent) =>
       this.setHover(event.clientY - (event.currentTarget as HTMLElement).getBoundingClientRect().top),
     );
@@ -236,7 +248,7 @@ export class DownloadSpeedGraph extends GraphCanvas {
     context.fillStyle = BAND_BACKGROUND;
     context.fillRect(0, bandTop, width, BAND_CAPTION_HEIGHT + height + 2);
     horizontal(bottom, AXIS_COLOR);
-    ticks.forEach(tick => horizontal(toY(tick), GRID_COLOR));
+    ticks.forEach(tick => horizontal(toY(tick), band.grid));
 
     // A request that never downloaded measured nothing, which an empty column would hide.
     const laneIds = frame.renditions.map(rendition => rendition.id);
@@ -278,15 +290,18 @@ export class DownloadSpeedGraph extends GraphCanvas {
       }
     });
 
-    this.drawLadder(context, geometry, ladder, toY, top);
+    this.drawLadder(context, geometry, ladder, toY, top, bottom);
     this.drawClippedMarks(context, band, clipped, bottom);
-    this.drawYAxisLabels(context, scale, ticks, toY, top, bottom, plotRight);
+    this.drawYAxisLabels(context, band, scale, toY, top, bottom, plotRight);
     this.drawCaption(context, frame, geometry, band, samples, visible, bandTop + BAND_CAPTION_HEIGHT / 2);
   }
 
   /**
-   * A dashed line at every rung, over the bars, and its name in the label column of the timeline.
-   * Where two names would overlap, the one of the rendition being played is kept, then the lower one.
+   * A line across the plot at every rung, over the bars, dashed and brighter for the rung being played,
+   * and the name of every rung in the label column of the timeline.
+   * Names that would overlap move apart, around the name of the rung being played, which stays at its
+   * line. Only where the band is too short for all names are names left out: the one of the rendition
+   * being played is kept, then the lower one.
    */
   private drawLadder(
     context: CanvasRenderingContext2D,
@@ -294,11 +309,12 @@ export class DownloadSpeedGraph extends GraphCanvas {
     ladder: Rung[],
     toY: (mbps: number) => number,
     top: number,
+    bottom: number,
   ): void {
     const lineY = (rung: Rung) => Math.round(toY(rung.mbps)) + 0.5;
     ladder.forEach(rung => {
       context.strokeStyle = rung.active ? ACTIVE_RUNG_COLOR : RUNG_COLOR;
-      context.setLineDash(RUNG_DASH);
+      context.setLineDash(rung.active ? RUNG_DASH : []);
       context.beginPath();
       context.moveTo(geometry.plotLeft, lineY(rung));
       context.lineTo(geometry.plotLeft + geometry.plotWidth, lineY(rung));
@@ -307,14 +323,20 @@ export class DownloadSpeedGraph extends GraphCanvas {
       this.rungHits.push({ y: lineY(rung), text: `${rung.label} — ${formatMbps(rung.mbps)} Mbps` });
     });
 
-    const placed: number[] = [];
+    const wanted = ladder.map(rung => Math.max(lineY(rung), top + RUNG_NAME_MIN_DROP));
+    const labelsTop = top + RUNG_NAME_MIN_DROP;
+    const labelsBottom = bottom - RUNG_NAME_MIN_DROP;
+    const active = ladder.findIndex(rung => rung.active);
+    const positions: (number | null)[] =
+      (active >= 0
+        ? spreadLabelsAround(wanted, active, MIN_RUNG_LABEL_SPACING, labelsTop, labelsBottom)
+        : spreadLabels(wanted, MIN_RUNG_LABEL_SPACING, labelsTop, labelsBottom)) ?? cullLabels(ladder, wanted);
     const measure = (text: string) => context.measureText(text).width;
-    [...ladder.filter(rung => rung.active), ...ladder.filter(rung => !rung.active)].forEach(rung => {
-      const y = Math.max(lineY(rung), top + RUNG_NAME_MIN_DROP);
-      if (placed.some(placedY => Math.abs(placedY - y) < MIN_RUNG_LABEL_SPACING)) {
+    ladder.forEach((rung, index) => {
+      const y = positions[index];
+      if (y == null) {
         return;
       }
-      placed.push(y);
       context.font = rung.active ? FONT_BOLD : FONT;
       context.fillStyle = rung.active ? ACTIVE_RUNG_LABEL_COLOR : RUNG_LABEL_COLOR;
       context.fillText(truncateToWidth(measure, rung.label, geometry.labelWidth, ELLIPSIS), geometry.labelLeft, y);
@@ -344,7 +366,7 @@ export class DownloadSpeedGraph extends GraphCanvas {
         const value = String(Number(mbps.toPrecision(2)));
         const left = x - context.measureText(value).width / 2;
         if (left >= lastValueRight + Y_LABEL_INSET) {
-          lastValueRight = drawBackedText(
+          lastValueRight = drawOutlinedText(
             context,
             value,
             left,
@@ -357,12 +379,12 @@ export class DownloadSpeedGraph extends GraphCanvas {
 
   /**
    * The top and floor of the scale and every tick with room between them, inside the right edge of the
-   * plot, where the fewest bars are. The unit goes on the top label only.
+   * plot, where the fewest bars are, in the band's colour. The unit goes on the top label only.
    */
   private drawYAxisLabels(
     context: CanvasRenderingContext2D,
+    band: Band,
     scale: Scale,
-    ticks: number[],
     toY: (mbps: number) => number,
     top: number,
     bottom: number,
@@ -375,7 +397,7 @@ export class DownloadSpeedGraph extends GraphCanvas {
       [formatTick(scale.floorMbps), floorY],
     ];
     let lastY = floorY;
-    ticks.forEach(tick => {
+    resolveTicks(scale).forEach(tick => {
       const y = toY(tick);
       if (lastY - y >= MIN_TICK_SPACING && y - topY >= MIN_TICK_SPACING) {
         labels.push([formatTick(tick), y]);
@@ -383,7 +405,7 @@ export class DownloadSpeedGraph extends GraphCanvas {
       }
     });
     labels.forEach(([text, y]) =>
-      drawBackedText(context, text, plotRight - Y_LABEL_INSET - context.measureText(text).width, y, LABEL_COLOR),
+      drawOutlinedText(context, text, plotRight - Y_LABEL_INSET - context.measureText(text).width, y, band.color),
     );
   }
 
@@ -477,6 +499,23 @@ function isBandShown(band: Band, frame: GraphFrame, samples: Sample[]): boolean 
   );
 }
 
+/**
+ * Label positions for a band too short to name every rung: a name that would overlap one already placed
+ * is left out (null). The name of the rendition being played is placed first, then the others in ladder order.
+ */
+function cullLabels(ladder: Rung[], wanted: number[]): (number | null)[] {
+  const positions: (number | null)[] = ladder.map((): number | null => null);
+  const indices = ladder.map((_, index) => index);
+  const order = indices.filter(index => ladder[index].active).concat(indices.filter(index => !ladder[index].active));
+  order.forEach(index => {
+    if (positions.every(placed => placed == null || Math.abs(placed - wanted[index]) >= MIN_RUNG_LABEL_SPACING)) {
+      positions[index] = wanted[index];
+    }
+  });
+
+  return positions;
+}
+
 /** The rungs of a media type, ascending. Renditions at one bitrate share a rung, named for all of them. */
 function resolveLadder(frame: GraphFrame, mediaType: SegmentMediaType): Rung[] {
   const activeId = activeRenditionOf(frame, mediaType);
@@ -536,15 +575,23 @@ function resolveTicks(scale: Scale): number[] {
   return ticks;
 }
 
-/** Text on a dark backing, so a rung or grid line at the same height does not run through it. Returns its right edge. */
-function drawBackedText(context: CanvasRenderingContext2D, text: string, x: number, y: number, color: string): number {
-  const textWidth = context.measureText(text).width;
-  context.fillStyle = LABEL_BACKING;
-  context.fillRect(x - 2, y - Y_LABEL_BACKING_HALF_HEIGHT, textWidth + 4, Y_LABEL_BACKING_HALF_HEIGHT * 2);
+/** Text with a thin dark outline, so a rung line or bar at the same height does not run through it. Returns its right edge. */
+function drawOutlinedText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  color: string,
+): number {
+  context.lineWidth = LABEL_OUTLINE_WIDTH;
+  context.lineJoin = 'round';
+  context.strokeStyle = LABEL_OUTLINE;
+  context.strokeText(text, x, y);
+  context.lineWidth = 1;
   context.fillStyle = color;
   context.fillText(text, x, y);
 
-  return x + textWidth;
+  return x + context.measureText(text).width;
 }
 
 /** `1 2 5` and `0.2 0.5`: only the decimals a tick needs. */

@@ -6,6 +6,7 @@ import {
   PlayerStub,
   segmentParsed,
   segmentRequest,
+  VIDEO_1080,
 } from '../components/panels/player-graphs/graphTestHelpers';
 
 describe('SegmentHistory', () => {
@@ -64,6 +65,26 @@ describe('SegmentHistory', () => {
       player.fire(PLAYER_EVENTS.Ready);
 
       expect(history.getRenditions().map(rendition => rendition.id)).toEqual(['v1080', 'v720', 'p2-v', 'a-en']);
+    });
+
+    it.each([PLAYER_EVENTS.PeriodSwitched, PLAYER_EVENTS.VideoQualityAdded])(
+      'adds a video quality the player lists after `%s`',
+      event => {
+        (player as any).getAvailableVideoQualities = () => [VIDEO_1080, { id: 'v2160', label: '2160p', bitrate: 9e6 }];
+        player.fire(event);
+
+        expect(history.getRenditions().map(rendition => rendition.id)).toEqual(['v2160', 'v1080', 'v720', 'a-en']);
+      },
+    );
+
+    it('adds an audio track the player lists after `AudioAdded`', () => {
+      (player as any).getAvailableAudio = () => [
+        { id: 'en', lang: 'en', getQualities: () => [AUDIO_EN] },
+        { id: 'de', lang: 'de', getQualities: () => [{ id: 'a-de', label: '96k', bitrate: 96000 }] },
+      ];
+      player.fire(PLAYER_EVENTS.AudioAdded);
+
+      expect(history.getRenditions().map(rendition => rendition.id)).toEqual(['v1080', 'v720', 'a-en', 'a-de']);
     });
 
     it('clears them when the source unloads', () => {
@@ -164,6 +185,13 @@ describe('SegmentHistory', () => {
       player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { loadedFrom: 'httpCache' }));
 
       expect(history.getRecords()).toEqual([expect.objectContaining({ httpCache: false, prefetched: true, mbps: 8 })]);
+    });
+
+    it('marks a segment the HTTP cache answered when a parsed chunk reported it first', () => {
+      player.fire(PLAYER_EVENTS.SegmentParsed, segmentParsed('s1', 4));
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { loadedFrom: 'httpCache' }));
+
+      expect(history.getRecords()).toEqual([expect.objectContaining({ httpCache: true })]);
     });
 
     it('counts the refills from the player cache', () => {

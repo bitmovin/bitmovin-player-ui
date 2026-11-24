@@ -72,12 +72,19 @@ export class SegmentHistory {
   private readonly records = new Map<string, SegmentRecord>();
   private readonly unsized: Partial<Record<SegmentMediaType, number>> = {};
   private readonly lastDownloads: Partial<Record<SegmentMediaType, LastDownload>> = {};
+  /**
+   * From `AdBreakStarted` to `AdBreakFinished`. `ads.isLinearAdActive()` alone is false before the first
+   * ad of a break starts and between its ads, while the player already reports the ad break.
+   */
   private adBreakActive = false;
 
   initialize(player: PlayerAPI): void {
     const events = player.exports.PlayerEvent;
     this.player = player;
     player.on(events.Ready, this.updateRenditions);
+    player.on(events.PeriodSwitched, this.updateRenditions);
+    player.on(events.VideoQualityAdded, this.updateRenditions);
+    player.on(events.AudioAdded, this.updateRenditions);
     player.on(events.SourceUnloaded, this.reset);
     player.on(events.SegmentRequestFinished, this.onSegmentRequestFinished);
     player.on(events.SegmentPlayback, this.onSegmentPlayback);
@@ -96,6 +103,9 @@ export class SegmentHistory {
 
     const events = player.exports.PlayerEvent;
     player.off(events.Ready, this.updateRenditions);
+    player.off(events.PeriodSwitched, this.updateRenditions);
+    player.off(events.VideoQualityAdded, this.updateRenditions);
+    player.off(events.AudioAdded, this.updateRenditions);
     player.off(events.SourceUnloaded, this.reset);
     player.off(events.SegmentRequestFinished, this.onSegmentRequestFinished);
     player.off(events.SegmentPlayback, this.onSegmentPlayback);
@@ -187,8 +197,8 @@ export class SegmentHistory {
         }
       });
 
-    // A multi-period source lists only the current period's qualities at each `Ready`. The lanes of
-    // earlier periods stay until the source unloads.
+    // A multi-period source lists only the current period's qualities. The lanes of earlier periods, and
+    // of removed qualities, stay until the source unloads, because their segments are still recorded.
     const listedIds = listed.map(rendition => rendition.id);
     const all = listed.concat(this.renditions.filter(rendition => !listedIds.includes(rendition.id)));
     const ofType = (mediaType: SegmentMediaType) =>
@@ -221,7 +231,6 @@ export class SegmentHistory {
     }
 
     const httpCache = event.success && event.loadedFrom === 'httpCache';
-    const isNew = !this.records.has(event.uid);
     const record = this.recordFor(event.uid, {
       representationId: event.representationId,
       mediaType,
@@ -233,7 +242,8 @@ export class SegmentHistory {
     record.outcome = event.success ? 'downloaded' : 'failed';
     record.failures += countFailures(event);
     // A segment re-requested from the HTTP cache after a network download, as after an ad break, stays a network download.
-    record.httpCache = (isNew || record.httpCache) && httpCache;
+    // A record created from a parsed chunk has no request outcome yet, so its first request decides.
+    record.httpCache = (record.httpCache ?? true) && httpCache;
     record.prefetched = record.prefetched || event.wasPrefetched === true;
 
     if (event.success && !httpCache && record.mbps == null) {

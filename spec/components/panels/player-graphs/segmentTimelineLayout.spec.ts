@@ -1,6 +1,8 @@
 import {
   resolveTickStep,
   resolveWindow,
+  spreadLabels,
+  spreadLabelsAround,
   truncateToWidth,
 } from '../../../../src/ts/components/panels/player-graphs/segmentTimelineLayout';
 
@@ -87,6 +89,51 @@ describe('segmentTimelineLayout', () => {
 
     it('keeps at least one character plus the ellipsis when nothing fits', () => {
       expect(truncateToWidth(measure, '1920x818', 1, '…')).toBe('1…');
+    });
+  });
+
+  describe('spreadLabels', () => {
+    it('leaves labels that are far enough apart where they are', () => {
+      expect(spreadLabels([10, 40, 70], 14, 0, 100)).toEqual([10, 40, 70]);
+    });
+
+    it('pushes a label down from a neighbour that is too close, in the order given', () => {
+      expect(spreadLabels([30, 20, 25], 14, 0, 100)).toEqual([48, 20, 34]);
+    });
+
+    it('pulls labels back up where they would run past the bottom', () => {
+      expect(spreadLabels([90, 95, 100], 14, 0, 100)).toEqual([72, 86, 100]);
+    });
+
+    it('keeps labels inside the top and bottom', () => {
+      expect(spreadLabels([-5, 120], 14, 0, 100)).toEqual([0, 100]);
+    });
+
+    it('gives up when the labels need more room than there is', () => {
+      expect(spreadLabels([10, 20, 30], 14, 0, 20)).toBeNull();
+    });
+  });
+
+  describe('spreadLabelsAround', () => {
+    it('keeps the anchor at its wanted position and spreads the others around it', () => {
+      expect(spreadLabelsAround([40, 45, 50], 1, 14, 0, 100)).toEqual([31, 45, 59]);
+    });
+
+    it('puts labels wanted at the anchor position on the side with more room', () => {
+      expect(spreadLabelsAround([100, 100, 100], 1, 14, 0, 100)).toEqual([72, 100, 86]);
+      expect(spreadLabelsAround([0, 0], 0, 14, 0, 100)).toEqual([0, 14]);
+    });
+
+    it('judges ties by the wanted position, also where it lies past the bottom', () => {
+      expect(spreadLabelsAround([110, 110, 110], 1, 14, 0, 100)).toEqual([72, 100, 86]);
+    });
+
+    it('moves the anchor only as far as the labels on one side need', () => {
+      expect(spreadLabelsAround([5, 5, 10], 2, 14, 0, 100)).toEqual([0, 14, 28]);
+    });
+
+    it('gives up when the labels need more room than there is', () => {
+      expect(spreadLabelsAround([10, 20, 30], 1, 14, 0, 20)).toBeNull();
     });
   });
 });

@@ -173,8 +173,8 @@ export class SegmentTimelineGraph extends GraphCanvas {
       const span = mediaSpan(record);
       return span.end > timelineWindow.start && span.start < windowEnd;
     });
-    // Where even compact lanes do not fit the budget, lanes with nothing in the window that are not
-    // played collapse to stubs, so the lanes with segments keep their height.
+    // Where even compact lanes do not fit the budget, lanes with nothing in the window, other than the
+    // rendition being decoded, collapse to stubs, so the lanes with segments keep their height.
     const budget = frame.heightBudget?.timeline;
     const stubIds =
       budget != null && fixedHeight + renditions.length * MIN_LANE_HEIGHT > budget

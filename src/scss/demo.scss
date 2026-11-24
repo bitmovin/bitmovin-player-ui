@@ -21,6 +21,8 @@ body {
 #player-graphs-host {
   .bmpui-ui-player-graphs-panel {
     max-height: none;
+    // The settings panel base keeps a gap to the player edge. Below the player, the page does not need it.
+    max-width: none;
     overflow: visible;
     position: static;
     width: 100%;

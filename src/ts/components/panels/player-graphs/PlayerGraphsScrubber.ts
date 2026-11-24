@@ -76,7 +76,6 @@ export class PlayerGraphsScrubber extends Component<ComponentConfig> {
     return parseFloat(this.input().value);
   }
 
-  // Looked up rather than kept in a field: the base constructor builds the element before field initializers run.
   private input(): HTMLInputElement {
     return this.getDomElement().get(0).querySelector('input');
   }

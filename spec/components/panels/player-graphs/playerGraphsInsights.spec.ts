@@ -25,6 +25,14 @@ describe('player graphs insights', () => {
       );
     });
 
+    it('names a segment whose path ends in a slash without the query of its URL', () => {
+      const atPath = (uid: string, start: number, mediaStart: number) =>
+        record(uid, start, { mediaStart, mediaEnd: mediaStart + 1.96, url: 'https://cdn/path/?token=1' });
+      const drifts = findTimingDrifts(frame([parsed('s1', 0, 0), atPath('s2', 2, 1.96), atPath('s3', 4, 3.92)]));
+
+      expect(collectInsights(frame([]), drifts, 0)[0].text).toMatch(/First seen at https:\/\/cdn\/path\/\.$/);
+    });
+
     it('ignores a single segment declared short, and exact segments', () => {
       expect(findTimingDrifts(frame([parsed('s1', 0, 0, 1.5), parsed('s2', 2, 1.5), parsed('s3', 4, 3.5)]))).toEqual(
         [],

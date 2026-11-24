@@ -248,7 +248,14 @@ export class PlayerGraphsPanel extends SettingsPanel<PlayerGraphsPanelConfig> {
    * source unloads. Throws on data that is not a snapshot of this version.
    */
   loadSnapshot(snapshot: PlayerGraphsSnapshot): void {
-    if (snapshot?.format !== SNAPSHOT_FORMAT || snapshot.version !== SNAPSHOT_VERSION) {
+    if (
+      snapshot?.format !== SNAPSHOT_FORMAT ||
+      snapshot.version !== SNAPSHOT_VERSION ||
+      !Array.isArray(snapshot.segments) ||
+      !Array.isArray(snapshot.renditions) ||
+      !Array.isArray(snapshot.insights) ||
+      !Number.isFinite(snapshot.player?.currentTime)
+    ) {
       throw new Error(`Not a ${SNAPSHOT_FORMAT} version ${SNAPSHOT_VERSION} snapshot`);
     }
 
@@ -619,7 +626,7 @@ function buildHint(text: string): Label<LabelConfig> {
   return hint;
 }
 
-/** A row that stacks its components. A configured `label` would be placed after them. */
+/** A row that stacks its components. A configured `label` would be placed before them. */
 function buildItem(
   components: Component<ComponentConfig>[],
   config: SettingsPanelItemConfig = {},

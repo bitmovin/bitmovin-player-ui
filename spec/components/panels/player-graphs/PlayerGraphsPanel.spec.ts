@@ -154,6 +154,21 @@ describe('PlayerGraphsPanel', () => {
       expect(() => buildPanel().loadSnapshot({ format: 'other' } as any)).toThrow();
     });
 
+    it.each([
+      ['segments', (snapshot: any) => delete snapshot.segments],
+      ['renditions', (snapshot: any) => delete snapshot.renditions],
+      ['insights', (snapshot: any) => delete snapshot.insights],
+      ['player time', (snapshot: any) => delete snapshot.player.currentTime],
+    ])('rejects a snapshot without its %s and keeps showing the player', (_, breakSnapshot) => {
+      const panel = buildPanel();
+      panel.show();
+      const snapshot = JSON.parse(JSON.stringify(panel.exportSnapshot()));
+      breakSnapshot(snapshot);
+
+      expect(() => panel.loadSnapshot(snapshot)).toThrow('Not a bitmovin-player-graphs version 1 snapshot');
+      expect(panel.isShowingSnapshot()).toBe(false);
+    });
+
     it('returns to the player when the next source unloads', () => {
       const panel = buildPanel();
       panel.loadSnapshot(panel.exportSnapshot());

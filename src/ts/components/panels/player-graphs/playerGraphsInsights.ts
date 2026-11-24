@@ -144,11 +144,11 @@ function describeDrift({ rendition, declaredDuration, realDuration, url }: Timin
   return url ? `${finding}. First seen at ${segmentName(url)}.` : `${finding}.`;
 }
 
-/** The last path component of a segment URL, without its query. */
+/** The last path component of a segment URL, or its whole path when that ends in `/`. Never the query. */
 function segmentName(url: string): string {
   const path = url.split(/[?#]/)[0];
 
-  return path.slice(path.lastIndexOf('/') + 1) || url;
+  return path.slice(path.lastIndexOf('/') + 1) || path;
 }
 
 function segments(count: number): string {
