@@ -96,18 +96,29 @@ export const AUDIO_EN = { id: 'a-en', label: '128k', bitrate: 128000 };
 
 export interface PlayerStub extends PlayerAPI {
   fire(eventType: string, event?: unknown): void;
-  handlers: Map<string, (event: unknown) => void>;
+  handlers: Map<string, ((event: unknown) => void)[]>;
 }
 
 /** A player with the surface the graphs read. `overrides` replaces any of its methods. */
 export function buildPlayer(overrides: Partial<Record<keyof PlayerAPI, unknown>> = {}): PlayerStub {
-  const handlers = new Map<string, (event: unknown) => void>();
+  const handlers = new Map<string, ((event: unknown) => void)[]>();
+  const off = (eventType: string, handler: (event: unknown) => void) => {
+    const rest = (handlers.get(eventType) ?? []).filter(other => other !== handler);
+    if (rest.length > 0) {
+      handlers.set(eventType, rest);
+    } else {
+      handlers.delete(eventType);
+    }
+  };
 
   return {
-    on: jest.fn((eventType: string, handler: (event: unknown) => void) => handlers.set(eventType, handler)),
-    off: jest.fn((eventType: string) => handlers.delete(eventType)),
+    on: jest.fn((eventType: string, handler: (event: unknown) => void) =>
+      handlers.set(eventType, [...(handlers.get(eventType) ?? []), handler]),
+    ),
+    off: jest.fn(off),
     handlers,
-    fire: (eventType: string, event: unknown = {}) => handlers.get(eventType)?.(event),
+    fire: (eventType: string, event: unknown = {}) =>
+      (handlers.get(eventType) ?? []).slice().forEach(handler => handler(event)),
     exports: {
       PlayerEvent: PLAYER_EVENTS,
       MediaType: { Video: 'video', Audio: 'audio' },
@@ -145,7 +156,7 @@ export function segmentRequest(uid: string, startTime: number, overrides: Record
     duration: 2,
     size: 1000000,
     downloadTime: 1,
-    attempts: 1,
+    attempt: 1,
     ...overrides,
   };
 }
@@ -167,8 +178,8 @@ export function segmentParsed(uid: string, playbackTime: number, overrides: Reco
 }
 
 export const RENDITIONS: PlayerGraphsRendition[] = [
-  { id: 'v1080', mediaType: 'video', label: '1080p', bitrate: 5000000 },
-  { id: 'a-en', mediaType: 'audio', label: 'en', bitrate: 128000 },
+  { id: 'v1080', mediaType: 'video', label: '1080p', bitrate: 5000000, isListed: true },
+  { id: 'a-en', mediaType: 'audio', label: 'en', bitrate: 128000, isListed: true },
 ];
 
 export function record(uid: string, start: number, overrides: Partial<SegmentRecord> = {}): SegmentRecord {

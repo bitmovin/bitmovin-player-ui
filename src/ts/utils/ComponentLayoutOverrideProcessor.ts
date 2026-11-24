@@ -1,7 +1,7 @@
 import type { UIVariantIdentifier } from '../UIManager';
 import type { UIConfig } from '../UIConfig';
 import { UIComponentLayoutOverride } from '../UIComponentLayoutOverrides';
-import type { UIComponentLayoutOverrideMap } from '../UIComponentLayoutOverrides';
+import type { UIComponentLayoutOverrideMap, UIComponentLayoutOverrides } from '../UIComponentLayoutOverrides';
 import { Component, ComponentConfig } from '../components/Component';
 import { Container, ContainerConfig } from '../components/Container';
 import { SettingsPanelItem } from '../components/settings/SettingsPanelItem';
@@ -38,7 +38,7 @@ export class ComponentLayoutOverrideProcessor {
   }
 
   private shouldExclude(component: Component<ComponentConfig>, variantIdentifier: UIVariantIdentifier): boolean {
-    if (this.resolveComponentLayoutOverride(component, variantIdentifier) === UIComponentLayoutOverride.Exclude) {
+    if (this.resolveOverrideFor(component, variantIdentifier) === UIComponentLayoutOverride.Exclude) {
       return true;
     }
 
@@ -47,36 +47,22 @@ export class ComponentLayoutOverrideProcessor {
       const settingComponent = component.getConfig().settingComponent;
       return (
         settingComponent != null &&
-        this.resolveComponentLayoutOverride(settingComponent, variantIdentifier) === UIComponentLayoutOverride.Exclude
+        this.resolveOverrideFor(settingComponent, variantIdentifier) === UIComponentLayoutOverride.Exclude
       );
     }
 
     return false;
   }
 
-  private resolveComponentLayoutOverride(
+  private resolveOverrideFor(
     component: Component<ComponentConfig>,
     variantIdentifier: UIVariantIdentifier,
   ): UIComponentLayoutOverride {
-    const componentLayoutOverrides = this.config.componentLayoutOverrides;
-    const componentTypeNames = getConstructorNames(component.constructor as { prototype: object });
-    let override = UIComponentLayoutOverride.Include;
-
-    const resolveConfig = (componentLayoutOverrides: UIComponentLayoutOverrideMap): void => {
-      const componentLayoutOverrideMap = componentLayoutOverrides as {
-        [componentTypeName: string]: UIComponentLayoutOverride;
-      };
-      for (const componentTypeName of componentTypeNames) {
-        override = componentLayoutOverrideMap[componentTypeName] ?? override;
-      }
-    };
-
-    resolveConfig(componentLayoutOverrides);
-    if (componentLayoutOverrides[variantIdentifier] != null) {
-      resolveConfig(componentLayoutOverrides[variantIdentifier]);
-    }
-
-    return override;
+    return resolveComponentLayoutOverride(
+      this.config.componentLayoutOverrides,
+      getConstructorNames(component.constructor as { prototype: object }),
+      variantIdentifier,
+    );
   }
 
   private releaseComponentTree(
@@ -106,4 +92,62 @@ export class ComponentLayoutOverrideProcessor {
 
     component.release();
   }
+}
+
+/**
+ * The overrides in force for a UI config, in the precedence of {@link UIComponentLayoutOverrides}: the built-in
+ * exclusions, then the config aliases, then the configured overrides.
+ */
+export function mergeComponentLayoutOverrides(uiconfig: UIConfig): UIComponentLayoutOverrides {
+  return {
+    CaptionToggleButton: UIComponentLayoutOverride.Exclude,
+    EcoModeContainer: UIComponentLayoutOverride.Exclude,
+    PlayerGraphsContextMenuItem: UIComponentLayoutOverride.Exclude,
+    PlayerGraphsPanel: UIComponentLayoutOverride.Exclude,
+    QuickSeekButton: UIComponentLayoutOverride.Exclude,
+    Watermark: UIComponentLayoutOverride.Exclude,
+    ...(uiconfig.playerGraphs != null && {
+      PlayerGraphsContextMenuItem: uiconfig.playerGraphs
+        ? UIComponentLayoutOverride.Include
+        : UIComponentLayoutOverride.Exclude,
+      PlayerGraphsPanel: uiconfig.playerGraphs ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
+    }),
+    ...(uiconfig.ecoMode != null && {
+      EcoModeContainer: uiconfig.ecoMode ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
+    }),
+    ...(uiconfig.includeWatermark != null && {
+      Watermark: uiconfig.includeWatermark ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
+    }),
+    ...(uiconfig.playbackSpeedSelectionEnabled != null && {
+      PlaybackSpeedSelectBox: uiconfig.playbackSpeedSelectionEnabled
+        ? UIComponentLayoutOverride.Include
+        : UIComponentLayoutOverride.Exclude,
+    }),
+    ...uiconfig.componentLayoutOverrides,
+  };
+}
+
+/**
+ * The override in force for a component in a variant. The top-level overrides apply first, then the overrides of
+ * the variant. Within each, the key of a base class applies first, then the keys of its subclasses.
+ */
+export function resolveComponentLayoutOverride(
+  componentLayoutOverrides: UIComponentLayoutOverrides,
+  componentTypeNames: string[],
+  variantIdentifier: UIVariantIdentifier,
+): UIComponentLayoutOverride {
+  let override = UIComponentLayoutOverride.Include;
+  const resolveMap = (componentLayoutOverrideMap: UIComponentLayoutOverrideMap): void => {
+    const overridesByName = componentLayoutOverrideMap as { [componentTypeName: string]: UIComponentLayoutOverride };
+    for (const componentTypeName of componentTypeNames) {
+      override = overridesByName[componentTypeName] ?? override;
+    }
+  };
+
+  resolveMap(componentLayoutOverrides);
+  if (componentLayoutOverrides[variantIdentifier] != null) {
+    resolveMap(componentLayoutOverrides[variantIdentifier]);
+  }
+
+  return override;
 }

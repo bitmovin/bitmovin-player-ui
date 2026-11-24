@@ -96,9 +96,9 @@ describe('DownloadSpeedGraph', () => {
     const closeRungs = (): GraphFrame => ({
       ...frame([record('s', 10, { mbps: 4 })]),
       renditions: [
-        { id: 'v1080', mediaType: 'video', label: 'A', bitrate: 5000000 },
-        { id: 'v-b', mediaType: 'video', label: 'B', bitrate: 4800000 },
-        { id: 'v-c', mediaType: 'video', label: 'C', bitrate: 4600000 },
+        { id: 'v1080', mediaType: 'video', label: 'A', bitrate: 5000000, isListed: true },
+        { id: 'v-b', mediaType: 'video', label: 'B', bitrate: 4800000, isListed: true },
+        { id: 'v-c', mediaType: 'video', label: 'C', bitrate: 4600000, isListed: true },
       ],
     });
 
@@ -134,7 +134,7 @@ describe('DownloadSpeedGraph', () => {
       const close = closeRungs();
       // A higher rung moves the close ones away from the top of the band.
       const renditions = [
-        { id: 'v-d', mediaType: 'video' as const, label: 'D', bitrate: 40000000 },
+        { id: 'v-d', mediaType: 'video' as const, label: 'D', bitrate: 40000000, isListed: true },
         ...close.renditions,
       ];
       graph.render({ ...close, renditions, state: { ...close.state, activeRenditionIds: ['v-b'] } }, GEOMETRY);

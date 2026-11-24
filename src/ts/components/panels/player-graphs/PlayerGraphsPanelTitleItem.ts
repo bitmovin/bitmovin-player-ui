@@ -5,7 +5,7 @@ import { Button, ButtonConfig, ButtonStyle } from '../../buttons/Button';
 import { Container } from '../../Container';
 import { Label, LabelConfig } from '../../labels/Label';
 import { SettingsPanelItem, SettingsPanelItemConfig } from '../../settings/SettingsPanelItem';
-import type { PlayerGraphsSnapshot } from './PlayerGraphsPanel';
+import type { PlayerGraphsSnapshot } from './PlayerGraphsRecorder';
 
 interface PlayerGraphsPanelTitleTarget {
   hide(): void;

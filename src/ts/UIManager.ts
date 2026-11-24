@@ -24,9 +24,13 @@ import { ShadowDomManager } from './utils/ShadowDomManager';
 import { AdBreakTracker } from './utils/AdBreakTracker';
 import { ResumePositionTracker } from './utils/ResumePositionTracker';
 import { ComponentConfigManager } from './utils/ComponentConfigManager';
-import { ComponentLayoutOverrideProcessor } from './utils/ComponentLayoutOverrideProcessor';
+import {
+  ComponentLayoutOverrideProcessor,
+  mergeComponentLayoutOverrides,
+} from './utils/ComponentLayoutOverrideProcessor';
 import { UIComponentLayoutOverride } from './UIComponentLayoutOverrides';
 import { NON_LINEAR_AD_EVENTS, NON_LINEAR_AD_STARTED_EVENT } from './utils/NonLinearAdEvents';
+import { PlayerGraphsRecorder } from './components/panels/player-graphs/PlayerGraphsRecorder';
 
 /**
  * @category Configs
@@ -264,6 +268,8 @@ export class UIManager {
   private timelineMarkersApi: TimelineMarkersApi;
   private componentLayoutOverrideProcessor: ComponentLayoutOverrideProcessor;
   private activeNonLinearAdStartedEvent?: AdEvent;
+  /** Created for the first graphs panel, so a UI without one does not record. */
+  private playerGraphsRecorder?: PlayerGraphsRecorder;
 
   private events = {
     onUiVariantResolve: new EventDispatcher<UIManager, UIConditionContext>(),
@@ -328,34 +334,7 @@ export class UIManager {
       enableTimestampDeepLink: true,
       shadowDom: false,
       ...uiconfig,
-      componentLayoutOverrides: {
-        CaptionToggleButton: UIComponentLayoutOverride.Exclude,
-        EcoModeContainer: UIComponentLayoutOverride.Exclude,
-        PlayerGraphsContextMenuItem: UIComponentLayoutOverride.Exclude,
-        PlayerGraphsPanel: UIComponentLayoutOverride.Exclude,
-        QuickSeekButton: UIComponentLayoutOverride.Exclude,
-        Watermark: UIComponentLayoutOverride.Exclude,
-        ...(uiconfig.playerGraphs != null && {
-          PlayerGraphsContextMenuItem: uiconfig.playerGraphs
-            ? UIComponentLayoutOverride.Include
-            : UIComponentLayoutOverride.Exclude,
-          PlayerGraphsPanel: uiconfig.playerGraphs
-            ? UIComponentLayoutOverride.Include
-            : UIComponentLayoutOverride.Exclude,
-        }),
-        ...(uiconfig.ecoMode != null && {
-          EcoModeContainer: uiconfig.ecoMode ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
-        }),
-        ...(uiconfig.includeWatermark != null && {
-          Watermark: uiconfig.includeWatermark ? UIComponentLayoutOverride.Include : UIComponentLayoutOverride.Exclude,
-        }),
-        ...(uiconfig.playbackSpeedSelectionEnabled != null && {
-          PlaybackSpeedSelectBox: uiconfig.playbackSpeedSelectionEnabled
-            ? UIComponentLayoutOverride.Include
-            : UIComponentLayoutOverride.Exclude,
-        }),
-        ...uiconfig.componentLayoutOverrides,
-      },
+      componentLayoutOverrides: mergeComponentLayoutOverrides(uiconfig),
       events: {
         onUpdated: new EventDispatcher<UIManager, void>(),
       },
@@ -538,6 +517,7 @@ export class UIManager {
           this.subtitleSettingsManager,
           this.uiPreferencesManager,
           this.uiWrapperElement,
+          this.providePlayerGraphsRecorder,
         ),
       );
     }
@@ -886,6 +866,15 @@ export class UIManager {
     }
   }
 
+  private readonly providePlayerGraphsRecorder = (): PlayerGraphsRecorder => {
+    if (!this.playerGraphsRecorder) {
+      this.playerGraphsRecorder = new PlayerGraphsRecorder();
+      this.playerGraphsRecorder.initialize(this.managerPlayerWrapper.getPlayer());
+    }
+
+    return this.playerGraphsRecorder;
+  };
+
   private releaseUi(ui: InternalUIInstanceManager): void {
     ui.releaseControls();
 
@@ -913,6 +902,8 @@ export class UIManager {
     for (const uiInstanceManager of this.uiInstanceManagers) {
       this.releaseUi(uiInstanceManager);
     }
+    this.playerGraphsRecorder?.release();
+    this.playerGraphsRecorder = undefined;
     this.activeNonLinearAdStartedEvent = undefined;
     this.managerPlayerWrapper.clearEventHandlers();
     this.uiPreferencesManager.release();
@@ -1010,6 +1001,7 @@ export class UIInstanceManager {
   private config: InternalUIConfig;
   private subtitleSettingsManager: SubtitleSettingsManager;
   private uiPreferencesManager: UIPreferencesManager;
+  private readonly providePlayerGraphsRecorder: () => PlayerGraphsRecorder;
   protected spatialNavigation?: SpatialNavigation;
   readonly uiWrapperElement: DOM;
 
@@ -1038,6 +1030,7 @@ export class UIInstanceManager {
     subtitleSettingsManager: SubtitleSettingsManager,
     uiPreferencesManager: UIPreferencesManager,
     uiWrapperElement: DOM,
+    providePlayerGraphsRecorder: () => PlayerGraphsRecorder,
   ) {
     if (typeof uiVariant.ui === 'function' && (uiVariant as UIVariant).spatialNavigation) {
       throw Error('Lazy UI variants must return spatialNavigation from the ui factory');
@@ -1049,6 +1042,7 @@ export class UIInstanceManager {
     this.subtitleSettingsManager = subtitleSettingsManager;
     this.uiPreferencesManager = uiPreferencesManager;
     this.uiWrapperElement = uiWrapperElement;
+    this.providePlayerGraphsRecorder = providePlayerGraphsRecorder;
     if (typeof uiVariant.ui !== 'function') {
       this.uiContainer = uiVariant.ui;
       this.spatialNavigation = (uiVariant as UIVariant).spatialNavigation;
@@ -1061,6 +1055,11 @@ export class UIInstanceManager {
 
   getUIPreferencesManager() {
     return this.uiPreferencesManager;
+  }
+
+  /** The recording of the player graphs, shared by all UI variants of the player. Created at the first call. */
+  getPlayerGraphsRecorder(): PlayerGraphsRecorder {
+    return this.providePlayerGraphsRecorder();
   }
 
   getConfig(): InternalUIConfig {

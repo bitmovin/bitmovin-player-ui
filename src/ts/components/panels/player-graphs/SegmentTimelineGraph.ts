@@ -146,7 +146,7 @@ export class SegmentTimelineGraph extends GraphCanvas {
       return null;
     }
 
-    const { state, renditions, currentTime } = frame;
+    const { state, currentTime } = frame;
     const width = this.getCssWidth();
     // On live the seekable range is the DVR window, which can be a few seconds or none at all, while
     // the segments before it were downloaded and played all the same.
@@ -154,6 +154,15 @@ export class SegmentTimelineGraph extends GraphCanvas {
       ? resolveWindow(currentTime, -Infinity, Infinity, MAX_WINDOW_SECONDS, PLAYHEAD_HOLD)
       : resolveWindow(currentTime, state.seekableStart, state.seekableEnd, MAX_WINDOW_SECONDS, PLAYHEAD_HOLD);
     const windowEnd = timelineWindow.start + timelineWindow.seconds;
+    const visible = frame.records.filter(record => {
+      const span = mediaSpan(record);
+      return span.end > timelineWindow.start && span.start < windowEnd;
+    });
+    // A rendition the player does not list, of an earlier or of the next period, gets a lane only while its
+    // segments are in view.
+    const renditions = frame.renditions.filter(
+      rendition => rendition.isListed || visible.some(record => record.representationId === rendition.id),
+    );
 
     context.font = LEGEND_FONT;
     const legendRows = wrapLegend(
@@ -169,10 +178,6 @@ export class SegmentTimelineGraph extends GraphCanvas {
       groupCount * GROUP_HEADING_HEIGHT +
       (muxedNote ? GROUP_HEADING_HEIGHT + MUXED_NOTE_HEIGHT : 0) +
       AXIS_HEIGHT;
-    const visible = frame.records.filter(record => {
-      const span = mediaSpan(record);
-      return span.end > timelineWindow.start && span.start < windowEnd;
-    });
     // Where even compact lanes do not fit the budget, lanes with nothing in the window, other than the
     // rendition being decoded, collapse to stubs, so the lanes with segments keep their height.
     const budget = frame.heightBudget?.timeline;

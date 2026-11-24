@@ -13,6 +13,8 @@ export interface PlayerGraphsRendition {
   label: string;
   /** In bits per second, 0 where the player reports none. */
   bitrate: number;
+  /** Whether the player lists the rendition now. A multi-period source lists only the current period's renditions. */
+  isListed: boolean;
 }
 
 /**
@@ -172,6 +174,7 @@ export class SegmentHistory {
       mediaType: 'video',
       label: quality.label,
       bitrate: quality.bitrate,
+      isListed: true,
     }));
     player
       .getAvailableAudio()
@@ -184,6 +187,7 @@ export class SegmentHistory {
             mediaType: 'audio',
             label: track.lang,
             bitrate: qualities[0]?.bitrate ?? 0,
+            isListed: true,
           });
         } else {
           qualities.forEach(quality =>
@@ -192,19 +196,55 @@ export class SegmentHistory {
               mediaType: 'audio',
               label: `${track.lang} ${quality.label}`,
               bitrate: quality.bitrate,
+              isListed: true,
             }),
           );
         }
       });
 
-    // A multi-period source lists only the current period's qualities. The lanes of earlier periods, and
+    // A multi-period source lists only the current period's qualities. The renditions of earlier periods, and
     // of removed qualities, stay until the source unloads, because their segments are still recorded.
     const listedIds = listed.map(rendition => rendition.id);
-    const all = listed.concat(this.renditions.filter(rendition => !listedIds.includes(rendition.id)));
-    const ofType = (mediaType: SegmentMediaType) =>
-      all.filter(rendition => rendition.mediaType === mediaType).sort((left, right) => right.bitrate - left.bitrate);
-    this.renditions = ofType('video').concat(ofType('audio'));
+    this.setRenditions(
+      listed.concat(
+        this.renditions
+          .filter(rendition => !listedIds.includes(rendition.id))
+          .map(rendition => ({ ...rendition, isListed: false })),
+      ),
+    );
   };
+
+  /** Keeps the renditions in lane order. */
+  private setRenditions(renditions: PlayerGraphsRendition[]): void {
+    const ofType = (mediaType: SegmentMediaType) =>
+      renditions
+        .filter(rendition => rendition.mediaType === mediaType)
+        .sort((left, right) => right.bitrate - left.bitrate);
+    this.renditions = ofType('video').concat(ofType('audio'));
+  }
+
+  /**
+   * Adds a rendition the player does not list for a recorded segment, named by its ID, as for the next period's
+   * segments that download before the player switches to that period. A bitrate the segment reports replaces a
+   * missing one.
+   */
+  private addUnlistedRendition(record: SegmentRecord, bitrate: number | undefined): void {
+    const id = record.representationId;
+    const known = this.renditions.find(rendition => rendition.id === id);
+    const isNewBitrate = known != null && !known.isListed && !(known.bitrate > 0) && bitrate > 0;
+    if (known && !isNewBitrate) {
+      return;
+    }
+
+    const unlisted = {
+      id,
+      mediaType: record.mediaType,
+      label: id,
+      bitrate: bitrate > 0 ? bitrate : 0,
+      isListed: false,
+    };
+    this.setRenditions(this.renditions.filter(rendition => rendition !== known).concat(unlisted));
+  }
 
   private readonly onSegmentRequestFinished = (event: SegmentRequestFinishedEvent): void => {
     // During an ad break, only the content segments prefetched to resume with are content.
@@ -245,6 +285,7 @@ export class SegmentHistory {
     // A record created from a parsed chunk has no request outcome yet, so its first request decides.
     record.httpCache = (record.httpCache ?? true) && httpCache;
     record.prefetched = record.prefetched || event.wasPrefetched === true;
+    this.addUnlistedRendition(record, undefined);
 
     if (event.success && !httpCache && record.mbps == null) {
       if (event.size > 0 && event.downloadTime > 0) {
@@ -288,6 +329,7 @@ export class SegmentHistory {
     if (event.loadedFrom === 'cache') {
       record.reused = (record.reused ?? 0) + 1;
     }
+    this.addUnlistedRendition(record, event.mediaInfo?.bitrate);
   };
 
   private readonly onAdBreakStarted = (): void => {
@@ -338,13 +380,16 @@ function toMediaType(mimeType: string | undefined): SegmentMediaType | null {
   return mimeType?.startsWith('audio/') ? 'audio' : null;
 }
 
-/** A successful request's last attempt is the one that worked, a failed request exhausted all of them. */
-function countFailures({ success, attempts }: SegmentRequestFinishedEvent): number {
-  if (!Number.isFinite(attempts)) {
+/**
+ * A successful request's last attempt is the one that worked. Each attempt of a failed or cancelled
+ * request failed. A custom segment loader of the player can leave the count undefined.
+ */
+function countFailures({ success, attempt }: SegmentRequestFinishedEvent): number {
+  if (!Number.isFinite(attempt)) {
     return 0;
   }
 
-  return success ? Math.max(0, attempts - 1) : attempts;
+  return success ? attempt - 1 : attempt;
 }
 
 /**

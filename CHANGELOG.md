@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - An `Insights` section states the findings in words: retried segments, renditions whose segment times drift from their manifest, audio muxed into the video segments, refills from the player cache, and the session's Bitmovin Analytics impression ID. A snapshot carries the findings (`PlayerGraphsInsight`).
   - The timeline marks the forward buffer target, and where the buffer ends while video or audio goes without a download for longer than two segment durations although the buffer has room.
   - Inside the player, the graphs shrink to the height of the panel before it scrolls, and each graph and the insights fold from their caption.
-  - Needs a player that reports `startTime`, `representationId`, `attempts`, `cancelReason`, `wasPrefetched` and `loadedFrom` on `SegmentRequestFinished`, the `SegmentParsed` event, a `uid` that is unique per segment, and `AudioTrack.isMuxedIntoVideo`.
+  - Needs a player that reports `startTime`, `representationId`, `attempt`, `cancelReason`, `wasPrefetched` and `loadedFrom` on `SegmentRequestFinished`, the `SegmentParsed` event, a `uid` that is unique per segment, and `AudioTrack.isMuxedIntoVideo`.
 
 ## [4.24.0] - 2026-11-19
 

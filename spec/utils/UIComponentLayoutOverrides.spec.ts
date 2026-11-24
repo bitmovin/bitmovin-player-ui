@@ -52,7 +52,7 @@ function buildDefaultLayouts(): UIContainer[] {
       const desktopLayouts = [
         UIFactory.defaultLayouts.emptyState(),
         UIFactory.defaultLayouts.subtitle(),
-        UIFactory.defaultLayouts.main({ showPersistentPreferencesToggle: true }),
+        UIFactory.defaultLayouts.main({ showPersistentPreferencesToggle: true, playerGraphs: true }),
         UIFactory.defaultLayouts.ads(),
         UIFactory.defaultLayouts.smallScreen(),
         UIFactory.defaultLayouts.smallScreenAds(),

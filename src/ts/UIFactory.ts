@@ -42,6 +42,12 @@ import { PlayerUtils } from './utils/PlayerUtils';
 import { CastUIContainer } from './components/CastUIContainer';
 import { UIConditionContext, UIManager, UIVariant, UIVariantFactory, UIVariantIdentifier } from './UIManager';
 import { UIConfig } from './UIConfig';
+import { UIComponentLayoutOverride } from './UIComponentLayoutOverrides';
+import {
+  resolveComponentLayoutOverride,
+  mergeComponentLayoutOverrides,
+} from './utils/ComponentLayoutOverrideProcessor';
+import { getConstructorNames } from './utils/ConstructorUtils';
 import { PlayerAPI } from 'bitmovin-player';
 import { i18n } from './localization/i18n';
 import { SubtitleListBox } from './components/lists/SubtitleListBox';
@@ -105,7 +111,7 @@ export namespace UIFactory {
           identifier: UIVariantIdentifier.smallScreenAds,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen,
+          ui: () => UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi && context.documentWidth < smallScreenSwitchWidth;
           },
@@ -167,7 +173,7 @@ export namespace UIFactory {
           identifier: UIVariantIdentifier.smallScreenAds,
         },
         {
-          ui: UIFactory.defaultLayouts.smallScreen,
+          ui: () => UIFactory.defaultLayouts.smallScreen(config),
           condition: (context: UIConditionContext) => {
             return !context.isAd && !context.adRequiresUi;
           },
@@ -286,7 +292,7 @@ export namespace UIFactory {
     export function main(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
-      const playerGraphsPanel = BrowserUtils.isMobile ? null : new PlayerGraphsPanel({ hidden: true });
+      const playerGraphsPanel = buildPlayerGraphsPanel(config, UIVariantIdentifier.main);
       const playerContextMenu = playerInsightsPanel
         ? new PlayerContextMenu({ playerInsightsPanel, playerGraphsPanel })
         : null;
@@ -413,13 +419,13 @@ export namespace UIFactory {
       });
     }
 
-    export function smallScreen(): UIContainer {
+    export function smallScreen(config: UIConfig = {}): UIContainer {
       const subtitleOverlay = new SubtitleOverlay();
       const pauseAdStatusOverlay = new PauseAdStatusOverlay({
         cssClasses: BrowserUtils.isMobile ? ['touch-click-through'] : [],
       });
       const playerInsightsPanel = BrowserUtils.isMobile ? null : new PlayerInsightsPanel({ hidden: true });
-      const playerGraphsPanel = BrowserUtils.isMobile ? null : new PlayerGraphsPanel({ hidden: true });
+      const playerGraphsPanel = buildPlayerGraphsPanel(config, UIVariantIdentifier.smallScreen);
       const playerContextMenu = playerInsightsPanel
         ? new PlayerContextMenu({ playerInsightsPanel, playerGraphsPanel })
         : null;
@@ -775,6 +781,22 @@ export namespace UIFactory {
         cssClasses: ['ui', 'ui-empty-state'],
       });
     }
+  }
+
+  /**
+   * Builds the player graphs panel when the config includes it for the variant, else returns null. A variant
+   * without an identifier gets no layout overrides from `UIManager`, so the layout resolves them itself.
+   */
+  function buildPlayerGraphsPanel(config: UIConfig, variant: UIVariantIdentifier): PlayerGraphsPanel | null {
+    const override = resolveComponentLayoutOverride(
+      mergeComponentLayoutOverrides(config),
+      getConstructorNames(PlayerGraphsPanel),
+      variant,
+    );
+
+    return !BrowserUtils.isMobile && override === UIComponentLayoutOverride.Include
+      ? new PlayerGraphsPanel({ hidden: true })
+      : null;
   }
 
   function buildDefaultSettingsPanel(

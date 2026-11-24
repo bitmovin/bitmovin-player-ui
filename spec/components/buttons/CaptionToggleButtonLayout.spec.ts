@@ -1,7 +1,5 @@
 // Kept separate from CaptionToggleButton.spec.ts because building the real default layouts requires
 // the actual DOM implementation, while that spec mocks the DOM module through MockHelper.
-import * as fs from 'fs';
-import * as path from 'path';
 import { CaptionToggleButton } from '../../../src/ts/components/buttons/CaptionToggleButton';
 import { Container, ContainerConfig } from '../../../src/ts/components/Container';
 import { UIComponentLayoutOverride } from '../../../src/ts/UIComponentLayoutOverrides';
@@ -9,7 +7,10 @@ import { UIConfig } from '../../../src/ts/UIConfig';
 import { UIFactory } from '../../../src/ts/UIFactory';
 import { UIVariantIdentifier } from '../../../src/ts/UIManager';
 import { ComponentConfigManager } from '../../../src/ts/utils/ComponentConfigManager';
-import { ComponentLayoutOverrideProcessor } from '../../../src/ts/utils/ComponentLayoutOverrideProcessor';
+import {
+  ComponentLayoutOverrideProcessor,
+  mergeComponentLayoutOverrides,
+} from '../../../src/ts/utils/ComponentLayoutOverrideProcessor';
 import { UIUtils } from '../../../src/ts/utils/UIUtils';
 
 // Layouts that render subtitles and own a control bar the button can live in. The ad layouts have no
@@ -31,38 +32,6 @@ function withLayout<T>(
   );
 }
 
-/**
- * Reads the default `componentLayoutOverrides` the UIManager merges into every config. The UIManager
- * constructor cannot be run here without a full player, so the defaults are read from its source
- * instead of being restated in this spec.
- */
-function getDefaultComponentLayoutOverrides(): Record<string, UIComponentLayoutOverride> {
-  const uiManagerSource = fs.readFileSync(path.resolve(__dirname, '../../../src/ts/UIManager.ts'), 'utf8');
-  // Match the whole block up to the closing user-config spread, so defaults that are declared after a
-  // conditional spread are covered too.
-  const defaultsBlock = /componentLayoutOverrides: \{\n([\s\S]*?)\n\s*\.\.\.uiconfig\.componentLayoutOverrides,/.exec(
-    uiManagerSource,
-  );
-
-  if (!defaultsBlock) {
-    throw new Error('Could not read the default componentLayoutOverrides from src/ts/UIManager.ts.');
-  }
-
-  const overrides: Record<string, UIComponentLayoutOverride> = {};
-  // Only plain `Key: UIComponentLayoutOverride.Value,` entries are defaults. Keys nested in a
-  // conditional spread are indented deeper and are driven by the supplied config, so they must not
-  // overwrite a base default here.
-  const overridePattern = /^ {8}(\w+): UIComponentLayoutOverride\.(\w+),$/gm;
-  let match = overridePattern.exec(defaultsBlock[1]);
-
-  while (match) {
-    overrides[match[1]] = UIComponentLayoutOverride[match[2] as keyof typeof UIComponentLayoutOverride];
-    match = overridePattern.exec(defaultsBlock[1]);
-  }
-
-  return overrides;
-}
-
 function countCaptionToggleButtons(container: Container<ContainerConfig>): number {
   let captionToggleButtonCount = 0;
   UIUtils.traverseTree(container, component => {
@@ -82,7 +51,7 @@ describe('CaptionToggleButton in the default layouts', () => {
   it('is excluded by the default component layout overrides', () => {
     // The UIManager merges these defaults into every config, so the button ships opted out and
     // integrators have to include it explicitly.
-    expect(getDefaultComponentLayoutOverrides().CaptionToggleButton).toBe(UIComponentLayoutOverride.Exclude);
+    expect(mergeComponentLayoutOverrides({}).CaptionToggleButton).toBe(UIComponentLayoutOverride.Exclude);
   });
 
   it.each(LAYOUT_VARIANTS)('is removed from the %s layout when excluded', uiVariantIdentifier => {

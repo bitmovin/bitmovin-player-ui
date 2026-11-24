@@ -13,9 +13,15 @@ declare module 'bitmovin-player/types/core/Events' {
     representationId?: string;
     /** Whether the prefetching loader downloaded the segment ahead of playback. */
     wasPrefetched?: boolean;
-    /** The number of HTTP attempts the request took. */
-    attempts?: number;
-    /** Why the player cancelled the request. On such an event, `size` is the bytes received, `-1` for none. */
+    /** How many HTTP requests the player sent for the segment, also for a cancelled request. */
+    attempt?: number;
+    /**
+     * Why the player cancelled the request before it completed: `timeout` when the download ran past the time the
+     * remaining buffer allows, `abr` when the adaptation logic abandoned it to switch quality, `cancel` for every
+     * other cancellation, such as a seek, a track switch or unloading the source. Undefined for a request that
+     * completed, successfully or not. On the event for a cancelled request, `size` is the number of bytes received
+     * before the cancellation, `0` or `-1` when none arrived.
+     */
     cancelReason?: 'timeout' | 'abr' | 'cancel';
     /** Whether the network or the browser's HTTP cache answered a successful request. */
     loadedFrom?: 'network' | 'httpCache';
@@ -35,6 +41,14 @@ declare module 'bitmovin-player/types/core/Events' {
     /** Start of the segment as declared by the manifest. */
     startTime?: number;
     representationId?: string;
+    /** The coding parameters of the segment's media. */
+    mediaInfo: {
+      bitrate?: number;
+      sampleRate?: number;
+      frameRate?: number;
+      width?: number;
+      height?: number;
+    };
     /** Where the segment data came from. `cache` is a player-internal segment cache, reused without a request. */
     loadedFrom: 'network' | 'httpCache' | 'prefetch' | 'cache';
   }

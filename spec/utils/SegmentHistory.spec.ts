@@ -92,6 +92,35 @@ describe('SegmentHistory', () => {
 
       expect(history.getRenditions()).toEqual([]);
     });
+
+    it('adds a rendition the player does not list yet for its segment, with the bitrate its parse reports', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { representationId: 'v-next' }));
+      player.fire(
+        PLAYER_EVENTS.SegmentParsed,
+        segmentParsed('s1', 4, { representationId: 'v-next', mediaInfo: { bitrate: 6e6, height: 2160 } }),
+      );
+
+      expect(history.getRenditions()).toEqual([
+        { id: 'v-next', mediaType: 'video', label: 'v-next', bitrate: 6e6, isListed: false },
+        expect.objectContaining({ id: 'v1080', isListed: true }),
+        expect.objectContaining({ id: 'v720', isListed: true }),
+        expect.objectContaining({ id: 'a-en', isListed: true }),
+      ]);
+    });
+
+    it("takes the player's entry for a rendition once the player lists it", () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { representationId: 'v2160' }));
+      (player as any).getAvailableVideoQualities = () => [{ id: 'v2160', label: '2160p', bitrate: 9e6 }];
+      player.fire(PLAYER_EVENTS.PeriodSwitched);
+
+      expect(history.getRenditions()[0]).toEqual({
+        id: 'v2160',
+        mediaType: 'video',
+        label: '2160p',
+        bitrate: 9e6,
+        isListed: true,
+      });
+    });
   });
 
   describe('segment requests', () => {
@@ -104,10 +133,16 @@ describe('SegmentHistory', () => {
     });
 
     it('joins later requests for the same segment by uid and adds up their failed attempts', () => {
-      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { success: false, attempts: 3 }));
-      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { attempts: 2 }));
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { success: false, attempt: 3 }));
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { attempt: 2 }));
 
       expect(history.getRecords()).toEqual([expect.objectContaining({ outcome: 'downloaded', failures: 4 })]);
+    });
+
+    it('counts no failed attempts for a request that does not report them, as from a custom segment loader', () => {
+      player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { attempt: undefined }));
+
+      expect(history.getRecords()).toEqual([expect.objectContaining({ failures: 0 })]);
     });
 
     it('keeps the throughput of the first download', () => {
@@ -139,10 +174,10 @@ describe('SegmentHistory', () => {
     it.each([
       ['abandoned without data', { cancelReason: 'abr', size: -1 }],
       ['that timed out', { cancelReason: 'timeout' }],
-    ])('records a request %s as failed', (_, overrides) => {
+    ])('records a request %s as failed, with its attempts', (_, overrides) => {
       player.fire(PLAYER_EVENTS.SegmentRequestFinished, segmentRequest('s1', 4, { success: false, ...overrides }));
 
-      expect(history.getRecords()).toEqual([expect.objectContaining({ outcome: 'failed' })]);
+      expect(history.getRecords()).toEqual([expect.objectContaining({ outcome: 'failed', failures: 1 })]);
     });
 
     it('records only prefetched content segments during an ad break', () => {
