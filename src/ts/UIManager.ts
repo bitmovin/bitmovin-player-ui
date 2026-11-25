@@ -499,7 +499,7 @@ export class UIManager {
       this.uiContainerElement = new DOM(player.getContainer());
     }
 
-    if (this.config.shadowDom == true || (this.config.shadowDom && this.config.shadowDom.enabled)) {
+    if (this.config.shadowDom === true || (this.config.shadowDom && this.config.shadowDom.enabled)) {
       if (ShadowDomManager.isShadowDomSupported()) {
         this.shadowDomManager.initialize(
           this.uiContainerElement,
@@ -836,7 +836,7 @@ export class UIManager {
    */
   get uiWrapperElement(): DOM {
     const shadowRoot = this.shadowDomManager.getShadowRoot();
-    return shadowRoot != undefined ? new DOM(shadowRoot) : this.uiContainerElement;
+    return shadowRoot !== undefined ? new DOM(shadowRoot) : this.uiContainerElement;
   }
 
   private addUi(ui: InternalUIInstanceManager): void {
