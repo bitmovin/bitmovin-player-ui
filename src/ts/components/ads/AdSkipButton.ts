@@ -3,6 +3,7 @@ import { UIInstanceManager } from '../../UIManager';
 import { StringUtils } from '../../utils/StringUtils';
 import { AdEvent, LinearAd, PlayerAPI } from 'bitmovin-player';
 import { i18n, LocalizableText } from '../../localization/i18n';
+import { AdBreakTracker } from '../../utils/AdBreakTracker';
 
 /**
  * Configuration interface for the {@link AdSkipButton}.
@@ -33,6 +34,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   private skippableMessage?: LocalizableText;
   private skipOffset: number = -1;
   private player?: PlayerAPI;
+  private adBreakTracker?: AdBreakTracker;
 
   constructor(config: AdSkipButtonConfig = {}) {
     super(config);
@@ -53,6 +55,7 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
     this.player = player;
+    this.adBreakTracker = uimanager.getConfig().adBreakTracker;
 
     const config = this.getConfig();
     this.untilSkippableMessage = config.untilSkippableMessage;
@@ -64,16 +67,10 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
 
       // Update the skip message on the button
       if (player.getCurrentTime() < this.skipOffset) {
-        this.setText(
-          StringUtils.replaceAdMessagePlaceholders(
-            i18n.performLocalization(this.untilSkippableMessage),
-            player,
-            this.skipOffset,
-          ),
-        );
+        this.setText(this.getSkipMessage(player, this.untilSkippableMessage, this.skipOffset));
         this.disable();
       } else {
-        this.setText(StringUtils.replaceAdMessagePlaceholders(i18n.performLocalization(this.skippableMessage), player));
+        this.setText(this.getSkipMessage(player, this.skippableMessage));
         this.enable();
       }
     };
@@ -121,6 +118,16 @@ export class AdSkipButton extends Button<AdSkipButtonConfig> {
     if (this.player && this.updateSkipMessageHandler) {
       this.player.off(this.player.exports.PlayerEvent.TimeChanged, this.updateSkipMessageHandler);
     }
+    this.adBreakTracker = undefined;
     super.release();
+  }
+
+  private getSkipMessage(player: PlayerAPI, message: LocalizableText, skipOffset?: number): string {
+    return StringUtils.replaceAdMessagePlaceholders(
+      i18n.performLocalization(message),
+      player,
+      skipOffset,
+      this.adBreakTracker,
+    );
   }
 }
