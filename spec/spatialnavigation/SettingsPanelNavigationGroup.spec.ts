@@ -26,8 +26,14 @@ describe('SettingsPanelNavigationGroup', () => {
     return new SettingsPanelNavigationGroup(settingsPanel);
   };
 
-  const createSelectOption = (value: string) =>
-    new SettingsPanelSelectOption({ label: value, settingComponent: new SelectBox(), settingsValue: value });
+  const createSelectOption = (value: string) => {
+    // Like in a list box, the select box lists several choices. With fewer than two, the option hides itself and can't
+    // take the focus.
+    const selectBox = new SelectBox();
+    selectBox.addItem('off', 'off');
+    selectBox.addItem('en', 'English');
+    return new SettingsPanelSelectOption({ label: value, settingComponent: selectBox, settingsValue: value });
+  };
 
   describe('getComponents', () => {
     describe('when a title row only contains a label (e.g. a list box title)', () => {
