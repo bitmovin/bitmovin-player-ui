@@ -18,6 +18,45 @@ import { FocusableContainer } from './FocusableContainer';
 import { toHtmlElement } from './helper/toHtmlElement';
 
 /**
+ * Native form fields the browser focuses without a configured `tabIndex`, e.g. the `<select>` of a `SelectBox`.
+ */
+const NATIVE_FORM_FIELDS = ['SELECT', 'INPUT', 'TEXTAREA'];
+
+/**
+ * Whether spatial navigation can move the focus to the component: a component with a configured `tabIndex`, or a
+ * visible native form field that is not disabled. Components that only lost their `tabIndex`, like an ad click-through
+ * overlay without a URL, can't take the focus.
+ */
+function canTakeFocus(component: Focusable): boolean {
+  if (isFocusable(component)) {
+    return true;
+  }
+  if (component instanceof FocusableContainer || !component.isShown()) {
+    return false;
+  }
+  const element = toHtmlElement(component);
+  return (
+    Boolean(element) &&
+    NATIVE_FORM_FIELDS.indexOf(element.tagName) !== -1 &&
+    !(element as HTMLSelectElement).disabled &&
+    !isInsideHiddenComponent(element, `${component.getConfig().cssPrefix}-hidden`)
+  );
+}
+
+/**
+ * Whether the element is inside a hidden component, e.g. a settings row that hides itself because its select box
+ * offers no choice. The component of the element itself can still count as shown then.
+ */
+function isInsideHiddenComponent(element: HTMLElement, hiddenClass: string): boolean {
+  for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
+    if (ancestor.classList.contains(hiddenClass)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Used as part of spatial navigation. Groups together different components to which you can navigate to, in a single
  * navigation group.
  *
@@ -189,10 +228,10 @@ export class NavigationGroup {
   private resolveFocusTarget(component: Focusable | undefined): AnyComponent | undefined {
     if (component instanceof FocusableContainer) {
       const primaryComponent = component.primaryComponent;
-      return primaryComponent && isFocusable(primaryComponent) ? primaryComponent : component.components[0];
+      return primaryComponent && canTakeFocus(primaryComponent) ? primaryComponent : component.components[0];
     }
 
-    return component && isFocusable(component) ? component : undefined;
+    return component && canTakeFocus(component) ? component : undefined;
   }
 
   /**
@@ -264,7 +303,7 @@ export class NavigationGroup {
         if (!component) {
           return false;
         }
-        if (!isFocusable(component)) {
+        if (!canTakeFocus(component)) {
           // Never activate a component that became unavailable while focused. Move the focus to one the viewer can
           // see and act on instead; activating that one is left to the next SELECT.
           this.focusFirstComponent();
@@ -395,7 +434,7 @@ export class NavigationGroup {
         const enterListener = () => {
           // A registered component can stop being focusable while its listener stays attached, e.g. an ad click
           // overlay whose click-through URL was cleared. Hovering it must not focus it again.
-          if (isFocusable(component)) {
+          if (canTakeFocus(component)) {
             this.focusComponent(component);
           }
         };

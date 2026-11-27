@@ -8,6 +8,7 @@ import { SelectBox } from '../../src/ts/components/settings/SelectBox';
 import { Label, LabelConfig } from '../../src/ts/components/labels/Label';
 import { Button, ButtonConfig } from '../../src/ts/components/buttons/Button';
 import { MockHelper } from '../helper/MockHelper';
+import { Direction } from '../../src/ts/spatialnavigation/types';
 
 // Real components are used deliberately: which children count as navigation targets depends on their
 // configured tabIndex and visibility.
@@ -92,6 +93,77 @@ describe('SettingsPanelNavigationGroup', () => {
         expect(components).toContain(label);
         expect(components).toContain(selectBox);
       });
+    });
+  });
+
+  describe('a native select box in a custom settings panel', () => {
+    // A SelectBox keeps the default tabIndex of -1 in its config, but renders a native <select> that can take the focus
+    const createSettingRow = (...values: string[]) => {
+      const selectBox = new SelectBox();
+      values.forEach(value => selectBox.addItem(value, value));
+      const row = new SettingsPanelItem({
+        label: new Label<LabelConfig>({ text: 'Quality' }),
+        settingComponent: selectBox,
+      });
+      return { selectBox, row };
+    };
+
+    const layOutAt = (component: { getDomElement(): { get(index: number): HTMLElement } }, top: number) => {
+      jest.spyOn(component.getDomElement().get(0), 'getBoundingClientRect').mockReturnValue({
+        top,
+        bottom: top + 50,
+        left: 0,
+        right: 200,
+        width: 200,
+        height: 50,
+        x: 0,
+        y: top,
+      } as DOMRect);
+    };
+
+    afterEach(() => {
+      document.body.innerHTML = '';
+    });
+
+    it('should move the focus to a visible select box with the D-pad', () => {
+      const backButton = new SettingsPanelPageBackButton({
+        text: 'Back',
+        container: new SettingsPanel({ components: [new SettingsPanelPage({})] }),
+      });
+      const { selectBox, row } = createSettingRow('auto', '1080p');
+      const navigationGroup = createGroup(new SettingsPanelItem({ label: backButton, isSetting: false }), row);
+      document.body.appendChild(settingsPanel.getDomElement().get(0));
+      layOutAt(backButton, 0);
+      layOutAt(selectBox, 100);
+      navigationGroup.focusFirstComponent();
+      expect(navigationGroup.getActiveComponent()).toBe(backButton);
+
+      navigationGroup.handleNavigation(Direction.DOWN);
+
+      expect(navigationGroup.getActiveComponent()).toBe(selectBox);
+      expect(document.activeElement).toBe(selectBox.getDomElement().get(0));
+    });
+
+    it('should focus a visible select box first when the panel opens', () => {
+      const { selectBox, row } = createSettingRow('auto', '1080p');
+      const navigationGroup = createGroup(row);
+      document.body.appendChild(settingsPanel.getDomElement().get(0));
+
+      navigationGroup.enable();
+
+      expect(navigationGroup.getActiveComponent()).toBe(selectBox);
+      expect(document.activeElement).toBe(selectBox.getDomElement().get(0));
+    });
+
+    it('should not focus the select box of a row that hides itself because it offers no choice', () => {
+      const { row } = createSettingRow('auto');
+      const navigationGroup = createGroup(row);
+      document.body.appendChild(settingsPanel.getDomElement().get(0));
+      expect(row.isShown()).toBe(false);
+
+      navigationGroup.enable();
+
+      expect(navigationGroup.getActiveComponent()).toBeUndefined();
     });
   });
 });
