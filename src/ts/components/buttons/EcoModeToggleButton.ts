@@ -13,11 +13,11 @@ export class EcoModeToggleButton extends ToggleButton<ToggleButtonConfig> {
     super(config);
 
     const defaultConfig: ToggleButtonConfig = {
-      text: i18n.getLocalizer('ecoMode'),
+      text: i18n.getLocalizer('ecoMode.title'),
       cssClass: 'ui-ecomodetogglebutton',
       onClass: 'on',
       offClass: 'off',
-      ariaLabel: i18n.getLocalizer('ecoMode'),
+      ariaLabel: i18n.getLocalizer('ecoMode.title'),
     };
 
     this.config = this.mergeConfig(config, defaultConfig, this.config);

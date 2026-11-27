@@ -1,6 +1,8 @@
 import { ClickOverlay, ClickOverlayConfig } from '../overlays/ClickOverlay';
 import { UIInstanceManager } from '../../UIManager';
 import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
+import { i18n } from '../../localization/i18n';
+import { DOM } from '../../DOM';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
@@ -8,6 +10,10 @@ import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
  * @category Components
  */
 export class AdClickOverlay extends ClickOverlay {
+  private readonly clickThroughTabIndex: number;
+  private uimanager?: UIInstanceManager;
+  private focused = false;
+
   constructor(config: ClickOverlayConfig = {}) {
     super(config);
 
@@ -15,13 +21,72 @@ export class AdClickOverlay extends ClickOverlay {
       config,
       {
         acceptsTouchWithUiHidden: true,
+        ariaLabel: i18n.getLocalizer('ads.clickThrough'),
       },
       this.config,
     );
+
+    this.clickThroughTabIndex = this.config.tabIndex;
+  }
+
+  protected toDomElement(): DOM {
+    const element = super.toDomElement();
+    // Without a click-through URL the overlay is hidden from keyboard and assistive technologies. Like the pause ad
+    // click catcher, keep a pointer press from focusing it. The click that pauses the ad still arrives.
+    element.on('mousedown', event => {
+      if (!this.getUrl()) {
+        event.preventDefault();
+      }
+    });
+    return element;
+  }
+
+  setUrl(url: string): void {
+    super.setUrl(url);
+
+    // Without a click-through URL there is nothing to open, so keep the overlay out of the tab order and hide it from
+    // assistive technologies. Pointer input still reaches it.
+    const hasClickThrough = Boolean(this.getUrl());
+    if (!hasClickThrough) {
+      this.moveFocusAway();
+    }
+
+    // Spatial navigation reads focusability from `config.tabIndex` (see `isFocusable`), so it has to follow as well
+    this.config.tabIndex = hasClickThrough ? this.clickThroughTabIndex : -1;
+
+    const element = this.getDomElement();
+    element.attr('tabindex', String(this.config.tabIndex));
+    if (hasClickThrough) {
+      element.removeAttr('aria-hidden');
+    } else {
+      element.attr('aria-hidden', 'true');
+    }
+  }
+
+  /**
+   * Moves the focus to the UI container when the overlay is focused, so it is not left on an element that is hidden
+   * from assistive technologies.
+   */
+  private moveFocusAway(): void {
+    if (!this.focused) {
+      return;
+    }
+
+    this.uimanager?.getUI().getDomElement().get(0).focus();
+
+    // Fall back to blurring if the UI container could not take the focus
+    if (this.focused) {
+      this.getDomElement().get(0).blur();
+    }
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
     super.configure(player, uimanager);
+
+    this.uimanager = uimanager;
+    this.onFocusedChanged.subscribe((_, args) => {
+      this.focused = args.focused;
+    });
 
     let clickThroughCallback: () => void = null;
 

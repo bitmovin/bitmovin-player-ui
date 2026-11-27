@@ -11,12 +11,19 @@ export class SettingsPanelPageBackButton extends SettingsPanelPageNavigatorButto
   constructor(config: SettingsPanelPageNavigatorConfig) {
     super(config);
 
+    const pageTitle = config.text;
+
     this.config = this.mergeConfig(
       config,
       {
         cssClass: 'ui-settingspanelpagebackbutton',
         text: i18n.getLocalizer('back'),
         buttonStyle: ButtonStyle.TextWithLeadingIcon,
+        // When the button shows a page title instead of "Back", announce it as a back control as well. The name starts
+        // with the visible title so it can still be targeted by speech input.
+        ariaLabel: pageTitle
+          ? () => i18n.getLocalizer('settings.page.back', { title: i18n.performLocalization(pageTitle) })()
+          : undefined,
       } as SettingsPanelPageNavigatorConfig,
       this.config,
     );

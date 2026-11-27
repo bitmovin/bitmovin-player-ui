@@ -33,7 +33,9 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
   private visibleSettingsPanels: SettingsPanel<SettingsPanelConfig>[] = [];
 
   constructor(config: SettingsToggleButtonConfig) {
-    super(config);
+    // ToggleButton replaces `ariaLabel` with `onAriaLabel` in the config it receives. Pass a copy, so the caller's own
+    // `ariaLabel` is still known below.
+    super({ ...config });
 
     if (!config.settingsPanel) {
       throw new Error('Required SettingsPanel is missing');
@@ -42,15 +44,18 @@ export class SettingsToggleButton extends ToggleButton<SettingsToggleButtonConfi
     // Setting both ariaLabels on the parent ToggleButton suppresses its default
     // `aria-pressed` attribute (see the ToggleButtonConfig.ariaLabel doc) so we don't end
     // up announcing both pressed/unpressed *and* expanded/collapsed for the same widget.
-    // Using the same localizer for both states keeps the announced name stable.
+    // Unless a state-specific name is configured, both states share one name, which keeps the announced name stable. It
+    // defaults to the configured `ariaLabel` or `text`, so e.g. a toggle labelled "Subtitles" is not announced as
+    // "Settings". A configured `onAriaLabel` or `offAriaLabel` only applies to its own state.
     const settingsLabel = i18n.getLocalizer('settings');
+    const sharedAriaLabel = config.ariaLabel || config.text || settingsLabel;
     this.config = this.mergeConfig(
       config,
       {
         cssClass: 'ui-settingstogglebutton',
         text: settingsLabel,
-        onAriaLabel: settingsLabel,
-        offAriaLabel: settingsLabel,
+        onAriaLabel: sharedAriaLabel,
+        offAriaLabel: sharedAriaLabel,
         settingsPanel: null,
         autoHideWhenNoActiveSettings: true,
       },

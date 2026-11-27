@@ -285,6 +285,213 @@ describe('NavigationGroup', () => {
     });
   });
 
+  describe('components that became unavailable', () => {
+    let subtitleToggleButtonHtmlMock: HTMLElement;
+    let subtitleFocusSpy: jest.SpyInstance;
+    let subtitleClickSpy: jest.SpyInstance;
+    let playbackFocusSpy: jest.SpyInstance;
+    let playbackClickSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      subtitleToggleButtonHtmlMock = getFirstDomElement(subtitleToggleButtonMock);
+      subtitleFocusSpy = jest.spyOn(subtitleToggleButtonHtmlMock, 'focus');
+      subtitleClickSpy = jest.spyOn(subtitleToggleButtonHtmlMock, 'click');
+      playbackFocusSpy = jest.spyOn(playbackToggleButtonHtmlMock, 'focus');
+      playbackClickSpy = jest.spyOn(playbackToggleButtonHtmlMock, 'click');
+      jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
+        if (component === playbackToggleButtonMock) {
+          return playbackToggleButtonHtmlMock;
+        }
+        if (component === subtitleToggleButtonMock) {
+          return subtitleToggleButtonHtmlMock;
+        }
+        return undefined;
+      });
+      // The subtitle toggle stays remembered by the group, but can no longer take the focus
+      jest.spyOn(TypeGuards, 'isFocusable').mockImplementation(component => component !== subtitleToggleButtonMock);
+    });
+
+    it('should not activate an unavailable active component on SELECT but focus the first available one', () => {
+      rootNavigationGroup['activeComponent'] = subtitleToggleButtonMock;
+
+      const handled = rootNavigationGroup.handleAction(Action.SELECT);
+
+      expect(handled).toBe(true);
+      expect(subtitleClickSpy).not.toHaveBeenCalled();
+      expect(playbackClickSpy).not.toHaveBeenCalled();
+      expect(playbackFocusSpy).toHaveBeenCalled();
+      expect(rootNavigationGroup.getActiveComponent()).toBe(playbackToggleButtonMock);
+    });
+
+    it.each`
+      restoredBy
+      ${'enable'}
+      ${'handleNavigation'}
+    `(
+      'should focus the first available component instead of an unavailable saved one on $restoredBy',
+      ({ restoredBy }) => {
+        rootNavigationGroup['activeComponentBeforeDisable'] = subtitleToggleButtonMock;
+        rootNavigationGroup['activeComponent'] = undefined;
+
+        if (restoredBy === 'enable') {
+          rootNavigationGroup.enable();
+        } else {
+          rootNavigationGroup.handleNavigation(Direction.LEFT);
+        }
+
+        expect(subtitleFocusSpy).not.toHaveBeenCalled();
+        expect(playbackFocusSpy).toHaveBeenCalled();
+        expect(rootNavigationGroup.getActiveComponent()).toBe(playbackToggleButtonMock);
+      },
+    );
+  });
+
+  describe('focusable containers wrapping a component that became unavailable', () => {
+    let wrappedOverlayMock: jest.Mocked<SettingsToggleButton>;
+    let overlayAvailable: boolean;
+    let overlayFocusSpy: jest.SpyInstance;
+    let overlayClickSpy: jest.SpyInstance;
+    let playbackFocusSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      wrappedOverlayMock = mockComponent(SettingsToggleButton);
+      const overlayHtmlMock = getFirstDomElement(wrappedOverlayMock);
+      overlayFocusSpy = jest.spyOn(overlayHtmlMock, 'focus');
+      overlayClickSpy = jest.spyOn(overlayHtmlMock, 'click');
+      playbackFocusSpy = jest.spyOn(playbackToggleButtonHtmlMock, 'focus');
+      jest.spyOn(toHtmlElementModule, 'toHtmlElement').mockImplementation(component => {
+        if (component === playbackToggleButtonMock) {
+          return playbackToggleButtonHtmlMock;
+        }
+        if (component === wrappedOverlayMock) {
+          return overlayHtmlMock;
+        }
+        return undefined;
+      });
+      overlayAvailable = true;
+      jest.spyOn(TypeGuards, 'isFocusable').mockImplementation(component => {
+        return component !== wrappedOverlayMock || overlayAvailable;
+      });
+    });
+
+    function createGroupWithWrappedOverlay(explicitPrimary: boolean): NavigationGroup {
+      const wrapperMock = mockComponent(Container);
+      wrapperMock.getComponents.mockReturnValue([wrappedOverlayMock]);
+      const focusableContainer = new FocusableContainer(wrapperMock, explicitPrimary ? wrappedOverlayMock : undefined);
+
+      const navigationGroup = new NavigationGroup(rootContainerMock, focusableContainer, playbackToggleButtonMock);
+      // Focus the overlay through its focusable container, as moving into the container would
+      navigationGroup['focusComponent'](focusableContainer);
+      expect(navigationGroup.getActiveComponent()).toBe(wrappedOverlayMock);
+
+      return navigationGroup;
+    }
+
+    it.each`
+      primary        | explicitPrimary
+      ${'explicit'}  | ${true}
+      ${'automatic'} | ${false}
+    `(
+      'should focus the next available component on SELECT with an $primary primary component',
+      ({ explicitPrimary }) => {
+        const navigationGroup = createGroupWithWrappedOverlay(explicitPrimary);
+        overlayFocusSpy.mockClear();
+        overlayAvailable = false;
+
+        expect(() => navigationGroup.handleAction(Action.SELECT)).not.toThrow();
+
+        expect(overlayClickSpy).not.toHaveBeenCalled();
+        expect(overlayFocusSpy).not.toHaveBeenCalled();
+        expect(playbackFocusSpy).toHaveBeenCalled();
+        expect(navigationGroup.getActiveComponent()).toBe(playbackToggleButtonMock);
+      },
+    );
+
+    it.each`
+      primary        | explicitPrimary | interruption
+      ${'explicit'}  | ${true}         | ${'disabled and enabled again'}
+      ${'automatic'} | ${false}        | ${'disabled and enabled again'}
+      ${'explicit'}  | ${true}         | ${'enabled again without being disabled'}
+      ${'automatic'} | ${false}        | ${'enabled again without being disabled'}
+    `(
+      'should restore the next available component when $interruption with an $primary primary component',
+      ({ explicitPrimary, interruption }) => {
+        const navigationGroup = createGroupWithWrappedOverlay(explicitPrimary);
+        if (interruption === 'disabled and enabled again') {
+          navigationGroup.disable();
+        }
+        overlayFocusSpy.mockClear();
+        overlayAvailable = false;
+
+        expect(() => navigationGroup.enable()).not.toThrow();
+
+        expect(overlayFocusSpy).not.toHaveBeenCalled();
+        expect(playbackFocusSpy).toHaveBeenCalled();
+        expect(navigationGroup.getActiveComponent()).toBe(playbackToggleButtonMock);
+      },
+    );
+
+    it.each`
+      primary        | explicitPrimary
+      ${'explicit'}  | ${true}
+      ${'automatic'} | ${false}
+    `(
+      'should navigate past a focusable container without an available target with an $primary primary component',
+      ({ explicitPrimary }) => {
+        const subtitleHtmlMock = getFirstDomElement(subtitleToggleButtonMock);
+        const subtitleFocusSpy = jest.spyOn(subtitleHtmlMock, 'focus');
+        const toHtmlElementMock = toHtmlElementModule.toHtmlElement as jest.Mock;
+        const toOverlayOrPlaybackElement = toHtmlElementMock.getMockImplementation();
+        toHtmlElementMock.mockImplementation(component =>
+          component === subtitleToggleButtonMock ? subtitleHtmlMock : toOverlayOrPlaybackElement(component),
+        );
+        // Picks the first candidate in the group after the active component
+        (navigationAlgorithm.getComponentInDirection as jest.Mock).mockImplementation(
+          (activeComponent, components: unknown[]) => components.find(component => component !== activeComponent),
+        );
+        const afterNavigationMock = jest.fn();
+
+        const wrapperMock = mockComponent(Container);
+        wrapperMock.getComponents.mockReturnValue([wrappedOverlayMock]);
+        const focusableContainer = new FocusableContainer(
+          wrapperMock,
+          explicitPrimary ? wrappedOverlayMock : undefined,
+        );
+        const navigationGroup = new NavigationGroup(
+          rootContainerMock,
+          playbackToggleButtonMock,
+          focusableContainer,
+          subtitleToggleButtonMock,
+        );
+        navigationGroup.afterNavigation = afterNavigationMock;
+        navigationGroup['activeComponent'] = playbackToggleButtonMock;
+        overlayAvailable = false;
+
+        expect(navigationGroup.handleNavigation(Direction.RIGHT)).toBe(true);
+
+        expect(overlayFocusSpy).not.toHaveBeenCalled();
+        expect(subtitleFocusSpy).toHaveBeenCalled();
+        expect(navigationGroup.getActiveComponent()).toBe(subtitleToggleButtonMock);
+        expect(afterNavigationMock).toHaveBeenCalledWith(Direction.RIGHT, subtitleToggleButtonMock);
+      },
+    );
+
+    it('should do nothing on SELECT when no component can take the focus', () => {
+      const wrapperMock = mockComponent(Container);
+      wrapperMock.getComponents.mockReturnValue([wrappedOverlayMock]);
+      const focusableContainer = new FocusableContainer(wrapperMock);
+      const navigationGroup = new NavigationGroup(rootContainerMock, focusableContainer);
+      navigationGroup['focusComponent'](focusableContainer);
+      overlayFocusSpy.mockClear();
+      overlayAvailable = false;
+
+      expect(() => navigationGroup.handleAction(Action.SELECT)).not.toThrow();
+
+      expect(overlayClickSpy).not.toHaveBeenCalled();
+      expect(overlayFocusSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('trackElementHover', () => {
     let subtitleButtonHtml: HTMLElement;
     let playbackButtonHtml: HTMLElement;

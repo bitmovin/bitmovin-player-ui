@@ -69,6 +69,9 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     onClick: new EventDispatcher<Button<Config>, NoArgs>(),
   };
 
+  /** Whether the accessible name was set through {@link setAriaLabel}, which UI language changes then keep. */
+  private hasAriaLabelOverride = false;
+
   constructor(config: Config) {
     super(config);
 
@@ -89,6 +92,18 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     if (typeof this.config.text === 'function') {
       this.setText(this.config.text);
     }
+
+    // Localize the default accessible name together with the visible text, so both stay in the same language. A name
+    // set through `setAriaLabel` is left as it is.
+    const defaultAriaLabel = this.config.ariaLabel || this.config.text;
+    if (typeof defaultAriaLabel === 'function' && !this.hasAriaLabelOverride) {
+      this.getDomElement().attr('aria-label', i18n.performLocalization(defaultAriaLabel));
+    }
+  }
+
+  setAriaLabel(label: LocalizableText): void {
+    super.setAriaLabel(label);
+    this.hasAriaLabelOverride = true;
   }
 
   protected toDomElement(): DOM {

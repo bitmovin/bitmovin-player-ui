@@ -18,6 +18,45 @@ import { FocusableContainer } from './FocusableContainer';
 import { toHtmlElement } from './helper/toHtmlElement';
 
 /**
+ * Native form fields the browser focuses without a configured `tabIndex`, e.g. the `<select>` of a `SelectBox`.
+ */
+const NATIVE_FORM_FIELDS = ['SELECT', 'INPUT', 'TEXTAREA'];
+
+/**
+ * Whether spatial navigation can move the focus to the component: a component with a configured `tabIndex`, or a
+ * visible native form field that is not disabled. Components that only lost their `tabIndex`, like an ad click-through
+ * overlay without a URL, can't take the focus.
+ */
+function canTakeFocus(component: Focusable): boolean {
+  if (isFocusable(component)) {
+    return true;
+  }
+  if (component instanceof FocusableContainer || !component.isShown()) {
+    return false;
+  }
+  const element = toHtmlElement(component);
+  return (
+    Boolean(element) &&
+    NATIVE_FORM_FIELDS.indexOf(element.tagName) !== -1 &&
+    !(element as HTMLSelectElement).disabled &&
+    !isInsideHiddenComponent(element, `${component.getConfig().cssPrefix}-hidden`)
+  );
+}
+
+/**
+ * Whether the element is inside a hidden component, e.g. a settings row that hides itself because its select box
+ * offers no choice. The component of the element itself can still count as shown then.
+ */
+function isInsideHiddenComponent(element: HTMLElement, hiddenClass: string): boolean {
+  for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
+    if (ancestor.classList.contains(hiddenClass)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Used as part of spatial navigation. Groups together different components to which you can navigate to, in a single
  * navigation group.
  *
@@ -152,6 +191,11 @@ export class NavigationGroup {
       targetComponent = component;
     }
 
+    // A focusable container without any focusable component has nothing to focus
+    if (!targetComponent) {
+      return;
+    }
+
     this.blurActiveComponent();
     this.activeComponent = targetComponent;
     toHtmlElement(this.activeComponent).focus();
@@ -166,9 +210,43 @@ export class NavigationGroup {
   }
 
   public focusFirstComponent(): void {
-    const component = this.getComponents()[0];
-    if (component) {
-      this.focusComponent(component);
+    for (const component of this.getComponents()) {
+      const target = this.resolveFocusTarget(component);
+      if (target) {
+        this.focusComponent(target);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Resolves the component that focusing the given one would focus, if it can take the focus.
+   *
+   * A focusable container resolves to its primary component, or to its first focusable component when the primary
+   * one cannot take the focus. An empty container resolves to nothing.
+   */
+  private resolveFocusTarget(component: Focusable | undefined): AnyComponent | undefined {
+    if (component instanceof FocusableContainer) {
+      const primaryComponent = component.primaryComponent;
+      return primaryComponent && canTakeFocus(primaryComponent) ? primaryComponent : component.components[0];
+    }
+
+    return component && canTakeFocus(component) ? component : undefined;
+  }
+
+  /**
+   * Focuses the given component if it can still take the focus, else the first component that can. Does nothing when
+   * no component can take the focus.
+   *
+   * A component remembered by this group can become unavailable in the meantime, e.g. hidden or removed from the
+   * tab order like an ad click-through overlay without a URL.
+   */
+  private focusComponentOrFirst(component: AnyComponent | undefined): void {
+    const target = this.resolveFocusTarget(component);
+    if (target) {
+      this.focusComponent(target);
+    } else {
+      this.focusFirstComponent();
     }
   }
 
@@ -200,8 +278,12 @@ export class NavigationGroup {
       }
     }
 
-    // If no component was found within the container itself, check all components within the group
-    const targetComponent = getComponentInDirection(this.activeComponent, this.getComponents(), direction);
+    // If no component was found within the container itself, check all components within the group. Focusable
+    // containers without an available focus target are left out, so navigation continues past them.
+    const candidates = this.getComponents().filter(component => this.resolveFocusTarget(component));
+    const targetComponent = this.resolveFocusTarget(
+      getComponentInDirection(this.activeComponent, candidates, direction),
+    );
 
     if (targetComponent) {
       this.focusComponent(targetComponent);
@@ -216,9 +298,16 @@ export class NavigationGroup {
   protected defaultActionHandler(action: Action): boolean {
     switch (action) {
       case Action.SELECT: {
+        // Captured before the click: opening a list box disables this group, which clears the active component.
         const component = this.activeComponent;
         if (!component) {
           return false;
+        }
+        if (!canTakeFocus(component)) {
+          // Never activate a component that became unavailable while focused. Move the focus to one the viewer can
+          // see and act on instead; activating that one is left to the next SELECT.
+          this.focusFirstComponent();
+          return true;
         }
         toHtmlElement(component).click();
         return true;
@@ -258,11 +347,7 @@ export class NavigationGroup {
     if (!this.activeComponent) {
       // If we do not have an active element, the active element has been disabled by a mouseleave
       // event. We should continue the navigation at the exact place where we left off.
-      if (this.activeComponentBeforeDisable) {
-        this.focusComponent(this.activeComponentBeforeDisable);
-      } else {
-        this.focusFirstComponent();
-      }
+      this.focusComponentOrFirst(this.activeComponentBeforeDisable);
       return Boolean(this.activeComponent);
     }
 
@@ -308,15 +393,12 @@ export class NavigationGroup {
    * Enable navigation group
    *
    * Sets active element to either element that was active before disable, or first element of tracked elements.
-   * A settings panel that was closed focuses its first element when it is reopened.
+   * A settings panel that was closed focuses its first element when it is reopened. An element that can no longer take
+   * the focus is not restored.
    */
   public enable(): void {
-    if (this.activeComponentBeforeDisable) {
-      this.focusComponent(this.activeComponentBeforeDisable);
-      this.activeComponentBeforeDisable = undefined;
-    } else {
-      this.focusFirstComponent();
-    }
+    this.focusComponentOrFirst(this.activeComponentBeforeDisable);
+    this.activeComponentBeforeDisable = undefined;
 
     this.trackElementHover();
   }
@@ -349,7 +431,13 @@ export class NavigationGroup {
         return { component, element: toHtmlElement(component) };
       })
       .map(({ element, component }) => {
-        const enterListener = this.focusComponent.bind(this, component);
+        const enterListener = () => {
+          // A registered component can stop being focusable while its listener stays attached, e.g. an ad click
+          // overlay whose click-through URL was cleared. Hovering it must not focus it again.
+          if (canTakeFocus(component)) {
+            this.focusComponent(component);
+          }
+        };
         const exitListener = () => this.disable();
 
         this.eventSubscriber.on(element, 'mouseenter', enterListener);
