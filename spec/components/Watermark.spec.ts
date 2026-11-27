@@ -1,9 +1,14 @@
 import { Watermark, WatermarkConfig } from '../../src/ts/components/Watermark';
+import { defaultVocabularies, i18n } from '../../src/ts/localization/i18n';
 
 const BITMOVIN_NAME = 'Bitmovin website, opens in a new tab';
 const GENERIC_NAME = 'Link to Homepage';
 
 describe('Watermark', () => {
+  afterEach(() => {
+    i18n.setConfig({ language: 'en', vocabularies: defaultVocabularies });
+  });
+
   it.each`
     config                                               | expectedName
     ${{}}                                                | ${BITMOVIN_NAME}
@@ -26,6 +31,25 @@ describe('Watermark', () => {
     watermark.setUrl(url);
 
     expect(getName(watermark)).toBe(expectedName);
+  });
+
+  it('should keep a name set through setAriaLabel when the URL changes later', () => {
+    const watermark = createWatermark({});
+
+    watermark.setAriaLabel('Customer home page');
+    watermark.setUrl('https://customer.example/');
+
+    expect(getName(watermark)).toBe('Customer home page');
+  });
+
+  it('should name a watermark with a changed URL in the new UI language', () => {
+    const watermark = createWatermark({});
+    watermark.setUrl('https://customer.example/');
+
+    i18n.setLanguage('de');
+
+    expect(getName(watermark)).toBe(i18n.performLocalization(i18n.getLocalizer('watermarkLink')));
+    expect(getName(watermark)).not.toBe(GENERIC_NAME);
   });
 
   function createWatermark(config: WatermarkConfig): Watermark {

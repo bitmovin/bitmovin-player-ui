@@ -1,5 +1,9 @@
 import { AdClickOverlay } from '../../../src/ts/components/ads/AdClickOverlay';
 import { UIContainer } from '../../../src/ts/components/UIContainer';
+import { Button, ButtonConfig } from '../../../src/ts/components/buttons/Button';
+import { Container, ContainerConfig } from '../../../src/ts/components/Container';
+import { NavigationGroup } from '../../../src/ts/spatialnavigation/NavigationGroup';
+import { Action } from '../../../src/ts/spatialnavigation/types';
 import { isFocusable } from '../../../src/ts/spatialnavigation/TypeGuards';
 import type { UIInstanceManager } from '../../../src/ts/UIManager';
 import { MockHelper, TestingPlayerAPI } from '../../helper/MockHelper';
@@ -120,6 +124,67 @@ describe('AdClickOverlay', () => {
 
       expect(document.activeElement).not.toBe(getElement());
       expectHiddenFromKeyboardAndAssistiveTechnology();
+    });
+  });
+
+  it.each`
+    clickThroughUrl          | focusPrevented
+    ${'https://example.com'} | ${false}
+    ${undefined}             | ${true}
+  `(
+    'should prevent focusing by pointer press: $focusPrevented (clickThroughUrl=$clickThroughUrl)',
+    ({ clickThroughUrl, focusPrevented }) => {
+      playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl });
+      const mousedown = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+
+      getElement().dispatchEvent(mousedown);
+
+      expect(mousedown.defaultPrevented).toBe(focusPrevented);
+    },
+  );
+
+  describe('registered in a navigation group, after the click-through URL was cleared', () => {
+    let otherButton: Button<ButtonConfig>;
+    let group: NavigationGroup;
+
+    beforeEach(() => {
+      otherButton = new Button({ tabIndex: 0 });
+      const container = new Container<ContainerConfig>({ components: [adClickOverlay, otherButton] });
+      document.body.appendChild(container.getDomElement().get(0));
+      jest.spyOn(uiInstanceManagerMock, 'getUI').mockReturnValue(new UIContainer({ components: [] }));
+      group = new NavigationGroup(container, adClickOverlay, otherButton);
+
+      playerMock.eventEmitter.fireAdStartedEvent({ clickThroughUrl: 'https://example.com' });
+      group.enable();
+      group['focusComponent'](adClickOverlay);
+      expect(group.getActiveComponent()).toBe(adClickOverlay);
+
+      playerMock.eventEmitter.fireAdFinishedEvent();
+    });
+
+    afterEach(() => {
+      group.release();
+      document.body.innerHTML = '';
+    });
+
+    it('should not focus the overlay again when it is hovered', () => {
+      group['focusComponent'](otherButton);
+
+      getElement().dispatchEvent(new MouseEvent('mouseenter'));
+
+      expect(group.getActiveComponent()).toBe(otherButton);
+      expect(document.activeElement).not.toBe(getElement());
+    });
+
+    it('should not activate the overlay on SELECT but focus the other control', () => {
+      const clickSpy = jest.spyOn(getElement(), 'click');
+
+      const handled = group.handleAction(Action.SELECT);
+
+      expect(handled).toBe(true);
+      expect(clickSpy).not.toHaveBeenCalled();
+      expect(group.getActiveComponent()).toBe(otherButton);
+      expect(document.activeElement).toBe(otherButton.getDomElement().get(0));
     });
   });
 

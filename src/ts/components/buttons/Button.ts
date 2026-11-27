@@ -69,6 +69,9 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     onClick: new EventDispatcher<Button<Config>, NoArgs>(),
   };
 
+  /** The default accessible name as last written to the element, see {@link onLanguageChanged}. */
+  private appliedDefaultAriaLabel?: string;
+
   constructor(config: Config) {
     super(config);
 
@@ -89,12 +92,22 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     if (typeof this.config.text === 'function') {
       this.setText(this.config.text);
     }
+
+    // Localize the default accessible name together with the visible text, so both stay in the same language. A name
+    // that was replaced at runtime, e.g. through `setAriaLabel`, is left as it is.
+    const defaultAriaLabel = this.config.ariaLabel || this.config.text;
+    const element = this.getDomElement();
+    if (typeof defaultAriaLabel === 'function' && element.attr('aria-label') === this.appliedDefaultAriaLabel) {
+      this.appliedDefaultAriaLabel = i18n.performLocalization(defaultAriaLabel);
+      element.attr('aria-label', this.appliedDefaultAriaLabel);
+    }
   }
 
   protected toDomElement(): DOM {
+    this.appliedDefaultAriaLabel = i18n.performLocalization(this.config.ariaLabel || this.config.text);
     const buttonElementAttributes: { [name: string]: string } = {
       id: this.config.id,
-      'aria-label': i18n.performLocalization(this.config.ariaLabel || this.config.text),
+      'aria-label': this.appliedDefaultAriaLabel,
       class: this.getCssClasses(),
       type: 'button',
       tabindex: this.config.tabIndex.toString(),

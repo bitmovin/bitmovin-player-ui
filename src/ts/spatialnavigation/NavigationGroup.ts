@@ -392,7 +392,13 @@ export class NavigationGroup {
         return { component, element: toHtmlElement(component) };
       })
       .map(({ element, component }) => {
-        const enterListener = this.focusComponent.bind(this, component);
+        const enterListener = () => {
+          // A registered component can stop being focusable while its listener stays attached, e.g. an ad click
+          // overlay whose click-through URL was cleared. Hovering it must not focus it again.
+          if (isFocusable(component)) {
+            this.focusComponent(component);
+          }
+        };
         const exitListener = () => this.disable();
 
         this.eventSubscriber.on(element, 'mouseenter', enterListener);

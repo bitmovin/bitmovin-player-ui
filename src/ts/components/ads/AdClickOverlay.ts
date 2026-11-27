@@ -2,6 +2,7 @@ import { ClickOverlay, ClickOverlayConfig } from '../overlays/ClickOverlay';
 import { UIInstanceManager } from '../../UIManager';
 import { Ad, AdEvent, PlayerAPI } from 'bitmovin-player';
 import { i18n } from '../../localization/i18n';
+import { DOM } from '../../DOM';
 
 /**
  * A simple click capture overlay for clickThroughUrls of ads.
@@ -26,6 +27,18 @@ export class AdClickOverlay extends ClickOverlay {
     );
 
     this.clickThroughTabIndex = this.config.tabIndex;
+  }
+
+  protected toDomElement(): DOM {
+    const element = super.toDomElement();
+    // Without a click-through URL the overlay is hidden from keyboard and assistive technologies. Like the pause ad
+    // click catcher, keep a pointer press from focusing it. The click that pauses the ad still arrives.
+    element.on('mousedown', event => {
+      if (!this.getUrl()) {
+        event.preventDefault();
+      }
+    });
+    return element;
   }
 
   setUrl(url: string): void {

@@ -1,5 +1,5 @@
 import { ClickOverlay, ClickOverlayConfig } from './overlays/ClickOverlay';
-import { i18n, Localizer } from '../localization/i18n';
+import { i18n, LocalizableText, Localizer } from '../localization/i18n';
 
 const BITMOVIN_URL = 'http://bitmovin.com';
 
@@ -18,12 +18,13 @@ export interface WatermarkConfig extends ClickOverlayConfig {
  * @category Components
  */
 export class Watermark extends ClickOverlay {
-  private readonly hasConfiguredAriaLabel: boolean;
+  /** Whether the integrator supplied the accessible name, in the config or later through {@link setAriaLabel}. */
+  private hasCustomAriaLabel: boolean;
 
   constructor(config: WatermarkConfig = {}) {
     super(config);
 
-    this.hasConfiguredAriaLabel = config.ariaLabel != null;
+    this.hasCustomAriaLabel = config.ariaLabel != null;
 
     this.config = this.mergeConfig(
       config,
@@ -41,9 +42,21 @@ export class Watermark extends ClickOverlay {
   setUrl(url: string): void {
     super.setUrl(url);
 
-    // Keep the automatic name in line with the link target. A configured `ariaLabel` is left untouched.
-    if (!this.hasConfiguredAriaLabel) {
-      this.setAriaLabel(Watermark.getAutomaticAriaLabel(this.getUrl()));
+    // Keep the automatic name in line with the link target. A name the integrator supplied is left untouched.
+    if (!this.hasCustomAriaLabel) {
+      super.setAriaLabel(Watermark.getAutomaticAriaLabel(this.getUrl()));
+    }
+  }
+
+  setAriaLabel(label: LocalizableText): void {
+    super.setAriaLabel(label);
+    this.hasCustomAriaLabel = true;
+  }
+
+  protected onLanguageChanged(): void {
+    super.onLanguageChanged();
+    if (!this.hasCustomAriaLabel) {
+      super.setAriaLabel(Watermark.getAutomaticAriaLabel(this.getUrl()));
     }
   }
 
