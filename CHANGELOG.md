@@ -7,9 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `ads.clickThrough`, `settings.page.back`, `subtitle.image` and `watermarkLink.bitmovin` localization keys for the new accessible names, in all six languages.
+
+### Changed
+
+- Spatial navigation no longer focuses, restores or activates a component that can't take the focus, e.g. a hidden one or the ad click-through overlay without a URL. Visible native form fields such as a `SelectBox` stay reachable.
+
 ### Fixed
 
-- Missing or misleading accessible names for screen reader and speech input users: the ad click-through overlay is now named and, while the ad has no click-through URL, gives up the focus, can no longer be focused with the keyboard, a pointer or TV navigation, and is hidden from the accessibility tree, the TV subtitle and audio track list buttons are no longer announced as "Settings", the subtitle "Options" button and the back buttons of settings sub-pages are named after their visible label, also after a UI language change, the Eco Mode toggle and the watermark have descriptive localized names, the buffering indicator dots are hidden from assistive technologies, and image subtitles use the cue text as text alternative, or a generic "Subtitle image" when the source provides none (a text equivalent of the dialogue has to come from the source).
+- The ad click-through overlay having no accessible name, and staying focusable while the ad has no click-through URL. Without a URL, it is now hidden from screen readers and can't be focused by keyboard, pointer or TV navigation. A click still pauses the ad.
+- The subtitle and audio track list buttons of the TV UI being announced as "Settings". A `SettingsToggleButton` is now named after its `ariaLabel` or text, and `onAriaLabel` and `offAriaLabel` only apply to their own state.
+- The subtitle "Options" button being named "Subtitles", and back buttons of settings sub-pages being named only after the page. Their names now match the visible label, also after a UI language change.
+- The Eco Mode toggle being named after its raw localization key, and the watermark being named "Link to Homepage". The watermark keeps a name set through `setAriaLabel()` when its URL changes.
+- The buffering indicator dots being exposed to screen readers, and image subtitles having no text alternative. Image subtitles now use the cue text, or "Subtitle image" when the source provides none.
 
 ## [4.24.1] - 2026-11-26
 
