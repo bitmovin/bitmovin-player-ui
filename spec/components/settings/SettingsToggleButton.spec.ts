@@ -152,26 +152,47 @@ describe('SettingsToggleButton', () => {
 
   describe('accessible name', () => {
     it.each`
-      config                             | expectedName
-      ${{}}                              | ${'Settings'}
-      ${{ text: 'Subtitles' }}           | ${'Subtitles'}
-      ${{ ariaLabel: 'Audio' }}          | ${'Audio'}
-      ${{ text: 'A', ariaLabel: 'B' }}   | ${'B'}
-      ${{ text: 'A', onAriaLabel: 'B' }} | ${'B'}
-    `('should be named "$expectedName" in both states for config $config', ({ config, expectedName }) => {
+      config                                      | expectedOffName | expectedOnName
+      ${{}}                                       | ${'Settings'}   | ${'Settings'}
+      ${{ text: 'Subtitles' }}                    | ${'Subtitles'}  | ${'Subtitles'}
+      ${{ ariaLabel: 'Audio' }}                   | ${'Audio'}      | ${'Audio'}
+      ${{ text: 'A', ariaLabel: 'B' }}            | ${'B'}          | ${'B'}
+      ${{ text: 'A', onAriaLabel: 'B' }}          | ${'A'}          | ${'B'}
+      ${{ onAriaLabel: 'Close settings' }}        | ${'Settings'}   | ${'Close settings'}
+      ${{ ariaLabel: 'A', offAriaLabel: 'Open' }} | ${'Open'}       | ${'A'}
+    `(
+      'should be named "$expectedOffName" when collapsed and "$expectedOnName" when expanded for config $config',
+      ({ config, expectedOffName, expectedOnName }) => {
+        const panel = new SettingsPanel({ components: [new SettingsPanelPage({})], hidden: true });
+        const button = new SettingsToggleButton({ settingsPanel: panel, ...config });
+        const playerMock = MockHelper.getPlayerMock();
+        const uiManagerMock = MockHelper.getUiInstanceManagerMock();
+        // Initializing applies `hidden`, so that showing the panel really expands the toggle
+        panel.initialize();
+        panel.configure(playerMock, uiManagerMock);
+        button.configure(playerMock, uiManagerMock);
+        const element = button.getDomElement().get(0);
+
+        expect(element.getAttribute('aria-label')).toBe(expectedOffName);
+
+        panel.show();
+
+        expect(element.getAttribute('aria-expanded')).toBe('true');
+        expect(element.getAttribute('aria-label')).toBe(expectedOnName);
+
+        panel.hide();
+
+        expect(element.getAttribute('aria-label')).toBe(expectedOffName);
+      },
+    );
+
+    it('should not change the config object it was created with', () => {
       const panel = new SettingsPanel({ components: [new SettingsPanelPage({})], hidden: true });
-      const button = new SettingsToggleButton({ settingsPanel: panel, ...config });
-      const playerMock = MockHelper.getPlayerMock();
-      const uiManagerMock = MockHelper.getUiInstanceManagerMock();
-      panel.configure(playerMock, uiManagerMock);
-      button.configure(playerMock, uiManagerMock);
-      const element = button.getDomElement().get(0);
+      const config = { settingsPanel: panel, onAriaLabel: 'Close settings' };
 
-      expect(element.getAttribute('aria-label')).toBe(expectedName);
+      new SettingsToggleButton(config);
 
-      panel.show();
-
-      expect(element.getAttribute('aria-label')).toBe(expectedName);
+      expect(config).toEqual({ settingsPanel: panel, onAriaLabel: 'Close settings' });
     });
   });
 });
