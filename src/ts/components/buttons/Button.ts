@@ -69,8 +69,8 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     onClick: new EventDispatcher<Button<Config>, NoArgs>(),
   };
 
-  /** The default accessible name as last written to the element, see {@link onLanguageChanged}. */
-  private appliedDefaultAriaLabel?: string;
+  /** Whether the accessible name was set through {@link setAriaLabel}, which UI language changes then keep. */
+  private hasAriaLabelOverride = false;
 
   constructor(config: Config) {
     super(config);
@@ -94,20 +94,22 @@ export class Button<Config extends ButtonConfig> extends Component<Config> {
     }
 
     // Localize the default accessible name together with the visible text, so both stay in the same language. A name
-    // that was replaced at runtime, e.g. through `setAriaLabel`, is left as it is.
+    // set through `setAriaLabel` is left as it is.
     const defaultAriaLabel = this.config.ariaLabel || this.config.text;
-    const element = this.getDomElement();
-    if (typeof defaultAriaLabel === 'function' && element.attr('aria-label') === this.appliedDefaultAriaLabel) {
-      this.appliedDefaultAriaLabel = i18n.performLocalization(defaultAriaLabel);
-      element.attr('aria-label', this.appliedDefaultAriaLabel);
+    if (typeof defaultAriaLabel === 'function' && !this.hasAriaLabelOverride) {
+      this.getDomElement().attr('aria-label', i18n.performLocalization(defaultAriaLabel));
     }
   }
 
+  setAriaLabel(label: LocalizableText): void {
+    super.setAriaLabel(label);
+    this.hasAriaLabelOverride = true;
+  }
+
   protected toDomElement(): DOM {
-    this.appliedDefaultAriaLabel = i18n.performLocalization(this.config.ariaLabel || this.config.text);
     const buttonElementAttributes: { [name: string]: string } = {
       id: this.config.id,
-      'aria-label': this.appliedDefaultAriaLabel,
+      'aria-label': i18n.performLocalization(this.config.ariaLabel || this.config.text),
       class: this.getCssClasses(),
       type: 'button',
       tabindex: this.config.tabIndex.toString(),

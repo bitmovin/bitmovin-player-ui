@@ -98,4 +98,20 @@ describe('SettingsPanelPageBackButton', () => {
     expect(element.textContent).toBe('Optionen');
     expect(element.getAttribute('aria-label')).toBe('Optionen');
   });
+
+  it('should keep a name set at runtime even when it equals the default name', () => {
+    const openButton = track(
+      new SettingsPanelPageOpenButton({
+        container: new SettingsPanel({}),
+        targetPage: new SettingsPanelPage({}),
+        text: i18n.getLocalizer('settings.subtitles.options'),
+        cssPrefix: 'ui',
+      }),
+    );
+    openButton.setAriaLabel('Options');
+
+    i18n.setLanguage('de');
+
+    expect(openButton.getDomElement().get(0).getAttribute('aria-label')).toBe('Options');
+  });
 });
